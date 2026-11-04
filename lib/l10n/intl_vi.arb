@@ -1,0 +1,67 @@
+{
+  "@@locale": "vi",
+  "er_email_field": "Định dạng email không hợp lệ.",
+  "@er_email_field": {
+    "description": "Show when the email field is invalid."
+  },
+  "er_name_field": "Định dạng tên không hợp lệ.",
+  "@er_name_field": {
+    "description": "Show when the name field is invalid."
+  },
+  "er_password_field": "Định dạng mật khẩu không hợp lệ.",
+  "@er_password_field": {
+    "description": "Show when the password field is invalid."
+  },
+  "er_phone_field": "Định dạng số điện thoại không hợp lệ.",
+  "@er_phone_field": {
+    "description": "Show when the phone field is invalid."
+  },
+  "er_required_field": "Trường không được để trống.",
+  "@er_required_field": {
+    "description": "Show when the field is null or empty."
+  },
+  "lb_about": "Giới thiệu",
+  "@lb_about": {
+    "description": "Label text for the About section or page."
+  },
+  "lb_dark_mode": "Chế độ tối",
+  "@lb_dark_mode": {
+    "description": "Label for the Dark Mode toggle/setting."
+  },
+  "lb_flush_error": "Lỗi",
+  "@lb_flush_error": {
+    "description": "Label title for flush bar in error state"
+  },
+  "lb_flush_info": "Thông tin",
+  "@lb_flush_info": {
+    "description": "Label title for flush bar in info state"
+  },
+  "lb_flush_success": "Thành công",
+  "@lb_flush_success": {
+    "description": "Label title for flush bar in success state"
+  },
+  "lb_flush_warning": "Cảnh báo",
+  "@lb_flush_warning": {
+    "description": "Label title for flush bar in warning state"
+  },
+  "lb_general": "Chung",
+  "@lb_general": {
+    "description": "Header or label for General settings."
+  },
+  "lb_language": "Ngôn ngữ",
+  "@lb_language": {
+    "description": "Label for the Language selection setting."
+  },
+  "lb_policy": "Quyền riêng tư & Chính sách",
+  "@lb_policy": {
+    "description": "Label text for the Privacy Policy section."
+  },
+  "lb_terms": "Điều khoản & Điều kiện",
+  "@lb_terms": {
+    "description": "Label text for the Terms and Conditions section."
+  },
+  "lb_version": "Phiên bản",
+  "@lb_version": {
+    "description": "Label text for the Terms and Conditions section."
+  }
+}

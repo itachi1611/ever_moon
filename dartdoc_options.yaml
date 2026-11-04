@@ -1,0 +1,19 @@
+dartdoc:
+  # ── Package scope ────────────────────────────────────────────────────────────
+  # Each value corresponds to a `library <name>;` declaration in a barrel file.
+  # Only these 5 named libraries are documented — everything else (firebase/,
+  # generated/, main*.dart) is automatically excluded.
+  include:
+    - base
+
+  # ── Warnings ─────────────────────────────────────────────────────────────────
+  # Keep unresolved cross-references as warnings (not errors) so that
+  # references to Flutter / third-party types don't fail the build.
+  warnings:
+    - unresolved-doc-reference
+    - missing-from-search-index
+
+  # ── Output ───────────────────────────────────────────────────────────────────
+  # Docs are generated into doc/api/ (dartdoc default).
+  # Run:  fvm dart doc .
+  # No hosted URL configured — local generation only.

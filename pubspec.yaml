@@ -1,0 +1,200 @@
+name: flutter_base
+description: "Flutter production boilerplate — BLoC/Cubit, GoRouter, Hive, Dio/Retrofit, Firebase (FlutterFire)."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Icons
+  cupertino_icons: ^1.0.9
+  font_awesome_flutter: ^11.0.0
+
+  # Localization
+  intl: ^0.20.2
+  intl_utils: ^2.8.14
+
+  # State management
+  bloc: ^9.2.0
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.8
+
+  # Navigation
+  go_router: ^17.2.3
+
+  # Storage & database
+  shared_preferences: ^2.5.5
+  get_storage: ^2.1.1
+
+  # Network
+  connectivity_plus: ^7.1.1
+  dio: ^5.9.2
+  retrofit: ^4.9.2
+  pretty_dio_logger: ^1.4.0
+
+  # Fonts
+  google_fonts: ^8.1.0
+
+  # Path & permissions
+  path_provider: ^2.1.5
+  external_path: ^2.2.0
+  path: ^1.9.1
+  permission_handler: ^12.0.1
+
+  # Browser
+  url_launcher: ^6.3.2
+
+  # Local packages
+  setting_ui_builder:
+    path: pkgs/setting_ui_builder
+  animation_kit:
+    path: pkgs/animation_kit
+  animation_text:
+    path: pkgs/animation_text
+
+  # UI components
+  another_flushbar: ^2.2.4
+  gap: ^3.0.1
+  flutter_local_notifications: ^22.0.1
+  fluttertoast: ^9.1.0
+
+  # Animations
+  animations: ^2.2.0
+  lottie: ^3.3.3
+  flutter_animate: ^4.5.2
+
+  # Markdown
+  flutter_markdown_plus: ^1.0.7
+
+  # Device & app info
+  device_info_plus: ^12.4.0
+  package_info_plus: ^9.0.1
+
+  # Environment
+  flutter_dotenv: ^5.2.1
+
+  # Utilities
+  json_annotation: ^4.12.0
+  timezone: ^0.11.0
+  collection: ^1.19.1
+
+  # AI
+  genkit: ^0.14.1
+  genkit_google_genai: ^0.2.9
+
+  # Logging
+  logger: ^2.7.0
+
+  # Firebase (FlutterFire)
+  firebase_core: ^4.10.0
+  firebase_messaging: ^16.3.0
+  firebase_remote_config: ^6.5.2
+  firebase_crashlytics: ^5.2.4
+  firebase_auth: ^6.1.1
+  firebase_ui_auth: ^3.0.1
+  firebase_ui_localizations: ^2.0.1
+  firebase_ui_oauth: ^2.0.1
+  firebase_ui_oauth_google: ^2.0.1
+
+  # Native method channel
+  pigeon: ^27.1.0
+
+  # Assets picker
+  image_picker: ^1.2.2
+  file_picker: ^10.3.8
+
+  # Image
+  cached_network_image: ^3.4.1
+  cached_network_image_platform_interface: ^4.1.1
+  flutter_cache_manager: ^3.4.1
+
+dependency_overrides:
+  # firebase_ui_auth requires email_validator ^2.x while genkit (via json_schema_builder)
+  # requires ^3.x. Override to the newer version — the API surface used by firebase_ui_auth
+  # (EmailValidator.validate) is unchanged in 3.0.0.
+  email_validator: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  change_app_package_name: ^1.5.0
+
+  # Code generation
+  build_runner: ^2.15.0
+  retrofit_generator: ^10.2.5
+  json_serializable: ^6.8.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  licenses:
+    - LICENSE
+
+  assets:
+    - assets/images/
+    - assets/lotties/
+    - assets/icons/
+    - assets/docs/
+    - assets/fonts/
+    - assets/env/.env.dev
+    - assets/env/.env.uat
+    - assets/env/.env.prod
+    - pubspec.yaml
+
+  fonts:
+    - family: SocialIcons
+      fonts:
+        - asset: packages/firebase_ui_auth/fonts/SocialIcons.ttf
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-VariableFont_wght.ttf
+        - asset: assets/fonts/Montserrat-Italic-VariableFont_wght.ttf
+          style: italic
+
+flutter_intl:
+  enabled: true
+  localizely:
+    project_id: 4e355a95-c675-4976-910f-82a868fbdb3b
+
+# When leaf_type: string, asset references return raw String paths (e.g., Assets.icons.user returns a string). In this mode the plugin will not auto-add flutter_svg, lottie, or rive.
+# When you style: legacy and leaf_type: class, the generator keeps flat access paths but wraps known asset types with typed helpers:
+# legacy + leaf_type: class
+# static const AssetGenImage imagesLogo = AssetGenImage('assets/images/logo.png');
+# static const SvgGenImage iconsHome = SvgGenImage('assets/icons/home.svg');
+# Unknown types (e.g. mp4, JSON) still fall back to String
+# static const String videosIntro = 'assets/videos/intro.mp4';
+flutter_assets_generator:
+  # Enable/Disable this plugin for the current module. Default: true when the block exists
+  enabled: true
+  # When set to false, generation stops and the previous generated Dart file is removed
+  # Sets the directory of generated files. Default: generated/
+  output_dir: generated/
+  # Sets the name for the generated file. Default: as
+  output_filename: app_assets
+  # Sets the name for the root class. Default: Assets
+  class_name: R
+  # Enable/Disable auto monitoring and dependency management. Default: true
+  auto_detection: false
+  # Automatically add missing dependencies (rive, flutter_svg, lottie) default: true
+  auto_add_dependencies: false
+  # Generation style: robust (Hierarchical) or legacy (Flat legacy). Default: robust
+  style: legacy
+  # Leaf type: class (typed wrappers) or string (raw asset path). Default: class for robust, string for legacy
+  leaf_type: string
+  # Name style for generated identifiers. Default: camel
+  name_style: camel
+  # Enable package parameter generation (package: 'your_package_name'). Default: false
+  package_parameter_enabled: false
+  # For legacy style: Prefix variable names with parent directory names. Default: true
+  named_with_parent: true
+  # Ignore specific paths. Default: []
+  path_ignore: ["assets/fonts"]

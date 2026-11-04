@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Flutter Base</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>flutter_base</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>google-signin</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>$(REVERSED_CLIENT_ID)</string>
+			</array>
+		</dict>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+		<string>mailto</string>
+		<string>tel</string>
+		<string>sms</string>
+	</array>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneClassName</key>
+					<string>UIWindowScene</string>
+					<key>UISceneConfigurationName</key>
+					<string>flutter</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Main</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<!-- ══════════════════════════════════════════════════════
+	     CAMERA
+	     Required by image_picker when using ImageSource.camera.
+	     Not needed if only picking from gallery.
+	     ══════════════════════════════════════════════════════ -->
+
+	<!-- Shown in the system permission dialog when the app first requests camera access.
+	     Also appears in Settings → Privacy & Security → Camera. -->
+	<key>NSCameraUsageDescription</key>
+	<string>Used to take photos and record videos.</string>
+
+	<!-- Required when recording video with audio via image_picker.
+	     Without this key, video recording will silently produce clips with no audio.
+	     Also shown in Settings → Privacy & Security → Microphone. -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Used to record audio when capturing videos.</string>
+
+	<!-- ══════════════════════════════════════════════════════
+	     PHOTO LIBRARY
+	     Required by image_picker when using ImageSource.gallery.
+	     file_picker uses UIDocumentPickerViewController — does NOT require these keys.
+	     ══════════════════════════════════════════════════════ -->
+
+	<!-- Full read + write access to the photo library.
+	     iOS 14+: users can grant full access or limited access (specific photos only).
+	     Required for image_picker gallery mode.
+	     Shown in Settings → Privacy & Security → Photos. -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Used to select photos and videos from your library.</string>
+
+	<!-- Write-only access — save images/videos to the library without reading existing ones.
+	     Required when calling ImagePicker.saveToAlbum or writing generated media to the gallery.
+	     If not declared and the app attempts to save, iOS throws a permission crash. -->
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Used to save photos and videos to your library.</string>
+
+	<!-- ══════════════════════════════════════════════════════
+	     FILE PICKER — UIDocumentPickerViewController
+	     file_picker uses the native document picker UI.
+	     No special plist keys are required for:
+	       - picking any file type (pdf, doc, zip, etc.)
+	       - picking audio files (FileType.audio)
+	       - picking video files (FileType.video) from Files app
+	     The system handles access sandboxing automatically.
+	     ══════════════════════════════════════════════════════ -->
+
+	<!-- ══════════════════════════════════════════════════════
+	     NOTIFICATION
+	     ══════════════════════════════════════════════════════ -->
+
+	<!-- Notification permission usage description — required on iOS 14 and below.
+	     On iOS 15+, the system uses the FirebaseMessaging/UNUserNotificationCenter prompt instead.
+	     This string appears in Settings → Notifications if the user reviews app permissions. -->
+	<key>NSUserNotificationUsageDescription</key>
+	<string>We use notifications to keep you updated with important alerts and messages.</string>
+
+	<!-- Supported orientations for iPhone — portrait only, matching the SystemChrome lock in main.dart. -->
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+
+	<!-- Supported orientations for iPad — portrait only, matching the SystemChrome lock in main.dart.
+	     Updated from 4-direction to stay consistent with the orientation lock applied at runtime. -->
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
+</dict>
+</plist>
