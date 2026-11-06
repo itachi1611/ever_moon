@@ -6,7 +6,7 @@ Stable rule IDs so that plans, reviews and findings can cite them. The full text
 
 - EM-STATE-1: Cubit (flutter_bloc) only; one Cubit per page, created in `initState`, closed in `dispose`.
 - EM-STATE-2: States are sealed and extend Equatable; never one class with nullable fields; no `setState` for business logic.
-- EM-NAV-1: GoRouter only; the `Routes` enum comes first, then `router_config.dart`; navigate with `context.go()` or `context.goNamed()`.
+- EM-NAV-1: GoRouter only; the `Routers` enum comes first, then `router_config.dart`; navigate with `context.go()` or `context.goNamed()`.
 
 ## Code and widgets
 

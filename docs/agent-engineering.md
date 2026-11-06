@@ -21,10 +21,12 @@ A phase skill stops at its own boundary. If a needed skill is missing, report it
 - Requirements and plans: owned by Fox; plans live in `docs/plans/`. A requirements tracker is not chosen yet (status: Pending). Plan 0001 uses criterion IDs `LC-n`.
 - Standards: `docs/engineering-standards.md` (rule IDs `EM-*`), backed by `CLAUDE.md`.
 - ADRs: `docs/adr/`. Domain vocabulary: `docs/GLOSSARY.md`. Product context: `docs/PRODUCT_BRIEF.md`.
-- Branching and commits: short branches, Conventional Commits. There is no git repository yet.
-- Verification: Python oracle tests with pytest in `tools/lunar_oracle/`; Dart with `fvm dart analyze` and `fvm dart test`. Neither Dart nor fvm is available in Claude's sandbox, so Fox runs Dart checks locally and Claude reports them as not run.
+- Branching and commits: short branches, Conventional Commits. The git repository exists (first commits 2026-11-06); Fox makes the commits. Claude uses only read-only git in the sandbox (`git --no-optional-locks status`, `log`, `diff`), because index-writing commands there leave a stale `.git/index.lock` that blocks Fox's git.
+- Verification: Python oracle tests in `tools/lunar_oracle/` (`python3 -m unittest discover -s tests -v`); Dart with `fvm dart analyze` and `fvm dart test`; the app with `fvm flutter analyze`, `fvm flutter test` and a run on an Android device. Neither Dart nor fvm is available in Claude's sandbox, so Fox runs these checks locally and Claude reports them as not run until Fox shares the output. Claude gives the exact commands and the expected output for every check it asks Fox to run.
 - Publication: nothing is committed, pushed or published without explicit authorization.
 
 ## Adoption record
 
 Adopted 2026-11-04 by Fox. Changes to this workflow are recorded here with a date.
+
+- 2026-11-06: git repository in use; read-only git for Claude; every check Claude asks Fox to run comes with exact commands and expected output.

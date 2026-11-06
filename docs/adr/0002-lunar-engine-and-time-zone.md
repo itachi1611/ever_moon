@@ -23,6 +23,16 @@ The Vietnamese lunar calendar depends on the time zone, so Chinese-calendar resu
 - Far-future results depend on the Delta T model, whose uncertainty grows with the distance from the present.
 - The official published source for Tết dates is still open (see the plan).
 
+## Results (2026-11-06)
+
+The decision was implemented in plan 0001, slices S0 to S3. Evidence:
+
+- Python reference (`ours.py`) against the oracle: new moons differ by a mean of -34.9 s (max 55.6 s), principal terms by at most 63.0 s. The mean offset is the aberration convention described above.
+- The Dart port reproduces `ours.py`: its periodic-term table and Delta T match to 5e-10 days and 2e-12 s, and a Python mirror of the Dart month builder produced all 4948 expected months before the Dart tests ran.
+- Dart tests (`fvm dart test`, run by Fox, 18 pass) assert: event bounds against the oracle, all months except the 13 pinned ones, leap months, the author's anchors (Tết 1985, 2007, 2030, 2053; 1984 and 1985 tables), a round trip on every month, and `null` for out-of-range or non-existent input.
+- Mutation check: with UTC+8 instead of UTC+7, 8 tests fail, including Tết 1985, which moves to the Chinese date 1985-02-20. The tests therefore detect the time-zone error this ADR exists to prevent.
+- Months are computed on demand per span (month 11 to the next month 11) and cached, which keeps the run-time computation of decision D1 cheap enough for the app.
+
 ## Alternatives considered
 
 - Adopt `vnlunar` or `full_calender`: less work, but low adoption and unconfirmed leap-month support (see the technical analysis). They remain optional comparison targets.

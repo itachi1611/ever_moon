@@ -1,6 +1,6 @@
 # Plan 0001: `lunar_calendar` package
 
-Status: In progress (S0 to S3 done; S5 next, S4 optional). Requirements owner: Fox. Tracker: pending (no tracker chosen yet).
+Status: Done for v1 (S0 to S3 and S5 done; S4 optional, not started). Requirements owner: Fox. Tracker: pending (no tracker chosen yet).
 
 ## Outcome
 
@@ -35,7 +35,7 @@ A pure-Dart package `packages/lunar_calendar` that converts between solar and Vi
 | S2 | Independent Python implementation `ours.py` and `compare.py` (tests ORS-001 to 007) | Done |
 | S3 | Dart port of `ours.py` plus Dart tests reading the same JSON fixtures | Done on 2026-11-06: `lib/src/astronomy/`, `lib/src/calendar/`, public `VietnameseLunarCalendar`. Fox ran `fvm dart analyze` (no issues) and `fvm dart test` (18 pass). Mutation check passed: with `vietnamTimeZoneHours = 8`, 8 tests fail, including Tết 1985 (gives the Chinese date 1985-02-20), the 1984 month 11 span, 1984 gaining a leap month, LC-1 and LC-3 |
 | S4 | Differential run against `vnlunar` and `full_calender` (optional comparison) | Not started |
-| S5 | Docs: ADR 0002 update, package README, workflow guide and standards refresh | Not started |
+| S5 | Docs: ADR 0002 update, package README, workflow guide and standards refresh | Done on 2026-11-06: `packages/lunar_calendar/README.md`, ADR 0002 Results section, `docs/agent-engineering.md` (git and verification), `Routers` name in the standards index |
 
 ## Progress
 
@@ -61,4 +61,4 @@ A pure-Dart package `packages/lunar_calendar` that converts between solar and Vi
 
 ## Next action
 
-S5: package README, ADR 0002 update, then the app-side `LunarCalendarService` and the anniversary resolver (D4). Template cleanup is tracked separately in plan 0002.
+App side, in a new plan: `LunarCalendarService` wrapping this package and the anniversary resolver of ADR 0001 (D4). Template cleanup is tracked separately in plan 0002.
