@@ -33,7 +33,7 @@ The app can answer, for any anniversary stored as lunar day and month (plus an o
 |---|---|---|
 | A1 | Path dependency on `lunar_calendar`; `LunarCalendarService`, `EngineLunarCalendarService`, getter | Done: Fox ran `fvm flutter pub get` (`lunar_calendar` resolved from path) and `fvm flutter analyze` (no issues) |
 | A2 | `AnniversaryDate` value, `AnniversaryResolver`, tests (fake service and fixture-based integration) | Done: `fvm flutter test`, 19 pass (3 routing, 16 in `test/services/lunar/`) |
-| A3 | Anniversary entity with stable ID and local persistence | Later plan |
+| A3 | Anniversary entity with stable ID and local persistence | Plan 0004 |
 | A4 | Local reminders on the exact day (ADR 0001, reminders v1) | Later plan |
 
 ## Verification

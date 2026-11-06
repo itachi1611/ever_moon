@@ -22,11 +22,12 @@ A phase skill stops at its own boundary. If a needed skill is missing, report it
 - Standards: `docs/engineering-standards.md` (rule IDs `EM-*`), backed by `CLAUDE.md`.
 - ADRs: `docs/adr/`. Domain vocabulary: `docs/GLOSSARY.md`. Product context: `docs/PRODUCT_BRIEF.md`.
 - Branching and commits: short branches, Conventional Commits. The git repository exists (first commits 2026-11-06); Fox makes the commits. Claude uses only read-only git in the sandbox (`git --no-optional-locks status`, `log`, `diff`), because index-writing commands there leave a stale `.git/index.lock` that blocks Fox's git.
-- Verification: Python oracle tests in `tools/lunar_oracle/` (`python3 -m unittest discover -s tests -v`); Dart with `fvm dart analyze` and `fvm dart test`; the app with `fvm flutter analyze`, `fvm flutter test` and a run on an Android device. Neither Dart nor fvm is available in Claude's sandbox, so Fox runs these checks locally and Claude reports them as not run until Fox shares the output. Claude gives the exact commands and the expected output for every check it asks Fox to run.
+- Verification: Python oracle tests in `tools/lunar_oracle/` (`python3 -m unittest discover -s tests -v`); Dart with `fvm dart analyze` and `fvm dart test`; the app with `fvm flutter analyze`, `fvm flutter test` and a run on an Android device. Neither Dart nor fvm is available in Claude's sandbox, so Fox runs these checks locally and Claude reports them as not run until Fox shares the output. Claude gives the exact commands and the expected output for every check it asks Fox to run. Since 2026-11-06 Fox lets Claude run these commands on the Mac terminal itself (fvm, flutter, build_runner); Claude still does not commit, push or publish.
 - Publication: nothing is committed, pushed or published without explicit authorization.
 
 ## Adoption record
 
 Adopted 2026-11-04 by Fox. Changes to this workflow are recorded here with a date.
 
+- 2026-11-06: Claude may run build, analyze and test commands on Fox's Mac terminal.
 - 2026-11-06: git repository in use; read-only git for Claude; every check Claude asks Fox to run comes with exact commands and expected output.
