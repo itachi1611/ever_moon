@@ -192,7 +192,7 @@ packages/                      # Local packages (path deps)
 | Logging            | `logger`                                                                                        |
 | Code generation    | `build_runner`, `retrofit_generator`, `json_serializable`, `json_annotation`                   |
 | Firebase           | `firebase_core`, `firebase_messaging`, `firebase_crashlytics`, `firebase_auth`, `firebase_ui_auth` (+ `firebase_ui_oauth_google`, `firebase_ui_localizations`), `flutter_local_notifications` |
-| Local packages     | `setting_ui_builder` (path dep in `packages/`); `lunar_calendar` (engine done, not yet a dependency of the app; see its README) |
+| Local packages     | `setting_ui_builder` (path dep in `packages/`); `lunar_calendar` (path dep; reach it only through `lib/services/lunar/`, see plan 0003) |
 
 ---
 

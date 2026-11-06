@@ -53,6 +53,9 @@ dependencies:
   # Local packages
   setting_ui_builder:
     path: packages/setting_ui_builder
+  # Reach it only through lib/services/lunar/ (ADR 0002).
+  lunar_calendar:
+    path: packages/lunar_calendar
 
   # UI components
   another_flushbar: ^2.2.4
