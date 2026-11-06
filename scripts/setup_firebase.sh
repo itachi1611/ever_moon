@@ -25,7 +25,7 @@ BOLD='\033[1m'
 DIM='\033[2m'
 NC='\033[0m'
 
-FLAVORS=("dev" "uat" "prod")
+FLAVORS=("dev" "prod")
 CHECKED=()
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -201,7 +201,7 @@ _ensure_project() {
 
   # Check if project already exists in the account's project list
   # LC_ALL=C: macOS BSD grep fails on UTF-8 input without this
-  # Exact match: project ID surrounded by non-[a-z0-9-] chars (avoids partial hits like "f-base" matching "f-base-dev")
+  # Exact match: project ID surrounded by non-[a-z0-9-] chars (avoids partial hits like "evermoon" matching "evermoon-dev")
   if firebase projects:list 2>/dev/null | LC_ALL=C grep -qE "(^|[^a-z0-9-])${pid}([^a-z0-9-]|$)"; then
     printf '%b found.%b\n' "$GREEN" "$NC"
     return 0
@@ -265,7 +265,7 @@ configure_flavor() {
   local flavor="$1"
   local out="lib/firebase/${flavor}/firebase_options.dart"
 
-  # Default suffix: .dev / .uat / empty for prod
+  # Default suffix: .dev / empty for prod
   local default_suffix=""
   [[ "$flavor" != "prod" ]] && default_suffix=".$flavor"
 

@@ -21,18 +21,20 @@ import '../common/app_env.dart' show AppEnv;
 /// ```
 class DioLoggerInterceptor extends PrettyDioLogger {
   // singleton constructor
-  DioLoggerInterceptor._internal() : super(
-    requestHeader: true,
-    requestBody: true,
-    responseBody: true,
-    responseHeader: true,
-    error: true,
-    compact: true,
-    maxWidth: 120,
-    enabled: AppEnv.enableLogging,
-  );
+  DioLoggerInterceptor._internal()
+    : super(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: true,
+        error: true,
+        compact: true,
+        maxWidth: 120,
+        enabled: AppEnv.enableLogging,
+      );
 
-  static final DioLoggerInterceptor _instance = DioLoggerInterceptor._internal();
+  static final DioLoggerInterceptor _instance =
+      DioLoggerInterceptor._internal();
 
   /// Returns the singleton [DioLoggerInterceptor] instance.
   factory DioLoggerInterceptor() => _instance;

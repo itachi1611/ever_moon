@@ -126,12 +126,12 @@ class _AnimatedBranchContainerState extends State<AnimatedBranchContainer>
                     position: _slideIn,
                   )
                 : isExiting
-                    ? widget.transitionType.transition(
-                        child: child,
-                        opacity: _fadeOut,
-                        position: _slideOut,
-                      )
-                    : child,
+                ? widget.transitionType.transition(
+                    child: child,
+                    opacity: _fadeOut,
+                    position: _slideOut,
+                  )
+                : child,
           ),
         );
       }).toList(),

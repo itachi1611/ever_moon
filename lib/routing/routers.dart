@@ -8,17 +8,8 @@ enum Routers {
   /// Splash screen — app entry point (`/`).
   root('/', 'root'),
 
-  /// Onboarding intro carousel (`/intro`), shown before the app shell.
-  intro('/intro', 'intro'),
-
   /// Home tab inside the shell (`/home`).
   home('/home', 'home'),
-
-  /// Service tab inside the shell (`/service`).
-  service('/service', 'service'),
-
-  /// Explore tab inside the shell (`/explore`).
-  explore('/explore', 'explore'),
 
   /// Settings tab inside the shell (`/setting`).
   setting('/setting', 'setting'),
@@ -31,16 +22,12 @@ enum Routers {
 
   /// Hero image viewer page (`/imagePreview`).
   imagePreview('/imagePreview', 'imagePreview'),
-  
+
   /// Bottom sheet
   languageSheet('/languageSheet', 'languageSheet'),
 
   /// Dialog
   confirmDialog('/confirmDialog', 'confirmDialog'),
-
-  /// AI support chat page (`/aiSupport`).
-  /// Accepts `extra: {'screenName': 'Home'}` to inject context into the AI.
-  aiSupport('/aiSupport', 'aiSupport'),
 
   /// User profile page (`/profile`).
   profile('/profile', 'profile'),

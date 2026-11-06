@@ -106,7 +106,7 @@ class BatteryApiSetup {
   /// Sets up an instance of `BatteryApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: BatteryApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
-    let getBatteryLevelChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_base.BatteryApi.getBatteryLevel\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let getBatteryLevelChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ever_moon.BatteryApi.getBatteryLevel\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getBatteryLevelChannel.setMessageHandler { _, reply in
         do {
@@ -133,7 +133,7 @@ class DeviceApiSetup {
   /// Sets up an instance of `DeviceApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: DeviceApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
-    let getDeviceIdChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_base.DeviceApi.getDeviceId\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let getDeviceIdChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ever_moon.DeviceApi.getDeviceId\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getDeviceIdChannel.setMessageHandler { _, reply in
         do {
@@ -146,7 +146,7 @@ class DeviceApiSetup {
     } else {
       getDeviceIdChannel.setMessageHandler(nil)
     }
-    let getModelChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_base.DeviceApi.getModel\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let getModelChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ever_moon.DeviceApi.getModel\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getModelChannel.setMessageHandler { _, reply in
         do {
@@ -173,7 +173,7 @@ class BluetoothApiSetup {
   /// Sets up an instance of `BluetoothApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: BluetoothApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
-    let getDevicesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_base.BluetoothApi.getDevices\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let getDevicesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ever_moon.BluetoothApi.getDevices\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getDevicesChannel.setMessageHandler { _, reply in
         do {
@@ -186,7 +186,7 @@ class BluetoothApiSetup {
     } else {
       getDevicesChannel.setMessageHandler(nil)
     }
-    let isEnabledChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_base.BluetoothApi.isEnabled\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let isEnabledChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ever_moon.BluetoothApi.isEnabled\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       isEnabledChannel.setMessageHandler { _, reply in
         do {

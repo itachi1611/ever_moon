@@ -18,14 +18,10 @@ class AppState extends Equatable {
   });
 
   /// Returns a new [AppState] with the provided fields replaced.
-  AppState copyWith({
-    ThemeMode? themeMode,
-    Locale? locale,
-  }) =>
-      AppState(
-        themeMode: themeMode ?? this.themeMode,
-        locale: locale ?? this.locale,
-      );
+  AppState copyWith({ThemeMode? themeMode, Locale? locale}) => AppState(
+    themeMode: themeMode ?? this.themeMode,
+    locale: locale ?? this.locale,
+  );
 
   /// Properties compared by [Equatable] for value equality.
   @override

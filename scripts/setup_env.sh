@@ -31,7 +31,7 @@ BOLD='\033[1m'
 DIM='\033[2m'
 NC='\033[0m'
 
-FLAVORS=("dev" "uat" "prod")
+FLAVORS=("dev" "prod")
 CHECKED=()
 
 # ── Helpers ──────────────────────────────────────────────────────────────────

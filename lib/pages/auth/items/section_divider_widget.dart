@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base/utils/extensions/extensions.dart';
+import 'package:ever_moon/utils/extensions/extensions.dart';
 
 /// "──── or ────" row divider used between the email form and OAuth buttons.
 class SectionDividerWidget extends StatelessWidget {

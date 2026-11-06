@@ -171,11 +171,7 @@ class _FlowFabMenuDelegate extends FlowDelegate {
           Matrix4.diagonal3Values(scale, scale, 1.0) *
           Matrix4.translationValues(-halfWidth, -halfHeight, 0);
 
-      context.paintChild(
-        i,
-        transform: transform,
-        opacity: progress,
-      );
+      context.paintChild(i, transform: transform, opacity: progress);
     }
   }
 

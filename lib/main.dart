@@ -8,9 +8,10 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_base/pages/widgets/render_error_widget.dart' show RenderErrorWidget;
-import 'package:flutter_base/utils/extensions/_extension.dart';
-import 'package:flutter_base/utils/extensions/string_extension.dart';
+import 'package:ever_moon/pages/widgets/render_error_widget.dart'
+    show RenderErrorWidget;
+import 'package:ever_moon/utils/extensions/_extension.dart';
+import 'package:ever_moon/utils/extensions/string_extension.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -35,7 +36,7 @@ Future<void> _onBackgroundMessage(RemoteMessage message) async {
   // TODO: handle background push notification
 }
 
-/// Shared entry point invoked by [main_dev.main], [main_uat.main], and
+/// Shared entry point invoked by [main_dev.main], and
 /// [main_prod.main].
 ///
 /// Detects the active flavor from the bundle ID suffix, loads the matching
@@ -60,7 +61,6 @@ Future<void> main() async {
 
       // Detect flavor from bundle ID / package name suffix:
       //   com.example.app.dev → 'dev'
-      //   com.example.app.uat → 'uat'
       //   com.example.app     → 'prod'
       final packageInfo = await PackageInfo.fromPlatform();
       final flavor = packageInfo.flavor;
@@ -127,7 +127,9 @@ Future<void> main() async {
       };
 
       LicenseRegistry.addLicense(() async* {
-        final String license = await rootBundle.loadString('assets/fonts/OFL.txt');
+        final String license = await rootBundle.loadString(
+          'assets/fonts/OFL.txt',
+        );
         yield LicenseEntryWithLineBreaks(<String>['app_font'], license);
       });
 

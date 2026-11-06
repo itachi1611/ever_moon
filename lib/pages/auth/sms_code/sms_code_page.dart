@@ -5,11 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../routing/routers.dart';
 
 class SmsCodePage extends StatelessWidget {
-  const SmsCodePage({
-    super.key,
-    required this.flowKey,
-    this.action,
-  });
+  const SmsCodePage({super.key, required this.flowKey, this.action});
 
   final Object flowKey;
   final AuthAction? action;

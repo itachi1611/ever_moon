@@ -47,7 +47,10 @@ class ApiRetryInterceptor extends Interceptor {
   ) async {
     if (_shouldRetry(err)) {
       try {
-        return requestRetries.scheduleRequestRetry(err.requestOptions, handler);
+        return await requestRetries.scheduleRequestRetry(
+          err.requestOptions,
+          handler,
+        );
       } catch (e, s) {
         logger.err('ApiRetryInterceptor: failed to schedule retry', e, s);
         return handler.next(err);
@@ -85,37 +88,35 @@ class DioConnectivityRequestRetries {
   ) async {
     late StreamSubscription<bool> subscription;
 
-    subscription = networkService.connectStream.listen(
-      (isConnected) async {
-        if (!isConnected) return;
+    subscription = networkService.connectStream.listen((isConnected) async {
+      if (!isConnected) return;
 
-        await subscription.cancel();
+      await subscription.cancel();
 
-        try {
-          final response = await dio.requestUri(
-            requestOptions.uri,
-            cancelToken: requestOptions.cancelToken,
-            data: requestOptions.data,
-            onReceiveProgress: requestOptions.onReceiveProgress,
-            onSendProgress: requestOptions.onSendProgress,
-            options: Options(
-              method: requestOptions.method,
-              headers: requestOptions.headers,
-            ),
-          );
-          handler.resolve(response);
-        } catch (e, s) {
-          logger.err('ApiRetryInterceptor: retry request failed', e, s);
-          handler.reject(
-            DioException(
-              requestOptions: requestOptions,
-              error: e,
-              stackTrace: s,
-              type: DioExceptionType.unknown,
-            ),
-          );
-        }
-      },
-    );
+      try {
+        final response = await dio.requestUri(
+          requestOptions.uri,
+          cancelToken: requestOptions.cancelToken,
+          data: requestOptions.data,
+          onReceiveProgress: requestOptions.onReceiveProgress,
+          onSendProgress: requestOptions.onSendProgress,
+          options: Options(
+            method: requestOptions.method,
+            headers: requestOptions.headers,
+          ),
+        );
+        handler.resolve(response);
+      } catch (e, s) {
+        logger.err('ApiRetryInterceptor: retry request failed', e, s);
+        handler.reject(
+          DioException(
+            requestOptions: requestOptions,
+            error: e,
+            stackTrace: s,
+            type: DioExceptionType.unknown,
+          ),
+        );
+      }
+    });
   }
 }

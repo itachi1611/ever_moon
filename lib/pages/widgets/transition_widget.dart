@@ -54,7 +54,7 @@ enum PageTransitionType {
 
   /// Material shared axis — scaled (z-axis), e.g. parent-child navigation
   /// with a zoom emphasis (uses the `animations` package).
-  sharedAxisScaled;
+  sharedAxisScaled,
 }
 
 extension PageTransitionExt on PageTransitionType {
@@ -64,12 +64,12 @@ extension PageTransitionExt on PageTransitionType {
   /// [PageTransitionType.fadeThrough] for the outgoing page. Falls back to
   /// [animation] when [secondaryAnimation] is null to avoid null-safety issues.
   Widget transition(
-      Animation<double> animation,
-      Widget child, {
-        Animation<double>? secondaryAnimation,
-        Curve curve = Curves.easeOut,
-        Curve reverseCurve = Curves.easeIn,
-      }) {
+    Animation<double> animation,
+    Widget child, {
+    Animation<double>? secondaryAnimation,
+    Curve curve = Curves.easeOut,
+    Curve reverseCurve = Curves.easeIn,
+  }) {
     // Wrap both animations in CurvedAnimation to apply the easing curve.
     // secondaryAnimation fallback prevents ANR from a null dereference.
     final Animation<double> primary = CurvedAnimation(
@@ -184,10 +184,7 @@ extension PageTransitionExt on PageTransitionType {
       case .size:
         return Align(
           alignment: Alignment.center,
-          child: SizeTransition(
-            sizeFactor: primary,
-            child: child,
-          ),
+          child: SizeTransition(sizeFactor: primary, child: child),
         );
       case .sharedAxisHorizontal:
         return SharedAxisTransition(
@@ -250,7 +247,9 @@ class TransitionPage extends CustomTransitionPage<void> {
              reverseTransitionDuration ?? const Duration(milliseconds: 350),
          transitionsBuilder: (context, animation, secondaryAnimation, child) {
            final isReverse = animation.status == .reverse;
-           final type = isReverse ? reverseTransitionType ?? transitionType : transitionType;
+           final type = isReverse
+               ? reverseTransitionType ?? transitionType
+               : transitionType;
 
            return type.transition(
              animation,

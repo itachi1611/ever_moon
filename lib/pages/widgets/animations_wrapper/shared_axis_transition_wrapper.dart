@@ -81,19 +81,20 @@ class SharedAxisTransitionWrapper extends StatelessWidget {
       duration: duration,
       reverse: isReverse,
       layoutBuilder: layoutBuilder,
-      transitionBuilder: (
-        Widget child,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-      ) {
-        return SharedAxisTransition(
-          animation: animation,
-          secondaryAnimation: secondaryAnimation,
-          transitionType: transitionType,
-          fillColor: fillColor,
-          child: child,
-        );
-      },
+      transitionBuilder:
+          (
+            Widget child,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+          ) {
+            return SharedAxisTransition(
+              animation: animation,
+              secondaryAnimation: secondaryAnimation,
+              transitionType: transitionType,
+              fillColor: fillColor,
+              child: child,
+            );
+          },
       child: child,
     );
   }

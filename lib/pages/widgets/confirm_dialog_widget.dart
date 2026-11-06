@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base/base.dart';
+import 'package:ever_moon/base.dart';
 import 'package:gap/gap.dart';
 
 /// The inner content of a confirmation dialog, mirroring the layout of a
@@ -91,11 +91,13 @@ class ConfirmDialogWidget extends StatelessWidget {
             overflowAlignment: OverflowBarAlignment.end,
             children: [
               TextButton(
-                onPressed: onCancel ?? () => context.backDialogWithResult(false),
+                onPressed:
+                    onCancel ?? () => context.backDialogWithResult(false),
                 child: Text(cancelLabel),
               ),
               FilledButton.tonal(
-                onPressed: onConfirm ?? () => context.backDialogWithResult(true),
+                onPressed:
+                    onConfirm ?? () => context.backDialogWithResult(true),
                 child: Text(confirmLabel),
               ),
             ],

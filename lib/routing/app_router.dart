@@ -13,7 +13,7 @@ import 'routers.dart';
 /// without needing a [BuildContext].
 ///
 /// ```dart
-/// import 'package:flutter_base/routing/app_router.dart';
+/// import 'package:ever_moon/routing/app_router.dart';
 ///
 /// // Navigate from a Cubit or Service
 /// appRouter.go(Routers.home.routerPath);
@@ -29,7 +29,7 @@ GoRouter get appRouter => AppRouter.instance.goRouter;
 /// to re-evaluate its `redirect` callback.
 ///
 /// ```dart
-/// import 'package:flutter_base/routing/app_router.dart';
+/// import 'package:ever_moon/routing/app_router.dart';
 ///
 /// // After login succeeds
 /// routerNotifier.attachAuthStateChange();

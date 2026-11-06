@@ -1,6 +1,6 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base/pages/widgets/bottom_sheet_widget.dart';
+import 'package:ever_moon/pages/widgets/bottom_sheet_widget.dart';
 import 'package:go_router/go_router.dart';
 
 import '../common/app_colors.dart';
@@ -18,8 +18,6 @@ final shellKey = GlobalKey<StatefulNavigationShellState>(debugLabel: '_kShell');
 
 // Branch navigator keys — one per tab in [ShellPage].
 final _homeBranchKey = GlobalKey<NavigatorState>(debugLabel: '_kHome');
-final _serviceBranchKey = GlobalKey<NavigatorState>(debugLabel: '_kService');
-final _exploreBranchKey = GlobalKey<NavigatorState>(debugLabel: '_kExplore');
 final _settingBranchKey = GlobalKey<NavigatorState>(debugLabel: '_kSetting');
 
 /// Top-level route list consumed by [GoRouter].
@@ -27,7 +25,6 @@ final _settingBranchKey = GlobalKey<NavigatorState>(debugLabel: '_kSetting');
 /// Order matters: GoRouter matches routes top-to-bottom.
 List<RouteBase> routes = [
   _splashRoute,
-  _introRoute,
   _profileRoute,
   _forgotPasswordRoute,
   _emailVerificationRoute,
@@ -39,7 +36,6 @@ List<RouteBase> routes = [
   _termRoute,
   _privacyRoute,
   _imagePreviewRoute,
-  _aiSupportRoute,
   _languageSheetRoute,
   ..._dialogRoutes,
   _notFoundRoute,
@@ -51,16 +47,6 @@ GoRoute get _splashRoute => GoRoute(
   path: Routers.root.routerPath,
   pageBuilder: (context, state) => TransitionPage(
     child: const SplashPage(),
-    transitionType: PageTransitionType.fade,
-  ),
-);
-
-// Onboarding
-GoRoute get _introRoute => GoRoute(
-  name: Routers.intro.routerName,
-  path: Routers.intro.routerPath,
-  pageBuilder: (context, state) => TransitionPage(
-    child: const IntroPage(),
     transitionType: PageTransitionType.fade,
   ),
 );
@@ -167,37 +153,7 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
       ],
     ),
 
-    // Branch 1 — Service
-    StatefulShellBranch(
-      navigatorKey: _serviceBranchKey,
-      routes: [
-        GoRoute(
-          name: Routers.service.routerName,
-          path: Routers.service.routerPath,
-          pageBuilder: (context, state) => TransitionPage(
-            child: const ServicePage(),
-            transitionType: PageTransitionType.fade,
-          ),
-        ),
-      ],
-    ),
-
-    // Branch 2 — Explore
-    StatefulShellBranch(
-      navigatorKey: _exploreBranchKey,
-      routes: [
-        GoRoute(
-          name: Routers.explore.routerName,
-          path: Routers.explore.routerPath,
-          pageBuilder: (context, state) => TransitionPage(
-            child: const ExplorePage(),
-            transitionType: PageTransitionType.fade,
-          ),
-        ),
-      ],
-    ),
-
-    // Branch 3 — Settings
+    // Branch 1 — Settings
     StatefulShellBranch(
       navigatorKey: _settingBranchKey,
       routes: [
@@ -280,20 +236,6 @@ List<GoRoute> get _dialogRoutes => [
     ),
   ),
 ];
-
-// AI Support chat
-GoRoute get _aiSupportRoute => GoRoute(
-  name: Routers.aiSupport.routerName,
-  path: Routers.aiSupport.routerPath,
-  pageBuilder: (context, state) {
-    final extra = state.extra as Map<String, dynamic>?;
-    final screenName = extra?['screenName'] as String? ?? 'App';
-    return TransitionPage(
-      child: AiSupportPage(screenName: screenName),
-      transitionType: PageTransitionType.slideFromRight,
-    );
-  },
-);
 
 // 404 fallback
 GoRoute get _notFoundRoute => GoRoute(

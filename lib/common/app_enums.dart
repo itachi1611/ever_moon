@@ -10,10 +10,7 @@ enum AppLanguage {
   eng(locale: Locale('en'), label: 'English', flag: '🇺🇸'),
 
   /// Vietnamese.
-  vi(locale: Locale('vi'), label: 'Tiếng Việt', flag: '🇻🇳'),
-
-  /// Japanese.
-  ja(locale: Locale('ja'), label: '日本語', flag: '🇯🇵');
+  vi(locale: Locale('vi'), label: 'Tiếng Việt', flag: '🇻🇳');
 
   /// The [Locale] this language maps to.
   final Locale locale;

@@ -52,7 +52,7 @@ extension IterableExtension<E> on Iterable<E> {
   ///
   /// Note: lazy — wrap in `.toList()` if you need to iterate it more than
   /// once or need a concrete [List].
-  Iterable<E> operator - (Iterable<E> other) {
+  Iterable<E> operator -(Iterable<E> other) {
     final otherSet = other.toSet();
     return where((e) => !otherSet.contains(e));
   }

@@ -36,10 +36,33 @@ enum PickedFileType {
   }
 
   static const Map<String, Set<String>> _supportExtensions = {
-    'image': {'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'heic', 'heif', 'tiff'},
+    'image': {
+      'jpg',
+      'jpeg',
+      'png',
+      'gif',
+      'webp',
+      'bmp',
+      'heic',
+      'heif',
+      'tiff',
+    },
     'video': {'mp4', 'mov', 'avi', 'mkv', 'webm', 'm4v', '3gp', 'flv'},
     'audio': {'mp3', 'aac', 'wav', 'ogg', 'm4a', 'flac', 'wma', 'opus', 'amr'},
-    'document': {'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv', 'rtf', 'odt', 'ods'},
+    'document': {
+      'pdf',
+      'doc',
+      'docx',
+      'xls',
+      'xlsx',
+      'ppt',
+      'pptx',
+      'txt',
+      'csv',
+      'rtf',
+      'odt',
+      'ods',
+    },
   };
 }
 
@@ -97,9 +120,7 @@ class PickedFile extends Equatable {
   /// [size] must be supplied by the caller — call `await file.length()` before
   /// constructing because factory constructors cannot be async.
   factory PickedFile.fromXFile(XFile file, {int? size}) {
-    final ext = file.name.contains('.')
-        ? file.name.split('.').last
-        : null;
+    final ext = file.name.contains('.') ? file.name.split('.').last : null;
     return PickedFile(
       name: file.name,
       path: file.path.isNotEmpty ? file.path : null,

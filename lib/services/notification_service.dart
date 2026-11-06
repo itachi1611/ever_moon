@@ -42,7 +42,8 @@ class NotificationService {
   static NotificationService get instance => _instance;
 
   // Define FlutterLocalNotificationsPlugin instance
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   /// Initialize the setting for each platform (Android, iOS)
   ///
@@ -55,18 +56,20 @@ class NotificationService {
   /// or to perform any other action.
   ///
   /// Note that this method is asynchronous and returns a [Future<void>].
-  Future<void> initPlatformSetting({NotificationCallback? onSelectNotification}) async {
+  Future<void> initPlatformSetting({
+    NotificationCallback? onSelectNotification,
+  }) async {
     // Android settings
-    const AndroidInitializationSettings androidSetting = AndroidInitializationSettings('notification');
+    const AndroidInitializationSettings androidSetting =
+        AndroidInitializationSettings('notification');
 
     // iOS settings
-    const DarwinInitializationSettings iosSetting = DarwinInitializationSettings();
+    const DarwinInitializationSettings iosSetting =
+        DarwinInitializationSettings();
 
     // Initialize setting for android and ios
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: androidSetting,
-      iOS: iosSetting,
-    );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: androidSetting, iOS: iosSetting);
 
     // Initialize the plugin
     await _flutterLocalNotificationsPlugin.initialize(
@@ -74,8 +77,8 @@ class NotificationService {
       onDidReceiveNotificationResponse: (notificationResponse) async {
         final String actionId = notificationResponse.actionId ?? '';
 
-        if(Platform.isAndroid && actionId.isNotEmpty) {
-          switch(actionId) {
+        if (Platform.isAndroid && actionId.isNotEmpty) {
+          switch (actionId) {
             case 'action_1':
               simpleLog('User tapped on dismiss action');
               break;
@@ -84,7 +87,7 @@ class NotificationService {
               break;
           }
         } else {
-          if(onSelectNotification != null) {
+          if (onSelectNotification != null) {
             onSelectNotification(notificationResponse.payload);
           }
         }
@@ -94,7 +97,11 @@ class NotificationService {
     /// Create an Android Notification Channel.
     /// We use this channel in the `AndroidManifest.xml` file to override the
     /// default FCM channel to enable heads up notifications.
-    await _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(defaultChannel);
+    await _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.createNotificationChannel(defaultChannel);
   }
 
   /// Check if the permission to display notification is granted on Android.
@@ -111,9 +118,11 @@ class NotificationService {
   /// and [false] otherwise.
   Future<bool> _isAndroidPermissionGranted() async {
     return await _flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
-        ?.areNotificationsEnabled() ?? false;
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >()
+            ?.areNotificationsEnabled() ??
+        false;
   }
 
   /// Request the platform permission to display notification.
@@ -124,24 +133,28 @@ class NotificationService {
   /// On iOS, request the permission to display notification.
   Future<void> requestPlatformPermission() async {
     // Android 13+ permission
-    if(Platform.isAndroid) {
+    if (Platform.isAndroid) {
       final hasPermission = await _isAndroidPermissionGranted();
 
-      if(!hasPermission) {
-        await _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
+      if (!hasPermission) {
+        await _flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >()
+            ?.requestNotificationsPermission();
       }
-    } else if(Platform.isIOS) {
-      await _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()?.requestPermissions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
-    } else if(Platform.isMacOS) {
-      await _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<MacOSFlutterLocalNotificationsPlugin>()?.requestPermissions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+    } else if (Platform.isIOS) {
+      await _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+    } else if (Platform.isMacOS) {
+      await _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            MacOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
     }
   }
 
@@ -156,10 +169,12 @@ class NotificationService {
     try {
       final notification = message.notification;
       final payload = message.data.isNotEmpty ? jsonEncode(message.data) : null;
-      if(notification == null) return;
+      if (notification == null) return;
 
       await showNotification(
-        id: message.messageId?.hashCode ?? DateTime.now().millisecondsSinceEpoch & 0x7FFFFFFF,
+        id:
+            message.messageId?.hashCode ??
+            DateTime.now().millisecondsSinceEpoch & 0x7FFFFFFF,
         title: notification.title ?? '',
         body: notification.body ?? '',
         payload: payload,
@@ -314,8 +329,10 @@ class NotificationService {
   /// [showNotification] or [scheduleNotification].
   NotificationDetails _getNotificationDetails({RemoteMessage? message}) {
     final subTxt = message != null
-      ? DateFormat('yyyy-MM-dd HH:mm:ss').format(message.sentTime ?? DateTime.now())
-      : null;
+        ? DateFormat(
+            'yyyy-MM-dd HH:mm:ss',
+          ).format(message.sentTime ?? DateTime.now())
+        : null;
 
     final androidDetails = AndroidNotificationDetails(
       defaultChannel.id,
@@ -349,10 +366,7 @@ class NotificationService {
       presentSound: true,
     );
 
-    return NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
+    return NotificationDetails(android: androidDetails, iOS: iosDetails);
   }
 
   /// Cancel a specific notification.

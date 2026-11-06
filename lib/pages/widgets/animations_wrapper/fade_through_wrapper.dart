@@ -73,18 +73,19 @@ class FadeThroughWrapper extends StatelessWidget {
       duration: duration,
       reverse: isReverse,
       layoutBuilder: layoutBuilder,
-      transitionBuilder: (
-        Widget child,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-      ) {
-        return FadeThroughTransition(
-          animation: animation,
-          secondaryAnimation: secondaryAnimation,
-          fillColor: fillColor,
-          child: child,
-        );
-      },
+      transitionBuilder:
+          (
+            Widget child,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+          ) {
+            return FadeThroughTransition(
+              animation: animation,
+              secondaryAnimation: secondaryAnimation,
+              fillColor: fillColor,
+              child: child,
+            );
+          },
       child: child,
     );
   }

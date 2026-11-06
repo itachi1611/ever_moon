@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "enableAllProjectMcpServers": true,
+  "permissions": {
+    "allow": [
+      "Bash(fvm flutter analyze:*)",
+      "Bash(fvm dart analyze:*)",
+      "Bash(fvm flutter test:*)",
+      "Bash(fvm dart test:*)",
+      "Bash(fvm flutter pub get:*)",
+      "Bash(fvm dart format:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ],
+    "deny": [
+      "Bash(flutter:*)",
+      "Bash(dart:*)",
+      "Read(./android/app/src/**/google-services.json)",
+      "Read(./ios/**/GoogleService-Info.plist)",
+      "Read(./assets/env/.env.dev)",
+      "Read(./assets/env/.env.prod)",
+      "Read(./android/key.properties)",
+      "Read(./**/*.jks)"
+    ]
+  },
+  "extraKnownMarketplaces": {
+    "agent-engineering": {
+      "source": {
+        "source": "github",
+        "repo": "otaviobarros/agent-engineering"
+      }
+    },
+    "dart-flutter": {
+      "source": {
+        "source": "github",
+        "repo": "flutter/agent-plugins"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "agent-engineering@agent-engineering": true,
+    "dart-flutter@dart-flutter": true
+  }
+}

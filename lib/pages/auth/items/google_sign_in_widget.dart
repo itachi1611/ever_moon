@@ -43,26 +43,26 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
       onPressed: _loading ? null : _signIn,
       child: _loading
           ? const SizedBox(
-        height: 20,
-        width: 20,
-        child: CircularProgressIndicator(strokeWidth: 2),
-      )
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
           : const Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            '',
-            style: TextStyle(
-              fontFamily: 'SocialIcons',
-              package: 'firebase_ui_auth',
-              fontSize: 20,
-              color: Color(0xFF4285F4),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '',
+                  style: TextStyle(
+                    fontFamily: 'SocialIcons',
+                    package: 'firebase_ui_auth',
+                    fontSize: 20,
+                    color: Color(0xFF4285F4),
+                  ),
+                ),
+                SizedBox(width: 12),
+                Text('Continue with Google'),
+              ],
             ),
-          ),
-          SizedBox(width: 12),
-          Text('Continue with Google'),
-        ],
-      ),
     );
   }
 }

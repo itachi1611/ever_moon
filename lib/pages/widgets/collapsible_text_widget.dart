@@ -13,22 +13,22 @@ import 'package:flutter/material.dart';
 /// ```
 class CollapsibleTextWidget extends StatefulWidget {
   const CollapsibleTextWidget(
-      this.text, {
-        super.key,
-        this.maxLines = 3,
-        this.readMoreText = 'Read more',
-        this.readLessText = 'Read less',
-        this.textStyle,
-        this.buttonTextStyle,
-        this.isSuffixButton = true,
-        this.allowCollapse = true,
-        this.expandOnTextTap = true,
-        this.animationCurve = Curves.easeOutBack,
-        this.animationDuration = const Duration(milliseconds: 300),
-      })  : assert(maxLines > 1, 'maxLines must be greater than 1'),
-        assert(text.length > 0, 'text cannot be empty'),
-        assert(readMoreText.length > 0, 'readMoreText cannot be empty'),
-        assert(readLessText.length > 0, 'readLessText cannot be empty');
+    this.text, {
+    super.key,
+    this.maxLines = 3,
+    this.readMoreText = 'Read more',
+    this.readLessText = 'Read less',
+    this.textStyle,
+    this.buttonTextStyle,
+    this.isSuffixButton = true,
+    this.allowCollapse = true,
+    this.expandOnTextTap = true,
+    this.animationCurve = Curves.easeOutBack,
+    this.animationDuration = const Duration(milliseconds: 300),
+  }) : assert(maxLines > 1, 'maxLines must be greater than 1'),
+       assert(text.length > 0, 'text cannot be empty'),
+       assert(readMoreText.length > 0, 'readMoreText cannot be empty'),
+       assert(readLessText.length > 0, 'readLessText cannot be empty');
 
   final String text;
   final int maxLines;
@@ -75,7 +75,8 @@ class _CollapsibleTextWidgetState extends State<CollapsibleTextWidget> {
           if (widget.isSuffixButton && showButton)
             TextSpan(
               text: ' $label',
-              style: widget.buttonTextStyle ??
+              style:
+                  widget.buttonTextStyle ??
                   const TextStyle(fontWeight: FontWeight.bold),
               recognizer: TapGestureRecognizer()..onTap = _toggle,
             ),
@@ -91,11 +92,15 @@ class _CollapsibleTextWidgetState extends State<CollapsibleTextWidget> {
       builder: (context, isExpanded, child) {
         return LayoutBuilder(
           builder: (context, constraints) {
-            assert(constraints.hasBoundedWidth,
-            'The parent widget must provide bounded width constraints');
+            assert(
+              constraints.hasBoundedWidth,
+              'The parent widget must provide bounded width constraints',
+            );
 
-            final style = widget.textStyle ?? DefaultTextStyle.of(context).style;
-            final fontSize = style.fontSize ?? DefaultTextStyle.of(context).style.fontSize!;
+            final style =
+                widget.textStyle ?? DefaultTextStyle.of(context).style;
+            final fontSize =
+                style.fontSize ?? DefaultTextStyle.of(context).style.fontSize!;
 
             // Measure whether the text overflows the allowed line count.
             final painter = TextPainter(
@@ -109,11 +114,12 @@ class _CollapsibleTextWidgetState extends State<CollapsibleTextWidget> {
             // Truncate to the last visible character when collapsed.
             final end = painter
                 .getPositionForOffset(
-              Offset(constraints.maxWidth, fontSize * widget.maxLines),
-            )
+                  Offset(constraints.maxWidth, fontSize * widget.maxLines),
+                )
                 .offset;
-            final truncated =
-            isExpanded ? widget.text : widget.text.substring(0, end);
+            final truncated = isExpanded
+                ? widget.text
+                : widget.text.substring(0, end);
 
             return GestureDetector(
               onTap: () {
@@ -123,10 +129,16 @@ class _CollapsibleTextWidgetState extends State<CollapsibleTextWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnimatedCrossFade(
-                    firstChild:
-                    _buildSpan(truncated, widget.readMoreText, showButton),
-                    secondChild:
-                    _buildSpan(widget.text, widget.readLessText, showButton),
+                    firstChild: _buildSpan(
+                      truncated,
+                      widget.readMoreText,
+                      showButton,
+                    ),
+                    secondChild: _buildSpan(
+                      widget.text,
+                      widget.readLessText,
+                      showButton,
+                    ),
                     crossFadeState: isExpanded
                         ? CrossFadeState.showSecond
                         : CrossFadeState.showFirst,
@@ -139,9 +151,11 @@ class _CollapsibleTextWidgetState extends State<CollapsibleTextWidget> {
                         padding: const EdgeInsets.only(top: 16, bottom: 8),
                         child: TextButton(
                           onPressed: _toggle,
-                          child: Text(isExpanded
-                              ? widget.readLessText
-                              : widget.readMoreText),
+                          child: Text(
+                            isExpanded
+                                ? widget.readLessText
+                                : widget.readMoreText,
+                          ),
                         ),
                       ),
                     ),
@@ -150,7 +164,7 @@ class _CollapsibleTextWidgetState extends State<CollapsibleTextWidget> {
             );
           },
         );
-      }
+      },
     );
   }
 }

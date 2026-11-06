@@ -1,4 +1,4 @@
 #include "Debug.xcconfig"
-PRODUCT_BUNDLE_IDENTIFIER=com.fox.base.flutter.dev
+PRODUCT_BUNDLE_IDENTIFIER=com.fox.evermoon.dev
 FLAVOR=dev
-REVERSED_CLIENT_ID=com.googleusercontent.apps.320355629095-4of9ccql8tl06h6g2b0sl0v7vh7663fc
+REVERSED_CLIENT_ID=com.googleusercontent.apps.738285598906-qaecj74nuer38j32flb2ol60upnoqjok

@@ -114,7 +114,7 @@ class BatteryApiSetup {
     ///
     /// Throws a [PlatformException] if the battery state is unavailable
     /// (e.g. some Android emulators or iOS Simulator without mock handling).
-    let getBatteryLevelChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_base.BatteryApi.getBatteryLevel\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let getBatteryLevelChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ever_moon.BatteryApi.getBatteryLevel\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getBatteryLevelChannel.setMessageHandler { _, reply in
         do {
@@ -153,7 +153,7 @@ class DeviceApiSetup {
     ///
     /// Android: [android.os.Build.ID].
     /// iOS: [UIDevice.identifierForVendor] UUID string, or `"unknown"` if nil.
-    let getDeviceIdChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_base.DeviceApi.getDeviceId\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let getDeviceIdChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ever_moon.DeviceApi.getDeviceId\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getDeviceIdChannel.setMessageHandler { _, reply in
         do {
@@ -170,7 +170,7 @@ class DeviceApiSetup {
     ///
     /// Android: `"<Manufacturer> <Model>"` (e.g. `"Samsung SM-S921B"`).
     /// iOS: [UIDevice.model] (e.g. `"iPhone"`).
-    let getModelChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_base.DeviceApi.getModel\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let getModelChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ever_moon.DeviceApi.getModel\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getModelChannel.setMessageHandler { _, reply in
         do {
@@ -204,7 +204,7 @@ class BluetoothApiSetup {
     /// Returns a list of bonded (paired) Bluetooth device names.
     ///
     /// Returns an empty list if Bluetooth is disabled or permission is denied.
-    let getDevicesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_base.BluetoothApi.getDevices\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let getDevicesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ever_moon.BluetoothApi.getDevices\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getDevicesChannel.setMessageHandler { _, reply in
         do {
@@ -218,7 +218,7 @@ class BluetoothApiSetup {
       getDevicesChannel.setMessageHandler(nil)
     }
     /// Returns `true` if Bluetooth is currently enabled on the device.
-    let isEnabledChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_base.BluetoothApi.isEnabled\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let isEnabledChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ever_moon.BluetoothApi.isEnabled\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       isEnabledChannel.setMessageHandler { _, reply in
         do {

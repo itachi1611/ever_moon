@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base/base.dart';
+import 'package:ever_moon/base.dart';
 
 class RouteDialogWidget<T> extends Page<T> {
   const RouteDialogWidget({
@@ -68,6 +68,8 @@ class RouteDialogWidget<T> extends Page<T> {
     reverseTransitionDuration: reverseTransitionDuration,
     barrierDismissible: barrierDismissible,
     barrierColor: barrierColor,
-    barrierLabel: barrierLabel ?? MaterialLocalizations.of(context).modalBarrierDismissLabel,
+    barrierLabel:
+        barrierLabel ??
+        MaterialLocalizations.of(context).modalBarrierDismissLabel,
   );
 }

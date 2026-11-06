@@ -10,8 +10,8 @@ Cấu hình project đang có (dùng xuyên suốt guide):
 |-----|---------|
 | Flavors | `dev`, `uat`, `prod` (dimension `env`) |
 | Entry point | `lib/main_<flavor>.dart` |
-| Android appId | `com.fox.base.flutter` (+ suffix `.dev`, `.uat`; prod không suffix) |
-| iOS bundle id | `com.fox.base.flutter.dev` / `.uat` / (prod) `com.fox.base.flutter` |
+| Android appId | `com.fox.evermoon` (+ suffix `.dev`, `.uat`; prod không suffix) |
+| iOS bundle id | `com.fox.evermoon.dev` / `.uat` / (prod) `com.fox.evermoon` |
 | iOS build config | `Release-dev`, `Release-uat`, `Release-prod` |
 | iOS scheme | `dev`, `uat`, `prod` |
 | Apple Team ID | `GH2PAB3V62` |
@@ -89,7 +89,7 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 cd android
 rm -rf fastlane            # xóa folder tạo dở từ lần init lỗi trước
-fastlane init              # nhập package name: com.fox.base.flutter
+fastlane init              # nhập package name: com.fox.evermoon
 ```
 
 > ⚠️ Trên **Ruby 4.0.x** (ví dụ 4.0.5 cài qua Homebrew), set locale vẫn KHÔNG
@@ -146,7 +146,7 @@ lên remote).
 mkdir -p android/signing        # keytool không tự tạo thư mục cha
 
 keytool -genkey -v \
-  -keystore android/signing/flutter_base_upload.jks \
+  -keystore android/signing/ever_moon_upload.jks \
   -keyalg RSA -keysize 2048 -validity 10000 \
   -alias upload
 ```
@@ -163,7 +163,7 @@ Giải thích các flag:
 Kiểm tra alias:
 
 ```bash
-keytool -list -v -keystore android/signing/flutter_base_upload.jks
+keytool -list -v -keystore android/signing/ever_moon_upload.jks
 # tìm dòng: Alias name: upload
 ```
 
@@ -175,7 +175,7 @@ dẫn **tương đối** (Gradle `file()` trong module `app` tính từ `android
 storePassword=<mật khẩu bạn nhập>
 keyPassword=<giống storePassword>
 keyAlias=upload
-storeFile=../signing/flutter_base_upload.jks
+storeFile=../signing/ever_moon_upload.jks
 ```
 
 ### A2b. Đảm bảo git ignore keystore + key.properties
@@ -193,7 +193,7 @@ Xác nhận trước khi commit (không được hiện file nào):
 
 ```bash
 git status --porcelain android/signing android/key.properties
-git check-ignore android/signing/flutter_base_upload.jks android/key.properties
+git check-ignore android/signing/ever_moon_upload.jks android/key.properties
 ```
 
 > Lưu ý: keystore bị ignore nên CI (GitHub Actions) sẽ KHÔNG có file này. Trên
@@ -271,7 +271,7 @@ PLAY_STORE_JSON_KEY=/path/play-store.json \
 
 1. [Firebase Console](https://console.firebase.google.com) → chọn project của
    flavor (dev/uat/prod) → thêm **Android app** với package đúng
-   (`com.fox.base.flutter.dev` cho dev, v.v.).
+   (`com.fox.evermoon.dev` cho dev, v.v.).
 2. Vào **Release & Monitor → App Distribution** → enable.
 3. Lấy **App ID** (dạng `1:1234567890:android:abcdef...`) trong Project Settings →
    General → Your apps. Mỗi flavor một App ID.
@@ -286,7 +286,7 @@ Ghi đè `android/fastlane/Appfile`:
 ```ruby
 # android/fastlane/Appfile
 json_key_file(ENV["PLAY_STORE_JSON_KEY"] || "fastlane/play-store.json")
-package_name("com.fox.base.flutter")
+package_name("com.fox.evermoon")
 ```
 
 ### A7. Fastfile
@@ -485,7 +485,7 @@ Vì có 3 bundle id (dev/uat/prod), nếu dùng match hãy chạy `match appstor
 
 ```ruby
 # ios/fastlane/Appfile
-app_identifier(ENV["IOS_BUNDLE_ID"] || "com.fox.base.flutter")
+app_identifier(ENV["IOS_BUNDLE_ID"] || "com.fox.evermoon")
 apple_id(ENV["APPLE_ID"])       # email tài khoản Apple Developer
 team_id("GH2PAB3V62")
 ```
@@ -502,17 +502,17 @@ PROJECT_ROOT = File.expand_path("../..", __dir__)
 FLAVORS = {
   "dev" => {
     scheme: "dev", config: "Release-dev",
-    bundle: "com.fox.base.flutter.dev",
+    bundle: "com.fox.evermoon.dev",
     firebase: ENV["FIREBASE_IOS_APP_ID_DEV"],
   },
   "uat" => {
     scheme: "uat", config: "Release-uat",
-    bundle: "com.fox.base.flutter.uat",
+    bundle: "com.fox.evermoon.uat",
     firebase: ENV["FIREBASE_IOS_APP_ID_UAT"],
   },
   "prod" => {
     scheme: "prod", config: "Release-prod",
-    bundle: "com.fox.base.flutter",
+    bundle: "com.fox.evermoon",
     firebase: ENV["FIREBASE_IOS_APP_ID_PROD"],
   },
 }.freeze
@@ -604,7 +604,7 @@ end
 ```bash
 cd ios
 bundle exec fastlane build flavor:dev export_method:ad-hoc
-IOS_BUNDLE_ID=com.fox.base.flutter bundle exec fastlane beta
+IOS_BUNDLE_ID=com.fox.evermoon bundle exec fastlane beta
 ```
 
 ---

@@ -50,20 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAHbp9pv5I2G4TVYlLNXjmLN23239SWeDA',
-    appId: '1:820924187413:android:93943f2590186ffed95f1c',
-    messagingSenderId: '820924187413',
-    projectId: 'f-base-prod',
-    storageBucket: 'f-base-prod.firebasestorage.app',
+    apiKey: 'AIzaSyDtzia-8DwxmjEBI8QIGsVFHyatGeRCc1g',
+    appId: '1:279662008621:android:8e2f324f5ee09ecae8dba4',
+    messagingSenderId: '279662008621',
+    projectId: 'evermoon-2cc28',
+    storageBucket: 'evermoon-2cc28.firebasestorage.app',
   );
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD8KuQNqqiiTVLsMDzW4ADYSxKVZdKUUec',
-    appId: '1:820924187413:ios:e8eb89dbe4ce94dcd95f1c',
-    messagingSenderId: '820924187413',
-    projectId: 'f-base-prod',
-    storageBucket: 'f-base-prod.firebasestorage.app',
-    androidClientId: '820924187413-c71b02i6akssa3h0lhlsggsof33ip43t.apps.googleusercontent.com',
-    iosClientId: '820924187413-sjda87bhs6p1bel8acmpcp0qdcs27hg5.apps.googleusercontent.com',
-    iosBundleId: 'com.fox.base.flutter',
+    apiKey: 'AIzaSyDqS2D0GGwQCcWD2Vamcs9c_UT6Xqz7bfg',
+    appId: '1:279662008621:ios:0c7117a3425201ace8dba4',
+    messagingSenderId: '279662008621',
+    projectId: 'evermoon-2cc28',
+    storageBucket: 'evermoon-2cc28.firebasestorage.app',
+    androidClientId: '279662008621-rg5aail24hnmmun7nem0uskcqugnpg7i.apps.googleusercontent.com',
+    iosClientId: '279662008621-cuah5sdqfc85j9k8ksdukju65j07mqjo.apps.googleusercontent.com',
+    iosBundleId: 'com.fox.evermoon',
   );
 }

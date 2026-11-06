@@ -123,7 +123,8 @@ class BottomSheetWidget<T> extends Page<T> {
     this.enableDrag = true,
     this.showDragHandle,
     this.isScrollControlled = true,
-    this.scrollControlDisabledMaxHeightRatio = _kDefaultScrollControlDisabledMaxHeightRatio,
+    this.scrollControlDisabledMaxHeightRatio =
+        _kDefaultScrollControlDisabledMaxHeightRatio,
     this.transitionAnimationController,
     this.anchorPoint,
     this.useSafeArea = false,
@@ -142,8 +143,11 @@ class BottomSheetWidget<T> extends Page<T> {
     super.name,
     super.arguments,
     super.restorationId,
-  })  : _sheetType = _SheetType.scroll,
-        assert(scrollableBuilder != null, 'scrollableBuilder is required for BottomSheetWidget.scroll');
+  }) : _sheetType = _SheetType.scroll,
+       assert(
+         scrollableBuilder != null,
+         'scrollableBuilder is required for BottomSheetWidget.scroll',
+       );
 
   /// Creates a [BottomSheetWidget] whose content is a plain, non-draggable
   /// sheet built directly from [builder].
@@ -162,7 +166,8 @@ class BottomSheetWidget<T> extends Page<T> {
     this.enableDrag = true,
     this.showDragHandle,
     this.isScrollControlled = false,
-    this.scrollControlDisabledMaxHeightRatio = _kDefaultScrollControlDisabledMaxHeightRatio,
+    this.scrollControlDisabledMaxHeightRatio =
+        _kDefaultScrollControlDisabledMaxHeightRatio,
     this.transitionAnimationController,
     this.anchorPoint,
     this.useSafeArea = false,
@@ -171,23 +176,23 @@ class BottomSheetWidget<T> extends Page<T> {
     super.name,
     super.arguments,
     super.restorationId,
-  })  : _sheetType = _SheetType.unableScroll,
-        scrollableBuilder = null,
-        initialChildSize = null,
-        maxChildSize = null,
-        minChildSize = null,
-        expand = null,
-        snap = null,
-        snapSizes = null,
-        snapAnimationDuration = null,
-        controller = null,
-        shouldCloseOnMinExtent = null;
+  }) : _sheetType = _SheetType.unableScroll,
+       scrollableBuilder = null,
+       initialChildSize = null,
+       maxChildSize = null,
+       minChildSize = null,
+       expand = null,
+       snap = null,
+       snapSizes = null,
+       snapAnimationDuration = null,
+       controller = null,
+       shouldCloseOnMinExtent = null;
 
   final _SheetType _sheetType;
 
   @override
   Route<T> createRoute(BuildContext context) => ModalBottomSheetRoute<T>(
-    builder: (context) => switch(_sheetType) {
+    builder: (context) => switch (_sheetType) {
       _SheetType.scroll => _ScrollBottomSheet(
         builder: scrollableBuilder!,
         initialChildSize: initialChildSize,
@@ -247,11 +252,21 @@ class _ScrollBottomSheet extends StatelessWidget {
     this.snapAnimationDuration,
     this.controller,
     required this.shouldCloseOnMinExtent,
-  })  : assert(minChildSize == null || minChildSize >= 0.0),
-        assert(maxChildSize == null || maxChildSize <= 1.0),
-        assert(minChildSize == null || initialChildSize == null || minChildSize <= initialChildSize),
-        assert(initialChildSize == null || maxChildSize == null || initialChildSize <= maxChildSize),
-        assert(snapAnimationDuration == null || snapAnimationDuration > Duration.zero);
+  }) : assert(minChildSize == null || minChildSize >= 0.0),
+       assert(maxChildSize == null || maxChildSize <= 1.0),
+       assert(
+         minChildSize == null ||
+             initialChildSize == null ||
+             minChildSize <= initialChildSize,
+       ),
+       assert(
+         initialChildSize == null ||
+             maxChildSize == null ||
+             initialChildSize <= maxChildSize,
+       ),
+       assert(
+         snapAnimationDuration == null || snapAnimationDuration > Duration.zero,
+       );
 
   @override
   Widget build(BuildContext context) {

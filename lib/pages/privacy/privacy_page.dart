@@ -23,10 +23,10 @@ class PrivacyPage extends StatelessWidget {
         future: _content,
         builder: (context, snapshot) => switch (snapshot.connectionState) {
           ConnectionState.done when snapshot.hasData => Markdown(
-              data: snapshot.data!,
-              styleSheet: context.m3MarkdownStyle,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            ),
+            data: snapshot.data!,
+            styleSheet: context.m3MarkdownStyle,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          ),
           ConnectionState.done => Center(child: Text('${snapshot.error}')),
           _ => const Center(child: CircularProgressIndicator()),
         },

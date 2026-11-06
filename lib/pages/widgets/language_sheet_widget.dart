@@ -74,9 +74,9 @@ class LanguageBottomSheet extends StatelessWidget {
                     ),
                     trailing: selected
                         ? Icon(
-                      Icons.check_circle_rounded,
-                      color: Theme.of(context).colorScheme.primary,
-                    )
+                            Icons.check_circle_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                          )
                         : null,
                     onTap: () {
                       context.read<AppCubit>().setLocale(opt.locale);

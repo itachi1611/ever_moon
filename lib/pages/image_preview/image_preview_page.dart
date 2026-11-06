@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base/base.dart';
+import 'package:ever_moon/base.dart';
 
 /// Full-screen, pinch-to-zoom viewer opened by [ImagePreviewPage]. Not
 /// meant to be routed to independently — [heroTag] must match the
 /// thumbnail that pushed it.
 class ImagePreviewPage extends StatelessWidget {
-  const ImagePreviewPage({super.key, required this.heroTag, required this.child});
+  const ImagePreviewPage({
+    super.key,
+    required this.heroTag,
+    required this.child,
+  });
 
   /// Must match the [Hero] tag of the thumbnail that opened this page.
   final String heroTag;

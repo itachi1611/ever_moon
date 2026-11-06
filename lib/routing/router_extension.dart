@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_base/routing/routers.dart';
+import 'package:ever_moon/routing/routers.dart';
 import 'package:go_router/go_router.dart';
 
 /// Convenience navigation helpers on [BuildContext].
@@ -16,7 +16,8 @@ extension RouterExtension on BuildContext {
   /// Pops the top-most route (e.g. a dialog) via the nearest [Navigator],
   /// returning [result] to whoever awaited the route (such as
   /// `context.showAppDialog<T>()`).
-  void backDialogWithResult<T extends Object?>([T? result]) => Navigator.pop(this, result);
+  void backDialogWithResult<T extends Object?>([T? result]) =>
+      Navigator.pop(this, result);
 
   /// Whether the current route can be popped.
   bool get canBack => GoRouter.of(this).canPop();
@@ -25,7 +26,8 @@ extension RouterExtension on BuildContext {
   void get back => GoRouter.of(this).pop();
 
   /// Pops the current route, optionally returning [result] to the caller.
-  void backWithResult<T extends Object?>([T? result]) => GoRouter.of(this).pop(result);
+  void backWithResult<T extends Object?>([T? result]) =>
+      GoRouter.of(this).pop(result);
 
   /// Navigates to [Routers.home], clearing the back stack.
   void get goHome => GoRouter.of(this).go(Routers.home.routerPath);

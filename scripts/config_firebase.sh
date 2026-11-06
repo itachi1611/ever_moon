@@ -9,9 +9,8 @@ fi
 # Run flutterfire configure for one or all flavors using predefined project configs.
 #
 # Usage:
-#   bash scripts/config_firebase.sh          — configure all flavors (dev → uat → prod)
+#   bash scripts/config_firebase.sh          — configure all flavors (dev → prod)
 #   bash scripts/config_firebase.sh dev      — configure dev only
-#   bash scripts/config_firebase.sh uat      — configure uat only
 #   bash scripts/config_firebase.sh prod     — configure prod only
 
 # ── Colors ───────────────────────────────────────────────────────────────────
@@ -28,25 +27,22 @@ NC='\033[0m'
 
 _project_id() {
   case "$1" in
-    dev)  echo "f-base-dev"  ;;
-    uat)  echo "f-base-uat"  ;;
-    prod) echo "f-base-prod" ;;
+    dev)  echo "evermoon-dev"  ;;
+    prod) echo "evermoon-2cc28" ;;
   esac
 }
 
 _android_pkg() {
   case "$1" in
-    dev)  echo "com.fox.base.flutter.dev" ;;
-    uat)  echo "com.fox.base.flutter.uat" ;;
-    prod) echo "com.fox.base.flutter"     ;;
+    dev)  echo "com.fox.evermoon.dev" ;;
+    prod) echo "com.fox.evermoon"     ;;
   esac
 }
 
 _ios_bundle() {
   case "$1" in
-    dev)  echo "com.fox.base.flutter.dev" ;;
-    uat)  echo "com.fox.base.flutter.uat" ;;
-    prod) echo "com.fox.base.flutter"     ;;
+    dev)  echo "com.fox.evermoon.dev" ;;
+    prod) echo "com.fox.evermoon"     ;;
   esac
 }
 
@@ -118,7 +114,7 @@ check_firebase_auth
 printf '\n%b🔥 config_firebase%b\n' "$BOLD" "$NC"
 printf '────────────────────────────────────\n'
 
-FLAVORS=("dev" "uat" "prod")
+FLAVORS=("dev" "prod")
 TARGET="$1"
 
 if [ -n "$TARGET" ]; then
@@ -126,7 +122,7 @@ if [ -n "$TARGET" ]; then
   valid=false
   for f in "${FLAVORS[@]}"; do [[ "$f" == "$TARGET" ]] && valid=true; done
   if [ "$valid" = false ]; then
-    printf '%b✗  Unknown flavor "%s". Valid: dev | uat | prod%b\n\n' "$YELLOW" "$TARGET" "$NC"
+    printf '%b✗  Unknown flavor "%s". Valid: dev | prod%b\n\n' "$YELLOW" "$TARGET" "$NC"
     exit 1
   fi
   FLAVORS=("$TARGET")

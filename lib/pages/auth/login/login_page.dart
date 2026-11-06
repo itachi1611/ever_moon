@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base/pages/auth/auth_mixin.dart';
-import 'package:flutter_base/pages/auth/items/google_sign_in_widget.dart';
+import 'package:ever_moon/pages/auth/auth_mixin.dart';
+import 'package:ever_moon/pages/auth/items/google_sign_in_widget.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../routing/routers.dart';
@@ -14,8 +14,9 @@ class LoginPage extends StatelessWidget with AuthMixin {
   @override
   Widget build(BuildContext context) {
     final allProviders = FirebaseUIAuth.providersFor(FirebaseAuth.instance.app);
-    final emailProvider =
-        allProviders.whereType<EmailAuthProvider>().firstOrNull;
+    final emailProvider = allProviders
+        .whereType<EmailAuthProvider>()
+        .firstOrNull;
 
     return FirebaseUIActions(
       actions: [

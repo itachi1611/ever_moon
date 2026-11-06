@@ -1,8 +1,11 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 
-import '../../firebase/dev/firebase_options.dart' as firebase_dev show DefaultFirebaseOptions;
-import '../../firebase/prod/firebase_options.dart' as firebase_prod show DefaultFirebaseOptions;
-import '../../firebase/uat/firebase_options.dart' as firebase_uat show DefaultFirebaseOptions;
+import '../../firebase/dev/firebase_options.dart'
+    as firebase_dev
+    show DefaultFirebaseOptions;
+import '../../firebase/prod/firebase_options.dart'
+    as firebase_prod
+    show DefaultFirebaseOptions;
 
 const _snakeCaseSeparator = '_';
 const _paramCaseSeparator = '-';
@@ -34,7 +37,6 @@ extension NullableStringExtension on String? {
   /// Derives the active flavor from the bundle ID / package name suffix.
   ///
   /// - Ends with `.dev` → `'dev'`
-  /// - Ends with `.uat` → `'uat'`
   /// - Otherwise → `'prod'`
   ///
   /// Usage: call on `PackageInfo.packageName` during app startup, before
@@ -43,7 +45,6 @@ extension NullableStringExtension on String? {
   /// Example:
   /// ```dart
   /// 'com.example.app.dev'.flavor;  // 'dev'
-  /// 'com.example.app.uat'.flavor;  // 'uat'
   /// 'com.example.app'.flavor;      // 'prod'
   /// null.flavor;                   // 'dev'
   /// ```
@@ -54,7 +55,6 @@ extension NullableStringExtension on String? {
   String get flavor {
     if (this == null) return 'dev';
     if (this!.endsWith('.dev')) return 'dev';
-    if (this!.endsWith('.uat')) return 'uat';
     return 'prod';
   }
 
@@ -64,7 +64,7 @@ extension NullableStringExtension on String? {
   ///
   /// Usage: call on `PackageInfo.packageName` right where
   /// [Firebase.initializeApp] is invoked, so the correct
-  /// `firebase_options.dart` (dev/uat/prod) is selected automatically.
+  /// `firebase_options.dart` (dev/prod) is selected automatically.
   ///
   /// Example:
   /// ```dart
@@ -74,7 +74,6 @@ extension NullableStringExtension on String? {
   /// ```
   FirebaseOptions get firebaseOptions => switch (flavor) {
     'dev' => firebase_dev.DefaultFirebaseOptions.currentPlatform,
-    'uat' => firebase_uat.DefaultFirebaseOptions.currentPlatform,
     _ => firebase_prod.DefaultFirebaseOptions.currentPlatform,
   };
 }
@@ -118,8 +117,8 @@ extension StringExtension on String {
 
       final isEndOfWord =
           nextChar == null ||
-              (_upperAlphaRegex.hasMatch(nextChar) && !isAllCaps) ||
-              _symbolSet.contains(nextChar);
+          (_upperAlphaRegex.hasMatch(nextChar) && !isAllCaps) ||
+          _symbolSet.contains(nextChar);
 
       if (isEndOfWord) {
         words.add(sb.toString());

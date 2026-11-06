@@ -36,11 +36,7 @@ import 'package:flutter/material.dart';
 ///    for the Material motion spec this pattern implements.
 class FadeWrapper extends StatelessWidget {
   /// Creates a [FadeWrapper].
-  const FadeWrapper({
-    super.key,
-    required this.animation,
-    required this.child,
-  });
+  const FadeWrapper({super.key, required this.animation, required this.child});
 
   /// Drives the fade/scale transition.
   final Animation<double> animation;
@@ -53,9 +49,6 @@ class FadeWrapper extends StatelessWidget {
     // FadeScaleTransition already listens to [animation] internally (it is
     // built on DualTransitionBuilder), so no extra AnimatedBuilder is needed
     // here — wrapping it in one would only cause redundant rebuilds.
-    return FadeScaleTransition(
-      animation: animation,
-      child: child,
-    );
+    return FadeScaleTransition(animation: animation, child: child);
   }
 }

@@ -72,7 +72,8 @@ class AppPreference {
 
   // Key-specific helpers — add one set (set / get / remove) per AppPreferenceKey.
   /// Persists [value] under [AppPreferenceKey.kTest].
-  Future<void> setTest(bool value) => _prefs.setBool(AppPreferenceKey.kTest.key, value);
+  Future<void> setTest(bool value) =>
+      _prefs.setBool(AppPreferenceKey.kTest.key, value);
 
   /// Returns the stored test flag, or `false` if not set.
   bool getTest() => _prefs.getBool(AppPreferenceKey.kTest.key) ?? false;
@@ -86,8 +87,10 @@ class AppPreference {
 
   /// Returns whether onboarding has been completed or skipped before, or
   /// `false` if not set (i.e. first launch).
-  bool isCompleteIntro() => _prefs.getBool(AppPreferenceKey.kCompletedIntro.key) ?? false;
+  bool isCompleteIntro() =>
+      _prefs.getBool(AppPreferenceKey.kCompletedIntro.key) ?? false;
 
   /// Removes [AppPreferenceKey.kSeenIntro] from storage.
-  Future<void> removeCompleteIntro() => removeKey(AppPreferenceKey.kCompletedIntro);
+  Future<void> removeCompleteIntro() =>
+      removeKey(AppPreferenceKey.kCompletedIntro);
 }

@@ -1,5 +1,5 @@
-name: flutter_base
-description: "Flutter production boilerplate — BLoC/Cubit, GoRouter, Hive, Dio/Retrofit, Firebase (FlutterFire)."
+name: ever_moon
+description: "Evermoon — yearly events on Vietnamese lunar dates with reminders."
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -40,7 +40,6 @@ dependencies:
   pretty_dio_logger: ^1.4.0
 
   # Fonts
-  google_fonts: ^8.1.0
 
   # Path & permissions
   path_provider: ^2.1.5
@@ -53,11 +52,7 @@ dependencies:
 
   # Local packages
   setting_ui_builder:
-    path: pkgs/setting_ui_builder
-  animation_kit:
-    path: pkgs/animation_kit
-  animation_text:
-    path: pkgs/animation_text
+    path: packages/setting_ui_builder
 
   # UI components
   another_flushbar: ^2.2.4
@@ -67,8 +62,6 @@ dependencies:
 
   # Animations
   animations: ^2.2.0
-  lottie: ^3.3.3
-  flutter_animate: ^4.5.2
 
   # Markdown
   flutter_markdown_plus: ^1.0.7
@@ -83,11 +76,6 @@ dependencies:
   # Utilities
   json_annotation: ^4.12.0
   timezone: ^0.11.0
-  collection: ^1.19.1
-
-  # AI
-  genkit: ^0.14.1
-  genkit_google_genai: ^0.2.9
 
   # Logging
   logger: ^2.7.0
@@ -95,12 +83,10 @@ dependencies:
   # Firebase (FlutterFire)
   firebase_core: ^4.10.0
   firebase_messaging: ^16.3.0
-  firebase_remote_config: ^6.5.2
   firebase_crashlytics: ^5.2.4
   firebase_auth: ^6.1.1
   firebase_ui_auth: ^3.0.1
   firebase_ui_localizations: ^2.0.1
-  firebase_ui_oauth: ^2.0.1
   firebase_ui_oauth_google: ^2.0.1
 
   # Native method channel
@@ -115,12 +101,6 @@ dependencies:
   cached_network_image_platform_interface: ^4.1.1
   flutter_cache_manager: ^3.4.1
 
-dependency_overrides:
-  # firebase_ui_auth requires email_validator ^2.x while genkit (via json_schema_builder)
-  # requires ^3.x. Override to the newer version — the API surface used by firebase_ui_auth
-  # (EmailValidator.validate) is unchanged in 3.0.0.
-  email_validator: ^3.0.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -133,6 +113,8 @@ dev_dependencies:
   json_serializable: ^6.8.0
 
 flutter:
+  config:
+    enable-swift-package-manager: true
   generate: true
   uses-material-design: true
 
@@ -142,11 +124,9 @@ flutter:
   assets:
     - assets/images/
     - assets/lotties/
-    - assets/icons/
     - assets/docs/
     - assets/fonts/
     - assets/env/.env.dev
-    - assets/env/.env.uat
     - assets/env/.env.prod
     - pubspec.yaml
 

@@ -50,10 +50,7 @@ extension WidgetExtension on Widget {
   /// ```dart
   /// Row(children: [left.equalExpand, right.equalExpand])
   /// ```
-  Widget get equalExpand => Expanded(
-    flex: 1,
-    child: this,
-  );
+  Widget get equalExpand => Expanded(flex: 1, child: this);
 
   /// Wraps this widget in an [Expanded] with the given [flex] factor.
   ///
@@ -64,10 +61,7 @@ extension WidgetExtension on Widget {
   /// ```dart
   /// Row(children: [left.tightExpand(2), right.tightExpand(1)])
   /// ```
-  Widget tightExpand(int flex) => Expanded(
-    flex: flex,
-    child: this,
-  );
+  Widget tightExpand(int flex) => Expanded(flex: flex, child: this);
 
   /// Wraps this widget in a [Flexible] with the given [flex] factor.
   ///
@@ -78,10 +72,7 @@ extension WidgetExtension on Widget {
   /// ```dart
   /// Row(children: [left.looseExpand(2), right.looseExpand(1)])
   /// ```
-  Widget looseExpand(int flex) => Flexible(
-    flex: flex,
-    child: this,
-  );
+  Widget looseExpand(int flex) => Flexible(flex: flex, child: this);
 
   /// Wraps this widget in an [InkWell] with the given [onTap] callback.
   ///
@@ -99,10 +90,7 @@ extension WidgetExtension on Widget {
   /// Note: [InkWell] needs an ancestor [Material] to render its ink
   /// effects — this extension does not add one, so make sure this widget
   /// sits inside a [Scaffold]/[Card]/other [Material] ancestor.
-  Widget inkWell({
-    required GestureTapCallback onTap,
-    Color? color,
-  }) => InkWell(
+  Widget inkWell({required GestureTapCallback onTap, Color? color}) => InkWell(
     onTap: onTap,
     highlightColor: color,
     splashColor: color,
@@ -118,12 +106,8 @@ extension WidgetExtension on Widget {
   /// ```dart
   /// avatar.gesture(onTap: openProfile)
   /// ```
-  Widget gesture({
-    required GestureTapCallback onTap,
-  }) => GestureDetector(
-    onTap: onTap,
-    child: this,
-  );
+  Widget gesture({required GestureTapCallback onTap}) =>
+      GestureDetector(onTap: onTap, child: this);
 
   /// Wraps this widget in a [Positioned.fill].
   ///
@@ -150,18 +134,14 @@ extension WidgetExtension on Widget {
   /// ```
   ///
   /// Note: only valid as a direct child of a [Stack], same as [Positioned].
-  Widget pos({
-    double? left,
-    double? top,
-    double? right,
-    double? bottom,
-  }) => Positioned(
-    left: left,
-    top: top,
-    right: right,
-    bottom: bottom,
-    child: this,
-  );
+  Widget pos({double? left, double? top, double? right, double? bottom}) =>
+      Positioned(
+        left: left,
+        top: top,
+        right: right,
+        bottom: bottom,
+        child: this,
+      );
 
   /// Wraps this widget in an [AspectRatio] with the given [ratio].
   ///
@@ -172,7 +152,8 @@ extension WidgetExtension on Widget {
   /// ```dart
   /// videoPlayer.aspect(ratio: 16 / 9)
   /// ```
-  Widget aspect({required double ratio}) => AspectRatio(aspectRatio: ratio, child: this);
+  Widget aspect({required double ratio}) =>
+      AspectRatio(aspectRatio: ratio, child: this);
 
   /// Wraps this widget in a [Padding] with independently specified edge insets.
   ///
@@ -202,10 +183,10 @@ extension WidgetExtension on Widget {
   /// ```dart
   /// title.symPad(horizontal: 16, vertical: 8)
   /// ```
-  Widget symPad({
-    double horizontal = .0,
-    double vertical = .0,
-  }) => Padding(padding: .symmetric(horizontal: horizontal, vertical: vertical), child: this);
+  Widget symPad({double horizontal = .0, double vertical = .0}) => Padding(
+    padding: .symmetric(horizontal: horizontal, vertical: vertical),
+    child: this,
+  );
 
   /// Wraps this widget in a [Padding] with only horizontal insets applied
   /// (defaults to `0`).
@@ -217,7 +198,10 @@ extension WidgetExtension on Widget {
   /// ```dart
   /// listTile.padX(16)
   /// ```
-  Widget padX([double horizontal = .0]) => Padding(padding: .symmetric(horizontal: horizontal), child: this);
+  Widget padX([double horizontal = .0]) => Padding(
+    padding: .symmetric(horizontal: horizontal),
+    child: this,
+  );
 
   /// Wraps this widget in a [Padding] with only vertical insets applied
   /// (defaults to `0`).
@@ -229,7 +213,10 @@ extension WidgetExtension on Widget {
   /// ```dart
   /// divider.padY(8)
   /// ```
-  Widget padY([double vertical = .0]) => Padding(padding: .symmetric(vertical: vertical), child: this);
+  Widget padY([double vertical = .0]) => Padding(
+    padding: .symmetric(vertical: vertical),
+    child: this,
+  );
 
   /// Wraps this widget in a [Padding] with the same inset on all four edges.
   ///

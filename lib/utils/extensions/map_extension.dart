@@ -6,7 +6,7 @@ extension MapExtension<K, V> on Map<K, V> {
   /// ```dart
   /// {'a': 1, 'b': 2} + {'b': 20, 'c': 3}; // {'a': 1, 'b': 20, 'c': 3}
   /// ```
-  Map<K, V> operator + (Map<K, V> other) => {...this}..addAll(other);
+  Map<K, V> operator +(Map<K, V> other) => {...this}..addAll(other);
 
   /// Returns a new [Map] with all entries removed whose key exists in
   /// [other]. Values in [other] are not considered.
@@ -14,7 +14,7 @@ extension MapExtension<K, V> on Map<K, V> {
   /// ```dart
   /// {'a': 1, 'b': 2} - {'b': 0}; // {'a': 1}
   /// ```
-  Map<K, V> operator - (Map<K, V> other) =>
+  Map<K, V> operator -(Map<K, V> other) =>
       {...this}..removeWhere((k, _) => other.containsKey(k));
 
   /// Maps each entry with [f], keeping only the non-null results.

@@ -24,9 +24,10 @@ extension NumListExtension<T extends num> on List<T> {
     return switch (length) {
       0 => 0.0,
       1 => first.toDouble(),
-      _ => length.isEven
-          ? (sorted[middleIndex] + sorted[middleIndex - 1]) / 2.0
-          : sorted[middleIndex].toDouble(),
+      _ =>
+        length.isEven
+            ? (sorted[middleIndex] + sorted[middleIndex - 1]) / 2.0
+            : sorted[middleIndex].toDouble(),
     };
   }
 
@@ -68,7 +69,7 @@ extension ListExtension<T> on List<T> {
   /// value overwrites the earlier one's in the resulting [Map] — the same
   /// behavior as inserting both into a `Map` by hand.
   Map<T, E> toMap<E>(E Function(T) f) => {
-    for (final item in this) item: f(item)
+    for (final item in this) item: f(item),
   };
 
   /// Combines this list with [mergeList] position by position, preferring

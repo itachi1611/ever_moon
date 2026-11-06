@@ -1,7 +1,7 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_base/base.dart' show NotifyColorExtension, RouterExtension;
-import 'package:flutter_base/utils/extensions/widget_extension.dart';
+import 'package:ever_moon/base.dart' show NotifyColorExtension, RouterExtension;
+import 'package:ever_moon/utils/extensions/widget_extension.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
@@ -819,7 +819,9 @@ extension DialogExtension on BuildContext {
       builder: builder,
       barrierDismissible: barrierDismissible,
       barrierColor: barrierColor ?? Colors.black54,
-      barrierLabel: barrierLabel ?? MaterialLocalizations.of(this).modalBarrierDismissLabel,
+      barrierLabel:
+          barrierLabel ??
+          MaterialLocalizations.of(this).modalBarrierDismissLabel,
       useSafeArea: useSafeArea,
       useRootNavigator: useRootNavigator,
       routeSettings: routeSettings,
@@ -928,12 +930,16 @@ extension DialogExtension on BuildContext {
       pageBuilder: (context, animation, secondaryAnimation) =>
           useSafeArea ? SafeArea(child: builder(context)) : builder(context),
       barrierDismissible: barrierDismissible,
-      barrierLabel: barrierLabel ?? MaterialLocalizations.of(this).modalBarrierDismissLabel,
+      barrierLabel:
+          barrierLabel ??
+          MaterialLocalizations.of(this).modalBarrierDismissLabel,
       barrierColor: barrierColor,
       transitionDuration: transitionDuration,
       transitionBuilder: (context, animation, secondaryAnimation, child) {
         final isReverse = animation.status == .reverse;
-        final type = isReverse ? reverseTransitionType ?? transitionType : transitionType;
+        final type = isReverse
+            ? reverseTransitionType ?? transitionType
+            : transitionType;
 
         return type.transition(
           animation,

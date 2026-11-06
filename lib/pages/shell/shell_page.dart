@@ -60,18 +60,6 @@ class ShellPage extends StatelessWidget {
                 tooltip: 'Home',
               ),
               NavigationDestination(
-                icon: Icon(Icons.miscellaneous_services_outlined),
-                selectedIcon: Icon(Icons.miscellaneous_services),
-                label: 'Service',
-                tooltip: 'Service',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.explore_outlined),
-                selectedIcon: Icon(Icons.explore),
-                label: 'Explore',
-                tooltip: 'Explore',
-              ),
-              NavigationDestination(
                 icon: Icon(Icons.settings_outlined),
                 selectedIcon: Icon(Icons.settings),
                 label: 'Settings',

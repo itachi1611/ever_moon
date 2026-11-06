@@ -27,7 +27,7 @@ enum DialogTransitionType {
   rotation,
 
   /// Expand from zero height, centered.
-  size;
+  size,
 }
 
 extension DialogTransitionExt on DialogTransitionType {
@@ -50,8 +50,10 @@ extension DialogTransitionExt on DialogTransitionType {
       curve: curve,
       reverseCurve: reverseCurve,
     );
-    final Animation<double> fade =
-        Tween<double>(begin: 0, end: 1).animate(primary);
+    final Animation<double> fade = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(primary);
 
     return switch (this) {
       .fade => FadeTransition(opacity: fade, child: child),
@@ -167,26 +169,26 @@ class TransitionDialog<T> extends RawDialogRoute<T> {
     super.traversalEdgeBehavior,
     super.directionalTraversalEdgeBehavior,
     super.fullscreenDialog,
-  })  : _reverseTransitionDuration = reverseTransitionDuration,
-        super(
-        transitionBuilder: (context, animation, secondaryAnimation, child) {
-          // A dialog route runs its animation in reverse while closing; swap
-          // to the reverse transition type for that phase (reverseCurve is
-          // applied by the CurvedAnimation inside transition()).
-          final isReverse = animation.status == AnimationStatus.reverse;
-          final type = isReverse
-              ? (reverseTransitionType ?? transitionType)
-              : transitionType;
+  }) : _reverseTransitionDuration = reverseTransitionDuration,
+       super(
+         transitionBuilder: (context, animation, secondaryAnimation, child) {
+           // A dialog route runs its animation in reverse while closing; swap
+           // to the reverse transition type for that phase (reverseCurve is
+           // applied by the CurvedAnimation inside transition()).
+           final isReverse = animation.status == AnimationStatus.reverse;
+           final type = isReverse
+               ? (reverseTransitionType ?? transitionType)
+               : transitionType;
 
-          return type.transition(
-            animation,
-            child,
-            secondaryAnimation: secondaryAnimation,
-            curve: curve,
-            reverseCurve: reverseCurve,
-          );
-        },
-      );
+           return type.transition(
+             animation,
+             child,
+             secondaryAnimation: secondaryAnimation,
+             curve: curve,
+             reverseCurve: reverseCurve,
+           );
+         },
+       );
 
   final Duration? _reverseTransitionDuration;
 

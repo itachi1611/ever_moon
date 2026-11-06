@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_base/base.dart';
+import 'package:ever_moon/base.dart';
 
 import 'api_client.dart';
 import 'api_interceptors.dart';
@@ -50,8 +50,8 @@ class ApiUtil {
     if (_dio == null) {
       _dio = Dio();
       _dio!.options.baseUrl = AppEnv.apiBaseUrl;
-      _dio!.options.connectTimeout =  Duration(milliseconds: AppEnv.timeoutMs);
-      _dio!.options.receiveTimeout =  Duration(milliseconds: AppEnv.timeoutMs);
+      _dio!.options.connectTimeout = Duration(milliseconds: AppEnv.timeoutMs);
+      _dio!.options.receiveTimeout = Duration(milliseconds: AppEnv.timeoutMs);
 
       _dio!.interceptors.add(ApiInterceptors());
       _dio!.interceptors.add(

@@ -19,11 +19,11 @@ String? onValidate(ValidatorType type, String? value) {
   }
 
   if (!RegExp(type.rawReg).hasMatch(value!)) {
-    return switch(type) {
-      ValidatorType.email    => S.current.er_email_field,
+    return switch (type) {
+      ValidatorType.email => S.current.er_email_field,
       ValidatorType.password => S.current.er_password_field,
-      ValidatorType.name     => S.current.er_name_field,
-      ValidatorType.phone    => S.current.er_phone_field,
+      ValidatorType.name => S.current.er_name_field,
+      ValidatorType.phone => S.current.er_phone_field,
     };
   }
 

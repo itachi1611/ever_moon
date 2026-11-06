@@ -11,8 +11,10 @@ mixin AuthMixin {
     BoxConstraints constraints,
     double shrinkOffset,
   ) {
-    final opacity =
-    (1.0 - shrinkOffset / constraints.maxHeight).clamp(0.0, 1.0);
+    final opacity = (1.0 - shrinkOffset / constraints.maxHeight).clamp(
+      0.0,
+      1.0,
+    );
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -98,7 +100,10 @@ mixin AuthMixin {
           borderRadius: radius,
           borderSide: BorderSide(color: base.colorScheme.error, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
     );
   }

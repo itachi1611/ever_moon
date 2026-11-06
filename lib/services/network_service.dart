@@ -9,7 +9,7 @@ import '../utils/app_logger.dart' as logger;
 /// Global read-only accessor for the [NetworkService] singleton.
 ///
 /// ```dart
-/// import 'package:flutter_base/services/network_service.dart';
+/// import 'package:ever_moon/services/network_service.dart';
 ///
 /// // Initialize once at startup
 /// await networkService.initialize();
@@ -121,8 +121,9 @@ class NetworkService {
       _isConnected = await checkConnection();
       _controller.sink.add(_isConnected);
 
-      _subscription =
-          _connectivity.onConnectivityChanged.listen(_onConnectionChanged);
+      _subscription = _connectivity.onConnectivityChanged.listen(
+        _onConnectionChanged,
+      );
     } on PlatformException catch (e) {
       logger.err('NetworkService: initialize failed', e);
     }
@@ -162,8 +163,9 @@ class NetworkService {
   /// or [TimeoutException] (no response within 5 s).
   Future<bool> _dnsLookup() async {
     try {
-      final addresses = await InternetAddress.lookup('example.com')
-          .timeout(const Duration(seconds: 5));
+      final addresses = await InternetAddress.lookup(
+        'example.com',
+      ).timeout(const Duration(seconds: 5));
       return addresses.isNotEmpty && addresses[0].rawAddress.isNotEmpty;
     } on SocketException {
       return false;
@@ -178,8 +180,9 @@ class NetworkService {
   /// (no interface). Emits on [connectStream] only when status differs from
   /// [_isConnected] to suppress redundant events.
   Future<void> _onConnectionChanged(List<ConnectivityResult> results) async {
-    final hasInternet =
-        results.contains(ConnectivityResult.none) ? false : await _dnsLookup();
+    final hasInternet = results.contains(ConnectivityResult.none)
+        ? false
+        : await _dnsLookup();
 
     if (hasInternet != _isConnected) {
       _isConnected = hasInternet;

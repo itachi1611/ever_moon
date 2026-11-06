@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.fox.base.flutter"
+    namespace = "com.fox.evermoon"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.fox.base.flutter"
+        applicationId = "com.fox.evermoon"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -36,11 +36,6 @@ android {
             dimension = "env"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-        }
-        create("uat") {
-            dimension = "env"
-            applicationIdSuffix = ".uat"
-            versionNameSuffix = "-uat"
         }
         create("prod") {
             dimension = "env"

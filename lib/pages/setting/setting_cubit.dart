@@ -15,7 +15,7 @@ class SettingCubit extends Cubit<SettingState> {
   bool notifyScroll(ScrollNotification scrollNotification) {
     final scrollInfo = scrollNotification.metrics.toString();
 
-    switch(scrollNotification) {
+    switch (scrollNotification) {
       case ScrollStartNotification _:
       case ScrollUpdateNotification _:
       case OverscrollNotification _:

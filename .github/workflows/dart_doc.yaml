@@ -1,7 +1,6 @@
 # .github/workflows/dart_doc.yml
 #
-# Generates dart doc for both flutter_base (root) and pkgs/dart_cli,
-# merges the output into a single deploy folder, then publishes to GitHub Pages.
+# Generates dart doc for ever_moon (root) and publishes it to GitHub Pages.
 
 name: Dart Doc
 
@@ -42,17 +41,14 @@ jobs:
       # ── 2. Merge outputs into a single deploy folder ─────────────────────
       # deploy/
       # ├── index.html              ← landing page (created in step 8)
-      # ├── api/                    ← flutter_base doc
-      # └── pkgs/dart_cli/api/      ← dart_cli doc
+      # └── api/                    ← ever_moon doc
       - name: Prepare deploy folder
         run: |
           mkdir -p deploy/api
-          mkdir -p deploy/pkgs/dart_cli/api
           cp -r doc/api/. deploy/api/
-          cp -r pkgs/dart_cli/doc/api/. deploy/pkgs/dart_cli/api/
 
       # ── 3. Create landing page ───────────────────────────────────────────
-      # Branded landing page linking to both doc sites.
+      # Landing page linking to the doc site.
       - name: Create landing page
         run: |
           cat > deploy/index.html << 'EOF'
@@ -61,7 +57,7 @@ jobs:
           <head>
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <title>flutter_base — API Docs</title>
+            <title>ever_moon — API Docs</title>
             <style>
               *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -136,27 +132,21 @@ jobs:
               <path d="M21.7 57.3L33.2 68.8 21.7 75 10.2 63.5 21.7 57.3Z" fill="white" fill-opacity=".6"/>
             </svg>
 
-            <h1>flutter_base</h1>
-            <p class="subtitle">Production Flutter boilerplate · API Documentation</p>
+            <h1>ever_moon</h1>
+            <p class="subtitle">Lunar event reminders · API Documentation</p>
 
             <div class="divider"></div>
 
             <div class="cards">
               <a class="card" href="api/">
                 <div class="card-icon">📱</div>
-                <div class="card-title">flutter_base</div>
+                <div class="card-title">ever_moon</div>
                 <div class="card-desc">App layer, theming, routing, pages &amp; utilities</div>
-                <span class="badge">dart doc</span>
-              </a>
-              <a class="card" href="pkgs/dart_cli/api/">
-                <div class="card-icon">⌨️</div>
-                <div class="card-title">dart_cli</div>
-                <div class="card-desc">Interactive Flutter development CLI tool</div>
                 <span class="badge">dart doc</span>
               </a>
             </div>
 
-            <footer>nws-namnt / flutter-base</footer>
+            <footer>ever_moon</footer>
           </body>
           </html>
           EOF

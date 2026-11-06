@@ -1,1 +1,0 @@
-const double kOverlapFactor = 0.5;

@@ -15,7 +15,7 @@ class _ShareWidgetState extends State<ShareWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return  ValueListenableBuilder(
+    return ValueListenableBuilder(
       valueListenable: openNotifier,
       builder: (context, isOpen, child) {
         return Stack(
@@ -66,7 +66,7 @@ class _ShareWidgetState extends State<ShareWidget> {
                       onPressed: () {},
                     ),
                     IconButton(
-                      icon:const FaIcon(FontAwesomeIcons.squareFacebook),
+                      icon: const FaIcon(FontAwesomeIcons.squareFacebook),
                       onPressed: () {},
                     ),
                     IconButton(
@@ -79,7 +79,7 @@ class _ShareWidgetState extends State<ShareWidget> {
             ),
           ],
         );
-      }
+      },
     );
   }
 }

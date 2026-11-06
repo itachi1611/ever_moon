@@ -193,7 +193,8 @@ class CachedImageWidget extends StatelessWidget {
 
   /// Whether the caller supplied their own loading UI — if so, it is
   /// forwarded as-is instead of falling back to [_DefaultPlaceholder].
-  bool get _hasCustomLoadingUi => placeholder != null || progressIndicatorBuilder != null;
+  bool get _hasCustomLoadingUi =>
+      placeholder != null || progressIndicatorBuilder != null;
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +210,8 @@ class CachedImageWidget extends StatelessWidget {
           ? placeholder
           : (_, _) => _DefaultPlaceholder(color: colors.primary),
       progressIndicatorBuilder: progressIndicatorBuilder,
-      errorWidget: errorWidget ?? (_, _, _) => _DefaultError(color: colors.error),
+      errorWidget:
+          errorWidget ?? (_, _, _) => _DefaultError(color: colors.error),
       errorListener: errorListener,
       fadeOutDuration: fadeOutDuration,
       fadeOutCurve: fadeOutCurve,

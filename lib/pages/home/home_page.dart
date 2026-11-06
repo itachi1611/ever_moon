@@ -2,9 +2,9 @@ import 'package:animations/animations.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_base/base.dart';
-import 'package:flutter_base/utils/app_utils.dart';
-import 'package:flutter_base/utils/extensions/widget_extension.dart';
+import 'package:ever_moon/base.dart';
+import 'package:ever_moon/utils/app_utils.dart';
+import 'package:ever_moon/utils/extensions/widget_extension.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -69,12 +69,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
 
     _listScrollController = ScrollController();
-    _listScrollController.addListener(() => _handleScroll(_listScrollController));
+    _listScrollController.addListener(
+      () => _handleScroll(_listScrollController),
+    );
 
     _gridScrollController = ScrollController();
-    _gridScrollController.addListener(() => _handleScroll(_gridScrollController));
+    _gridScrollController.addListener(
+      () => _handleScroll(_gridScrollController),
+    );
 
-    sensitive = ValueNotifier<ContentSensitivity>(ContentSensitivity.notSensitive);
+    sensitive = ValueNotifier<ContentSensitivity>(
+      ContentSensitivity.notSensitive,
+    );
   }
 
   @override
@@ -214,7 +220,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       showGeneralDialog<void>(
         context: context,
         barrierDismissible: true,
-        barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+        barrierLabel: MaterialLocalizations.of(
+          context,
+        ).modalBarrierDismissLabel,
         barrierColor: Colors.black54,
         transitionDuration: const Duration(milliseconds: 150),
         pageBuilder: (context, animation, secondaryAnimation) {
@@ -300,7 +308,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       const Text('Home'),
                       const Gap(8),
                       BadgeWidget.shake(
-                        badgeCount: state is HomeSuccess ? state.archived.length : 0,
+                        badgeCount: state is HomeSuccess
+                            ? state.archived.length
+                            : 0,
                       ),
                     ],
                   ),
@@ -313,7 +323,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           icon: const Icon(Icons.sensors_outlined),
                           label: Text(s.value),
                         );
-                      }
+                      },
                     ),
                     IconButton(
                       icon: AnimatedIcon(
@@ -345,10 +355,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             ),
                             accountName: Text(user?.displayName ?? 'Guest'),
                             accountEmail: Text(user?.email ?? 'Not signed in'),
-                            onDetailsPressed: isSignedIn ? null : () {
-                              _scaffoldKey.currentState?.closeDrawer();
-                              context.push(Routers.login.routerPath);
-                            },
+                            onDetailsPressed: isSignedIn
+                                ? null
+                                : () {
+                                    _scaffoldKey.currentState?.closeDrawer();
+                                    context.push(Routers.login.routerPath);
+                                  },
                           );
 
                           if (!isSignedIn) return header;
@@ -400,7 +412,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ? _buildGrid(data)
                                 : _buildReorderableList(data),
                           );
-                        }
+                        },
                       ),
                     ),
                   HomeError(:final errMess) => Text(
@@ -451,7 +463,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: Text('${direction == .startToEnd ? 'Archive' : 'Delete'} item $item?'),
+                  title: Text(
+                    '${direction == .startToEnd ? 'Archive' : 'Delete'} item $item?',
+                  ),
                   actions: [
                     TextButton.icon(
                       onPressed: () {
@@ -466,10 +480,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         result.complete(true);
                         ctx.backDialog;
                       },
-                      label: Text(direction == .startToEnd ? 'Archive' : 'Delete'),
-                      icon: Icon(direction == .startToEnd
-                          ? Icons.archive_rounded
-                          : Icons.delete_rounded),
+                      label: Text(
+                        direction == .startToEnd ? 'Archive' : 'Delete',
+                      ),
+                      icon: Icon(
+                        direction == .startToEnd
+                            ? Icons.archive_rounded
+                            : Icons.delete_rounded,
+                      ),
                     ),
                   ],
                 ),
@@ -479,27 +497,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: OpenContainerWrapper<void>(
-                tappable: false,
-                closedElevation: 1,
-                closedShape: const RoundedRectangleBorder(
+              child: Card(
+                elevation: 1,
+                margin: EdgeInsets.zero,
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                 ),
-                closedColor: index.isOdd ? AppColors.oldLace : AppColors.darkRaisin,
-                closedBuilder: (context, openContainer) {
-                  return ListTile(
-                    onTap: openContainer,
-                    textColor: index.isOdd
-                        ? AppColors.darkRaisin
-                        : AppColors.oldLace,
-                    title: Text('Item $item'),
-                    trailing: ReorderableDragStartListener(
-                      index: index,
-                      child: const Icon(Icons.drag_handle),
-                    ),
-                  );
-                },
-                openBuilder: (context, _) => HomeDetailPage(item: item),
+                color: index.isOdd ? AppColors.oldLace : AppColors.darkRaisin,
+                child: ListTile(
+                  textColor: index.isOdd
+                      ? AppColors.darkRaisin
+                      : AppColors.oldLace,
+                  title: Text('Item $item'),
+                  trailing: ReorderableDragStartListener(
+                    index: index,
+                    child: const Icon(Icons.drag_handle),
+                  ),
+                ),
               ),
             ),
           );
@@ -525,23 +539,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       itemCount: data.length,
       itemBuilder: (context, index) {
         final item = data[index];
-        return OpenContainerWrapper<void>(
-          closedElevation: 1,
-          closedShape: const RoundedRectangleBorder(
+        return Card(
+          elevation: 1,
+          margin: EdgeInsets.zero,
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
-          closedColor: index.isOdd ? AppColors.oldLace : AppColors.darkRaisin,
-          closedBuilder: (context, openContainer) {
-            return Center(
-              child: Text(
-                'Item $item',
-                style: TextStyle(
-                  color: index.isOdd ? AppColors.darkRaisin : AppColors.oldLace,
-                ),
+          color: index.isOdd ? AppColors.oldLace : AppColors.darkRaisin,
+          child: Center(
+            child: Text(
+              'Item $item',
+              style: TextStyle(
+                color: index.isOdd ? AppColors.darkRaisin : AppColors.oldLace,
               ),
-            );
-          },
-          openBuilder: (context, _) => HomeDetailPage(item: item),
+            ),
+          ),
         );
       },
     );
@@ -569,8 +581,8 @@ class _DismissibleItem extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: isArchive
-          ? theme.colorScheme.primaryContainer
-          : theme.colorScheme.errorContainer,
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(12),
       ),
       alignment: isArchive ? Alignment.centerLeft : Alignment.centerRight,
@@ -579,8 +591,8 @@ class _DismissibleItem extends StatelessWidget {
       child: Icon(
         isArchive ? Icons.archive_rounded : Icons.delete_rounded,
         color: isArchive
-          ? theme.colorScheme.onPrimaryContainer
-          : theme.colorScheme.onErrorContainer,
+            ? theme.colorScheme.onPrimaryContainer
+            : theme.colorScheme.onErrorContainer,
       ),
     );
   }
@@ -605,26 +617,17 @@ class FabAnimator extends FloatingActionButtonAnimator {
   /// Rotation animation played alongside the position change, eased with
   /// [Curves.easeInOutSine].
   @override
-  Animation<double> getRotationAnimation({
-    required Animation<double> parent,
-  }) {
-    return Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(
-        curve: Curves.easeInOutSine,
-        parent: parent,
-      ),
-    );
+  Animation<double> getRotationAnimation({required Animation<double> parent}) {
+    return Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(curve: Curves.easeInOutSine, parent: parent));
   }
 
   /// Scale animation played alongside the position change, eased with
   /// [Curves.easeInOutSine].
   @override
-  Animation<double> getScaleAnimation({
-    required Animation<double> parent,
-  }) {
-    return CurvedAnimation(
-      curve: Curves.easeInOutSine,
-      parent: parent,
-    );
+  Animation<double> getScaleAnimation({required Animation<double> parent}) {
+    return CurvedAnimation(curve: Curves.easeInOutSine, parent: parent);
   }
 }

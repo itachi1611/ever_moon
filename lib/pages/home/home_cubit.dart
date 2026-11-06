@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show FloatingActionButtonLocation;
-import 'package:flutter_base/utils/completer_util.dart';
+import 'package:ever_moon/utils/completer_util.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'home_state.dart';
@@ -48,7 +48,7 @@ class HomeCubit extends Cubit<HomeState> {
   /// No-op if the current state is not [HomeSuccess].
   void addItem() {
     final current = state;
-    if(current is! HomeSuccess) return;
+    if (current is! HomeSuccess) return;
 
     final data = List<String>.of(current.data);
     data.add('Item ${data.length + 1}');
@@ -112,20 +112,32 @@ class HomeCubit extends Cubit<HomeState> {
   /// requested position.
   void moveFab({bool isTop = true}) {
     final current = state;
-    if(current is! HomeSuccess) return;
+    if (current is! HomeSuccess) return;
 
     if (isTop) {
       if (current.fabLocation == FloatingActionButtonLocation.endTop) return;
-      emit(current.copyWith(fabLocation: FloatingActionButtonLocation.endTop, isTop: true));
+      emit(
+        current.copyWith(
+          fabLocation: FloatingActionButtonLocation.endTop,
+          isTop: true,
+        ),
+      );
     } else {
       if (current.fabLocation == FloatingActionButtonLocation.endFloat) return;
-      emit(current.copyWith(fabLocation: FloatingActionButtonLocation.endFloat, isTop: false));
+      emit(
+        current.copyWith(
+          fabLocation: FloatingActionButtonLocation.endFloat,
+          isTop: false,
+        ),
+      );
     }
   }
 
   // TODO: remove after verifying flavor config
   void _logFirebaseFlavor() {
     final app = Firebase.app();
-    debugPrint('🔥 Firebase loaded: project=${app.options.projectId}, appId=${app.options.appId}');
+    debugPrint(
+      '🔥 Firebase loaded: project=${app.options.projectId}, appId=${app.options.appId}',
+    );
   }
 }

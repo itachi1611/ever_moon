@@ -9,7 +9,7 @@ import 'string_extension.dart';
 ///
 /// Useful for About screens, crash report metadata, and Dio `User-Agent` headers.
 extension PackageExtension on PackageInfo {
-  /// Active flavor derived from [PackageInfo.packageName] — `'dev'` | `'uat'` | `'prod'`.
+  /// Active flavor derived from [PackageInfo.packageName] — `'dev'` | `'prod'`.
   ///
   /// See [StringExtension.flavor].
   String get flavor => packageName.flavor;
@@ -29,7 +29,8 @@ extension PackageExtension on PackageInfo {
       installerStore != null && installerStore!.isNotEmpty;
 
   /// Compact identifier for Dio `User-Agent` headers and crash report context.
-  String get userAgent => '$appName/$version (Build $buildNumber; $packageName)';
+  String get userAgent =>
+      '$appName/$version (Build $buildNumber; $packageName)';
 }
 
 /// Cross-platform convenience getters built on top of [DeviceInfoPlugin]

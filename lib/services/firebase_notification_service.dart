@@ -2,7 +2,12 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart' show RemoteMessage, FirebaseMessaging, NotificationSettings, AuthorizationStatus;
+import 'package:firebase_messaging/firebase_messaging.dart'
+    show
+        RemoteMessage,
+        FirebaseMessaging,
+        NotificationSettings,
+        AuthorizationStatus;
 import 'package:flutter/foundation.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 
@@ -26,31 +31,37 @@ class FirebaseNotificationService {
   FirebaseNotificationService._internal();
 
   /// The global singleton instance.
-  static final FirebaseNotificationService instance = FirebaseNotificationService._internal();
+  static final FirebaseNotificationService instance =
+      FirebaseNotificationService._internal();
 
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
   // Streams
-  final StreamController<RemoteMessage> _onMessageController = StreamController.broadcast();
+  final StreamController<RemoteMessage> _onMessageController =
+      StreamController.broadcast();
 
   /// Emits each [RemoteMessage] received while the app is in the foreground.
   Stream<RemoteMessage> get onMessage => _onMessageController.stream;
 
-  final StreamController<RemoteMessage> _onMessageOpenedController = StreamController.broadcast();
+  final StreamController<RemoteMessage> _onMessageOpenedController =
+      StreamController.broadcast();
 
   /// Emits the [RemoteMessage] whenever the user opens the app by tapping a
   /// notification — covers both background-to-foreground taps and the
   /// terminated-state launch message (see [initialMessage]).
-  Stream<RemoteMessage> get onMessageOpenedApp => _onMessageOpenedController.stream;
+  Stream<RemoteMessage> get onMessageOpenedApp =>
+      _onMessageOpenedController.stream;
 
   // Emits the payload (String?) when user taps a local notification created by NotificationService
-  final StreamController<String?> _onNotificationTapController = StreamController.broadcast();
+  final StreamController<String?> _onNotificationTapController =
+      StreamController.broadcast();
 
   /// Emits the payload string when the user taps a local notification shown
   /// via [NotificationService].
   Stream<String?> get onNotificationTap => _onNotificationTapController.stream;
 
-  final StreamController<String> _tokenRefreshController = StreamController.broadcast();
+  final StreamController<String> _tokenRefreshController =
+      StreamController.broadcast();
 
   /// Emits the new FCM token whenever it refreshes.
   Stream<String> get onTokenRefresh => _tokenRefreshController.stream;
@@ -132,9 +143,9 @@ class FirebaseNotificationService {
     }
 
     await NotificationService.instance.initPlatformSetting(
-        onSelectNotification: (notificationRes) {
-          _onNotificationTapController.add(notificationRes);
-        }
+      onSelectNotification: (notificationRes) {
+        _onNotificationTapController.add(notificationRes);
+      },
     );
     _isFlutterLocalNotificationsInitialized = true;
   }
@@ -146,23 +157,26 @@ class FirebaseNotificationService {
     /// Request permission
     try {
       NotificationSettings settings = await _messaging.requestPermission(
-            alert: true,
-            announcement: false,
-            badge: true,
-            carPlay: false,
-            criticalAlert: false, // requires Apple special entitlement — do not enable unless approved
-            provisional: false,   // provisional = silent delivery without explicit user consent; set true for soft permission flow
-            sound: true,
-          );
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert:
+            false, // requires Apple special entitlement — do not enable unless approved
+        provisional:
+            false, // provisional = silent delivery without explicit user consent; set true for soft permission flow
+        sound: true,
+      );
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-            devLog('User granted permission');
-          } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-            devLog('User granted provisional permission');
-          } else {
-            devLog('User declined or has not accepted permission');
-            return;
-          }
+        devLog('User granted permission');
+      } else if (settings.authorizationStatus ==
+          AuthorizationStatus.provisional) {
+        devLog('User granted provisional permission');
+      } else {
+        devLog('User declined or has not accepted permission');
+        return;
+      }
     } on FirebaseException catch (e) {
       // Swallow "already running" race condition on hot restart (development only).
       // In production this path is unreachable because the process is cold-started.
@@ -182,13 +196,15 @@ class FirebaseNotificationService {
     _onMessageSub = FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _onMessageController.add(message);
 
-      if(Platform.isAndroid) {
+      if (Platform.isAndroid) {
         NotificationService.instance.showFirebaseNotification(message);
       }
     });
 
     // Background to foreground
-    _onMessageOpenedSub = FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    _onMessageOpenedSub = FirebaseMessaging.onMessageOpenedApp.listen((
+      RemoteMessage message,
+    ) {
       _onMessageOpenedController.add(message);
     });
 
@@ -222,8 +238,10 @@ class FirebaseNotificationService {
     if (Platform.isIOS) {
       final apnsToken = await _waitForAPNSToken();
       if (apnsToken == null) {
-        devLog('⚠️ APNs token not available after $_apnsMaxRetries retries. '
-            'FCM token will be captured via onTokenRefresh once APNs is ready.');
+        devLog(
+          '⚠️ APNs token not available after $_apnsMaxRetries retries. '
+          'FCM token will be captured via onTokenRefresh once APNs is ready.',
+        );
         return;
       }
     }
@@ -246,7 +264,9 @@ class FirebaseNotificationService {
       final token = await _messaging.getAPNSToken();
       if (token != null) return token;
       if (i < _apnsMaxRetries - 1) {
-        devLog('⏳ APNs token attempt ${i + 1}/$_apnsMaxRetries — retrying in ${_apnsRetryDelay.inSeconds}s...');
+        devLog(
+          '⏳ APNs token attempt ${i + 1}/$_apnsMaxRetries — retrying in ${_apnsRetryDelay.inSeconds}s...',
+        );
         await Future.delayed(_apnsRetryDelay);
       }
     }
@@ -262,10 +282,12 @@ class FirebaseNotificationService {
   Future<void> deleteToken() => _messaging.deleteToken();
 
   /// Subscribes this device to the given FCM [topic].
-  Future<void> subscribeToTopic(String topic) => _messaging.subscribeToTopic(topic);
+  Future<void> subscribeToTopic(String topic) =>
+      _messaging.subscribeToTopic(topic);
 
   /// Unsubscribes this device from the given FCM [topic].
-  Future<void> unsubscribeFromTopic(String topic) => _messaging.unsubscribeFromTopic(topic);
+  Future<void> unsubscribeFromTopic(String topic) =>
+      _messaging.unsubscribeFromTopic(topic);
 
   /// Cancels all stream subscriptions and closes all stream controllers,
   /// resetting internal flags so [initialize] can be run again from scratch.

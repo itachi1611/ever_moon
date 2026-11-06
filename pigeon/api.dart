@@ -38,9 +38,9 @@ import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/generated/pigeon_api.g.dart',
-  dartPackageName: 'flutter_base',
-  kotlinOut: 'android/app/src/main/kotlin/com/fox/base/flutter/generated/PigeonApi.g.kt',
-  kotlinOptions: KotlinOptions(package: 'com.fox.base.flutter.generated'),
+  dartPackageName: 'ever_moon',
+  kotlinOut: 'android/app/src/main/kotlin/com/fox/evermoon/generated/PigeonApi.g.kt',
+  kotlinOptions: KotlinOptions(package: 'com.fox.evermoon.generated'),
   swiftOut: 'ios/Runner/generated/PigeonApi.g.swift',
 ))
 

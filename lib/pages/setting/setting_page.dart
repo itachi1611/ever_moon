@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base/base.dart';
-import 'package:flutter_base/common/app_enums.dart';
+import 'package:ever_moon/base.dart';
+import 'package:ever_moon/common/app_enums.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:setting_ui_builder/setting_ui_builder.dart' show SettingsList, SettingsTile, SettingsSection;
+import 'package:setting_ui_builder/setting_ui_builder.dart'
+    show SettingsList, SettingsTile, SettingsSection;
 
 import '../../generated/l10n.dart';
 import 'setting_cubit.dart';
@@ -44,26 +45,22 @@ class _SettingPageState extends State<SettingPage> {
         builder: (context, _) {
           // React to locale changes from AppCubit.
           return BlocBuilder<AppCubit, AppState>(
-            buildWhen: (pre, cur) => pre.locale != cur.locale || pre.themeMode != cur.themeMode,
+            buildWhen: (pre, cur) =>
+                pre.locale != cur.locale || pre.themeMode != cur.themeMode,
             builder: (context, appState) {
-              final currentLanguage = AppLanguage.values.firstWhere(
-                (e) => e.locale.languageCode == appState.locale.languageCode,
-                orElse: () => AppLanguage.values.first,
-              ).label;
+              final currentLanguage = AppLanguage.values
+                  .firstWhere(
+                    (e) =>
+                        e.locale.languageCode == appState.locale.languageCode,
+                    orElse: () => AppLanguage.values.first,
+                  )
+                  .label;
 
               return Scaffold(
                 backgroundColor: AppColors.oldLace,
-                floatingActionButton: FloatingActionButton.extended(
-                  onPressed: () => context.pushNamed(
-                    Routers.aiSupport.routerName,
-                    extra: {'screenName': 'Settings'},
-                  ),
-                  icon: const Icon(Icons.auto_awesome_rounded),
-                  label: const Text('AI Support'),
-                  tooltip: 'Open AI Support chat',
-                ),
                 body: NotificationListener<ScrollNotification>(
-                  onNotification: (scrollNotification) => _cubit.notifyScroll(scrollNotification),
+                  onNotification: (scrollNotification) =>
+                      _cubit.notifyScroll(scrollNotification),
                   child: SettingsList(
                     sections: [
                       SettingsSection(
@@ -73,15 +70,17 @@ class _SettingPageState extends State<SettingPage> {
                             leading: const Icon(Icons.language_outlined),
                             title: S.current.lb_language,
                             value: currentLanguage,
-                            onTap: () => context.push(Routers.languageSheet.routerPath),
+                            onTap: () =>
+                                context.push(Routers.languageSheet.routerPath),
                           ),
                           SettingsTile.toggle(
                             leading: const Icon(Icons.dark_mode_outlined),
                             title: S.current.lb_dark_mode,
                             value: appState.themeMode == ThemeMode.dark,
-                            onToggle: (v) => context.read<AppCubit>().setThemeMode(
-                              v ? ThemeMode.dark : ThemeMode.light,
-                            ),
+                            onToggle: (v) =>
+                                context.read<AppCubit>().setThemeMode(
+                                  v ? ThemeMode.dark : ThemeMode.light,
+                                ),
                           ),
                         ],
                       ),

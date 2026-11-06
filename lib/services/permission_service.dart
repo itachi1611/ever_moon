@@ -1,6 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_base/utils/app_utils.dart';
+import 'package:ever_moon/utils/app_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Global getter — shorthand for [PermissionService.instance].
@@ -48,8 +48,7 @@ class PermissionService {
   /// [openSettings] manually when appropriate.
   Future<Map<Permission, PermissionStatus>> requestPermissions(
     List<Permission> permissions,
-  ) =>
-      permissions.request();
+  ) => permissions.request();
 
   /// Opens the app's system settings page.
   ///

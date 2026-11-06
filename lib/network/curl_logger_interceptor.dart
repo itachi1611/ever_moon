@@ -12,7 +12,7 @@ import 'package:dio/dio.dart';
 ///
 /// This interceptor is conditionally attached by [ApiUtil] based on the
 /// `ENABLE_CURL_LOGGER` key in the active flavor's `.env` file —
-/// `true` for `dev`, `false` for `uat` and `prod`.
+/// `true` for `dev`, `false` for `prod`.
 ///
 /// ## Example output
 ///

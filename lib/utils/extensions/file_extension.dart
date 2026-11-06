@@ -130,4 +130,3 @@ extension FileExtension on File {
   /// Returns `null` on failure instead of throwing.
   Future<File?> createTmpFileFrom() => _copyToTmpFiles(path);
 }
-

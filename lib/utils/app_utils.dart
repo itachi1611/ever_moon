@@ -69,8 +69,8 @@ Future<Directory> _resolveDirectory() async {
     if (status.isGranted) {
       final downloadsDirectory =
           await ExternalPath.getExternalStoragePublicDirectory(
-        ExternalPath.DIRECTORY_DOWNLOAD,
-      );
+            ExternalPath.DIRECTORY_DOWNLOAD,
+          );
       return Directory(downloadsDirectory);
     }
     err(
@@ -221,7 +221,7 @@ Future<List<PickedFile>> pickMultipleImagesFromGallery() async {
     final status = await permissionService.requestPhotos();
     if (!status.isGranted) return [];
     final files = await ImagePicker().pickMultiImage();
-    return Future.wait(
+    return await Future.wait(
       files.map((f) async => PickedFile.fromXFile(f, size: await f.length())),
     );
   } catch (e) {

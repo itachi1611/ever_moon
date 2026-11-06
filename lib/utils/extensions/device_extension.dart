@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 extension DeviceExtension on BuildContext {
   /// Assumed pixel density used to convert pixels to inches — `150` on
   /// Android/iOS, `96` otherwise (approximate, not device-calibrated).
-  double get pixelsPerInch => Platform.isAndroid || Platform.isIOS? 150 : 96;
+  double get pixelsPerInch => Platform.isAndroid || Platform.isIOS ? 150 : 96;
 
   /// Returns same as MediaQuery.of(context)
   MediaQueryData get mq => MediaQuery.of(this);
@@ -67,12 +67,14 @@ extension DeviceExtension on BuildContext {
     // return diagonalInches <= 10.0 ? true : false;
 
     final dp = sizePx.shortestSide;
-    if (dp < 600) { // Phone
+    if (dp < 600) {
+      // Phone
       return true;
-    } else if (dp < 720) {  // small tablet
-      return true;  // ~7″
+    } else if (dp < 720) {
+      // small tablet
+      return true; // ~7″
     } else {
-      return false;  // ~10″+
+      return false; // ~10″+
     }
   }
 

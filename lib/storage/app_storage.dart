@@ -66,7 +66,8 @@ class AppStorage {
 
   // Key-specific helpers — add one set (set / get / remove) per AppStorageKey.
   /// Persists [value] under [AppStorageKey.kTest].
-  Future<void> setTest(bool value) => _storage.write(AppStorageKey.kTest.key, value);
+  Future<void> setTest(bool value) =>
+      _storage.write(AppStorageKey.kTest.key, value);
 
   /// Returns the stored test flag, or `false` if not set.
   bool getTest() => _storage.read<bool?>(AppStorageKey.kTest.key) ?? false;

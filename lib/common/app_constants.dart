@@ -13,7 +13,8 @@ class AppConstants {
   static const String kAndroidChannelName = 'Fox Push Notification Channel';
 
   /// Android notification channel description.
-  static const String kAndroidChannelDescription = 'This channel is used for push notifications.';
+  static const String kAndroidChannelDescription =
+      'This channel is used for push notifications.';
 
   /// Drawable resource name used as the small icon for push notifications.
   static const String kAndroidNotificationIcon = 'notification';

@@ -54,7 +54,7 @@ var maleNames = <String>{
   'Eric',
   'Blake',
   'Lincoln',
-  'Ryan'
+  'Ryan',
 };
 
 // List of all female names for randomName function.
@@ -104,7 +104,7 @@ var femaleNames = <String>{
   'Claire',
   'Nicole',
   'Kaylee',
-  'Samantha'
+  'Samantha',
 };
 
 var familyNames = <String>{
@@ -124,7 +124,7 @@ var familyNames = <String>{
   'Garcia',
   'Martinez',
   'Robinson',
-  'Jameson'
+  'Jameson',
 };
 
 // Random build parts for randomUrl function.
@@ -147,11 +147,11 @@ enum DataGenerationType {
   name,
   string,
   url,
-  uuid;
+  uuid,
 }
 
 extension DataGenerationExt on DataGenerationType {
-  dynamic generate() => switch(this) {
+  dynamic generate() => switch (this) {
     .color => randomColor(),
     .date => randomDate(),
     .familyName => randomFamilyName(),
@@ -248,14 +248,17 @@ extension DataGenerationExt on DataGenerationType {
     secondMoment ??= DateTime.now();
 
     secondMoment.isBefore(firstMoment)
-        ? throw ArgumentError('Second DateTime '
-        'moment should be after first DateTime moment.')
+        ? throw ArgumentError(
+            'Second DateTime '
+            'moment should be after first DateTime moment.',
+          )
         : null;
 
     Duration difference = secondMoment.difference(firstMoment);
 
-    return firstMoment
-        .add(Duration(seconds: random.nextInt(difference.inSeconds + 1)));
+    return firstMoment.add(
+      Duration(seconds: random.nextInt(difference.inSeconds + 1)),
+    );
   }
 
   /// Generate random family name.
@@ -288,7 +291,11 @@ extension DataGenerationExt on DataGenerationType {
 
   /// Generate a random double in range [min, max).
   /// Optionally round to [fractionDigits] decimal places.
-  double randomDouble([double min = 0.0, double max = 1.0, int? fractionDigits]) {
+  double randomDouble([
+    double min = 0.0,
+    double max = 1.0,
+    int? fractionDigits,
+  ]) {
     min >= max ? throw ArgumentError('min should be lower than max') : null;
     final value = min + random.nextDouble() * (max - min);
     if (fractionDigits == null) return value;
@@ -331,18 +338,18 @@ extension DataGenerationExt on DataGenerationType {
 
     var _ip = ip
         .map((s) {
-      if (s == '*') {
-        return '${random.nextInt(255 + 1).toString()}.';
-      }
+          if (s == '*') {
+            return '${random.nextInt(255 + 1).toString()}.';
+          }
 
-      var parsedGroup = int.tryParse(s);
+          var parsedGroup = int.tryParse(s);
 
-      if (parsedGroup != null && parsedGroup >= 0 && parsedGroup <= 255) {
-        return '$s.';
-      } else {
-        throw ArgumentError('Integers must be in range of 0 and 255');
-      }
-    })
+          if (parsedGroup != null && parsedGroup >= 0 && parsedGroup <= 255) {
+            return '$s.';
+          } else {
+            throw ArgumentError('Integers must be in range of 0 and 255');
+          }
+        })
         .toList()
         .join();
 
@@ -374,18 +381,18 @@ extension DataGenerationExt on DataGenerationType {
 
     var _ip = ip
         .map((s) {
-      if (s == '*') {
-        return '${random.nextInt(65535 + 1).toRadixString(16).padLeft(4, '0')}:';
-      }
+          if (s == '*') {
+            return '${random.nextInt(65535 + 1).toRadixString(16).padLeft(4, '0')}:';
+          }
 
-      var parsedGroup = int.tryParse(s, radix: 16);
+          var parsedGroup = int.tryParse(s, radix: 16);
 
-      if (parsedGroup != null && parsedGroup >= 0 && parsedGroup <= 65536) {
-        return '${s.padLeft(4, '0')}:';
-      } else {
-        throw ArgumentError('Integers must be in range of 0 and 65536');
-      }
-    })
+          if (parsedGroup != null && parsedGroup >= 0 && parsedGroup <= 65536) {
+            return '${s.padLeft(4, '0')}:';
+          } else {
+            throw ArgumentError('Integers must be in range of 0 and 65536');
+          }
+        })
         .toList()
         .join();
 
@@ -394,13 +401,17 @@ extension DataGenerationExt on DataGenerationType {
 
   /// Generate random latitude longitude in `radius` from `centerLat` to `centerLon`, inclusive.
   /// If any argument is null, random location will be returned.
-  Map<String, double> randomLocation(
-      [double? latitude, double? longitude, int? radius]) {
+  Map<String, double> randomLocation([
+    double? latitude,
+    double? longitude,
+    int? radius,
+  ]) {
     Map<String, double> location = {};
 
     if (latitude == null || longitude == null || radius == null) {
       location['lat'] = random.nextDouble() * 90 * (random.nextBool() ? 1 : -1);
-      location['lon'] = random.nextDouble() * 180 * (random.nextBool() ? 1 : -1);
+      location['lon'] =
+          random.nextDouble() * 180 * (random.nextBool() ? 1 : -1);
     } else {
       // Convert radius from meters to degrees
       double radiusInDegrees = radius / 111000.0;
@@ -465,8 +476,9 @@ extension DataGenerationExt on DataGenerationType {
       case 'any':
         var allNames = maleNames.union(femaleNames).toList();
         allNames.shuffle(random);
-        return allNames
-            .elementAt(random.nextInt(maleNames.length + femaleNames.length));
+        return allNames.elementAt(
+          random.nextInt(maleNames.length + femaleNames.length),
+        );
       default:
         throw ArgumentError('Invalid gender value');
     }
@@ -509,14 +521,18 @@ extension DataGenerationExt on DataGenerationType {
     // Check for validity of parameters.
 
     lengthOfMockedString <= 0
-        ? throw ArgumentError('Length must be integer '
-        'higher than 0')
+        ? throw ArgumentError(
+            'Length must be integer '
+            'higher than 0',
+          )
         : null;
 
     include.isEmpty ? throw ArgumentError('Empty include parameter') : null;
 
     include.split('').forEach((s) {
-      if (!('aA#!'.contains(s))) throw ArgumentError('Invalid include parameter');
+      if (!('aA#!'.contains(s))) {
+        throw ArgumentError('Invalid include parameter');
+      }
     });
 
     // Representation of all characters that will be generated
@@ -525,9 +541,10 @@ extension DataGenerationExt on DataGenerationType {
 
     for (var c in include.split('')) {
       if (c.contains('!')) {
-        allChars.writeAll(
-            ['abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'],
-            '0123456789');
+        allChars.writeAll([
+          'abcdefghijklmnopqrstuvwxyz',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        ], '0123456789');
         break;
       }
       switch (c) {
@@ -546,8 +563,10 @@ extension DataGenerationExt on DataGenerationType {
     }
 
     // Generate sequence of chars with length == [lengthOfMockedString]
-    return List<String>.generate(lengthOfMockedString,
-            (_) => allChars.toString()[random.nextInt(allChars.length)]).join();
+    return List<String>.generate(
+      lengthOfMockedString,
+      (_) => allChars.toString()[random.nextInt(allChars.length)],
+    ).join();
   }
 
   /// Generate random URL from a given parameters.
@@ -586,11 +605,12 @@ extension DataGenerationExt on DataGenerationType {
   ///   // Example: 'http://example.com?username=waldo&q=xyzzy'
   ///   randomUrl(scheme: 'http', false, true)
   /// ```
-  String randomUrl(
-      [String scheme = '*',
-        bool withPath = false,
-        withQuery = false,
-        withFragment = false]) {
+  String randomUrl([
+    String scheme = '*',
+    bool withPath = false,
+    withQuery = false,
+    withFragment = false,
+  ]) {
     var url = StringBuffer();
 
     switch (scheme) {
@@ -666,13 +686,20 @@ extension DataGenerationExt on DataGenerationType {
       case 'null':
         break;
       default:
-        throw ArgumentError('Invalid uuidType $uuidType. Possible choices are: '
-            'ver4, timestamp-first and null');
+        throw ArgumentError(
+          'Invalid uuidType $uuidType. Possible choices are: '
+          'ver4, timestamp-first and null',
+        );
     }
 
-    List<String> chars = List.from('0123456789abcdef'.split(''), growable: false);
-    List<String> uuid =
-    List.generate(36, (_) => chars.elementAt(random.nextInt(chars.length)));
+    List<String> chars = List.from(
+      '0123456789abcdef'.split(''),
+      growable: false,
+    );
+    List<String> uuid = List.generate(
+      36,
+      (_) => chars.elementAt(random.nextInt(chars.length)),
+    );
 
     uuid[8] = '-';
     uuid[13] = '-';
@@ -682,8 +709,11 @@ extension DataGenerationExt on DataGenerationType {
     uuid[23] = '-';
 
     if (uuidType == 'timestamp-first') {
-      uuid.setRange(0, 8,
-          DateTime.now().microsecondsSinceEpoch.toRadixString(16).split(''));
+      uuid.setRange(
+        0,
+        8,
+        DateTime.now().microsecondsSinceEpoch.toRadixString(16).split(''),
+      );
     } else if (uuidType == 'null') {
       uuid = '00000000-0000-0000-0000-000000000000'.split('');
     }
@@ -697,6 +727,3 @@ List<T> randomList<T>(int length, T Function(int index) generator) {
   length < 0 ? throw ArgumentError('length cannot be negative') : null;
   return List<T>.generate(length, generator);
 }
-
-
-

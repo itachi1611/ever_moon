@@ -18,13 +18,7 @@ extension OrDefaultExtension<T> on T? {
   T get orDefault {
     final value = this;
     if (value == null) {
-      return {
-        int: 0,
-        double: 0.0,
-        String: '',
-        Map: {},
-        List: [],
-      }[T] as T;
+      return {int: 0, double: 0.0, String: '', Map: {}, List: []}[T] as T;
     } else {
       return value;
     }

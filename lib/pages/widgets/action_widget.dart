@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../utils/extensions/string_extension.dart' show NullableStringExtension;
+import '../../utils/extensions/string_extension.dart'
+    show NullableStringExtension;
 
 /// Selects which design language [ActionWidget] renders with.
 enum ActionStyle {
@@ -758,7 +759,8 @@ class _MaterialAction extends StatelessWidget {
           : null,
       side: data.side,
     ),
-    ActionMaterial.filled || ActionMaterial.filledTonal => FilledButton.styleFrom(
+    ActionMaterial.filled ||
+    ActionMaterial.filledTonal => FilledButton.styleFrom(
       alignment: data.alignment,
       foregroundColor: data.foregroundColor,
       backgroundColor: data.backgroundColor,
@@ -799,7 +801,8 @@ class _CupertinoAction extends StatelessWidget {
   /// (plain uses `quaternarySystemFill`, tinted/filled use
   /// `tertiarySystemFill`), so leaving [ActionWidget.disabledColor] unset
   /// doesn't change the built-in look.
-  Color get _defaultDisabledColor => data.cupertinoType == ActionCupertino.standard
+  Color get _defaultDisabledColor =>
+      data.cupertinoType == ActionCupertino.standard
       ? CupertinoColors.quaternarySystemFill
       : CupertinoColors.tertiarySystemFill;
 

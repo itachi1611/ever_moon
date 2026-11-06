@@ -79,6 +79,7 @@ class M3Theme {
     surfaceContainerHigh: Color(0xffeae7ec),
     surfaceContainerHighest: Color(0xffe4e1e6),
   );
+
   /// Medium-contrast light [ColorScheme] (accessibility).
   static ColorScheme get lightMediumContrastScheme => const ColorScheme(
     brightness: Brightness.light,
@@ -128,6 +129,7 @@ class M3Theme {
     surfaceContainerHigh: Color(0xffdfdce0),
     surfaceContainerHighest: Color(0xffd3d1d5),
   );
+
   /// High-contrast light [ColorScheme] (accessibility).
   static ColorScheme get lightHighContrastScheme => const ColorScheme(
     brightness: Brightness.light,
@@ -229,6 +231,7 @@ class M3Theme {
     surfaceContainerHigh: Color(0xff2a2a2d),
     surfaceContainerHighest: Color(0xff353438),
   );
+
   /// Medium-contrast dark [ColorScheme] (accessibility).
   static ColorScheme get darkMediumContrastScheme => const ColorScheme(
     brightness: Brightness.dark,
@@ -278,6 +281,7 @@ class M3Theme {
     surfaceContainerHigh: Color(0xff323236),
     surfaceContainerHighest: Color(0xff3e3d41),
   );
+
   /// High-contrast dark [ColorScheme] (accessibility).
   static ColorScheme get darkHighContrastScheme => const ColorScheme(
     brightness: Brightness.dark,
@@ -405,7 +409,10 @@ class NotifyColorExtension extends ThemeExtension<NotifyColorExtension> {
   );
 
   @override
-  NotifyColorExtension lerp(covariant ThemeExtension<NotifyColorExtension>? other, double t) {
+  NotifyColorExtension lerp(
+    covariant ThemeExtension<NotifyColorExtension>? other,
+    double t,
+  ) {
     if (other is! NotifyColorExtension) return this;
     return NotifyColorExtension(
       success: Color.lerp(success, other.success, t)!,
@@ -418,7 +425,6 @@ class NotifyColorExtension extends ThemeExtension<NotifyColorExtension> {
       onInfo: Color.lerp(onInfo, other.onInfo, t)!,
     );
   }
-
 }
 
 /// Convenience extension that converts a [ColorScheme] into a full [ThemeData].
@@ -431,7 +437,9 @@ extension _AppThemeExtension on ColorScheme {
   /// - [InkSparkle] is used as the splash factory for a modern ripple effect.
   ThemeData get theme => ThemeData(
     extensions: [
-      brightness == .dark ? NotifyColorExtension.dark : NotifyColorExtension.light,
+      brightness == .dark
+          ? NotifyColorExtension.dark
+          : NotifyColorExtension.light,
     ],
     useMaterial3: true,
     colorScheme: this,
@@ -443,13 +451,13 @@ extension _AppThemeExtension on ColorScheme {
 
   /// Returns the base Material text theme with the local font family
   /// [AppConfig.kTextTheme] applied, matched to this scheme's [brightness].
-  TextTheme get textTheme => (brightness == .dark
-          ? Typography.material2021().white
-          : Typography.material2021().black)
-      .apply(fontFamily: AppConfig.kTextTheme);
+  TextTheme get textTheme =>
+      (brightness == .dark
+              ? Typography.material2021().white
+              : Typography.material2021().black)
+          .apply(fontFamily: AppConfig.kTextTheme);
 
   // In case using Google Font instead
   // /// Returns the Google Font text theme keyed by [AppConfig.kTextTheme].
   // TextTheme get textTheme => GoogleFonts.getTextTheme(AppConfig.kTextTheme);
 }
-

@@ -32,7 +32,8 @@ class AppPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => AppCubit(),
       child: BlocBuilder<AppCubit, AppState>(
-        buildWhen: (pre, cur) => pre.locale != cur.locale || pre.themeMode != cur.themeMode,
+        buildWhen: (pre, cur) =>
+            pre.locale != cur.locale || pre.themeMode != cur.themeMode,
         builder: (context, state) {
           return MaterialApp.router(
             title: 'Flutter Base',
@@ -43,7 +44,7 @@ class AppPage extends StatelessWidget {
             highContrastTheme: _lightHighContrastTheme,
             highContrastDarkTheme: _darkHighContrastTheme,
             locale: state.locale,
-            supportedLocales: const [Locale('en'), Locale('vi'), Locale('ja')],
+            supportedLocales: const [Locale('en'), Locale('vi')],
             localizationsDelegates: const [
               S.delegate,
               FirebaseUILocalizations.delegate,

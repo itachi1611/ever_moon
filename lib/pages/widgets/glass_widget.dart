@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_base/utils/extensions/widget_extension.dart';
+import 'package:ever_moon/utils/extensions/widget_extension.dart';
 
 import '../../common/app_colors.dart';
 
@@ -53,10 +53,7 @@ class GlassWidget extends StatelessWidget {
           children: [
             /// Blur effect
             BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: blur,
-                sigmaY: blur,
-              ),
+              filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
               child: const SizedBox(),
             ),
 
@@ -77,9 +74,7 @@ class GlassWidget extends StatelessWidget {
             ),
 
             /// Child if need
-            if(child != null)...[
-              isCenter ? child!.center : child!,
-            ]
+            if (child != null) ...[isCenter ? child!.center : child!],
           ],
         ),
       ),

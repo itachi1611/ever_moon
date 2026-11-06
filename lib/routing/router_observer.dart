@@ -28,7 +28,10 @@ class RouterObserver extends NavigatorObserver {
   }
 
   @override
-  void didStartUserGesture(Route<dynamic> route, Route<dynamic>? previousRoute) => info('didStartUserGesture: $route, previousRoute= $previousRoute');
+  void didStartUserGesture(
+    Route<dynamic> route,
+    Route<dynamic>? previousRoute,
+  ) => info('didStartUserGesture: $route, previousRoute= $previousRoute');
 
   @override
   void didStopUserGesture() => info('didStopUserGesture');
