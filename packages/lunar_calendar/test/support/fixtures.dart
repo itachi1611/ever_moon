@@ -16,3 +16,59 @@ Map<String, Object?> loadFixture(String fileName) {
   }
   return decoded;
 }
+
+/// Key of a month row: lunar year, month number, leap flag (0 or 1).
+typedef MonthKey = (int, int, int);
+
+/// Value of a month row: ISO start date and number of days.
+typedef MonthValue = (String, int);
+
+/// Months the engine must produce for lunar years 1800 to 2199.
+///
+/// The oracle rows, with the months pinned in `convention_differences.json`
+/// replaced by the author's convention (plan 0001, decision D7).
+Map<MonthKey, MonthValue> expectedMonths() {
+  final rows = loadFixture('oracle_months.json')['months'] as List<Object?>;
+  final expected = {for (final row in rows) _key(row): _value(row, 3)};
+  final pinned =
+      loadFixture('convention_differences.json')['differences'] as List<Object?>;
+  for (final item in pinned.cast<Map<String, Object?>>()) {
+    final key = _key(item['month']);
+    final ours = item['ours'];
+    if (ours == null) {
+      expected.remove(key);
+    } else {
+      expected[key] = _value(ours, 0);
+    }
+  }
+  return expected;
+}
+
+/// Lunar years whose leap month differs from the oracle by convention.
+Set<int> pinnedLeapYears() {
+  final pinned =
+      loadFixture('convention_differences.json')['differences'] as List<Object?>;
+  return {
+    for (final item in pinned.cast<Map<String, Object?>>())
+      if (_key(item['month']).$3 == 1) _key(item['month']).$1,
+  };
+}
+
+/// ISO `yyyy-mm-dd` of a UTC midnight date.
+String isoDate(DateTime date) => date.toIso8601String().substring(0, 10);
+
+/// Julian Date (UT) of an ISO date-time written in UTC without a zone suffix.
+double julianDateOfUtc(String isoDateTime) {
+  final instant = DateTime.parse('${isoDateTime}Z');
+  return instant.millisecondsSinceEpoch / 86400000.0 + 2440587.5;
+}
+
+MonthKey _key(Object? row) {
+  final list = row as List<Object?>;
+  return (list[0] as int, list[1] as int, list[2] as int);
+}
+
+MonthValue _value(Object? row, int startIndex) {
+  final list = row as List<Object?>;
+  return (list[startIndex] as String, list[startIndex + 1] as int);
+}
