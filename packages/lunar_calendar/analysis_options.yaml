@@ -1,0 +1,15 @@
+include: package:lints/recommended.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    prefer_final_locals: true
+    public_member_api_docs: true
+    avoid_print: true
+    # The project barrel convention names the library (`library lunar_calendar;`).
+    unnecessary_library_name: false

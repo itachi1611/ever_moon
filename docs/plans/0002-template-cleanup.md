@@ -47,7 +47,7 @@ The repo was cloned from Fox's Flutter base template (package `flutter_base`, ap
 
 ## Open
 
-- Auth is kept, but the router currently forces login. The v1 behavior (no forced login) is implemented in C2.
+- No forced login: confirmed on 2026-11-06. The router `redirect` only maps `pageNotFound` to home, and a dev build on a Pixel 5 opens on Home without signing in. CL-4 offline start is not yet checked (run once in airplane mode).
 - C6 list of UI packages and images, pending review.
 - Firebase files are gitignored. A fresh clone must run `scripts/config_firebase.sh` before building. The root copies (`android/app/google-services.json`, `ios/Runner/GoogleService-Info.plist`) hold the last flavor configured (prod); the flavor folders are the source of truth.
 - iOS not yet built after C8 and the Firebase regeneration: `fvm flutter build ios --flavor dev -t lib/main_dev.dart --debug --no-codesign`. The duplicate `GoogleService-Info.plist` file reference in `project.pbxproj` was removed on 2026-11-06.

@@ -1,0 +1,11 @@
+name: lunar_calendar
+description: Vietnamese lunar calendar engine (UTC+7) for lunar years 1800 to 2199. Pure Dart, no Flutter.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.0

@@ -1,6 +1,6 @@
 # Plan 0001: `lunar_calendar` package
 
-Status: In progress (S1, S2 done; S0 ready; S3 blocked on a local Dart SDK). Requirements owner: Fox. Tracker: pending (no tracker chosen yet).
+Status: In progress (S0, S1, S2 done; S3 next, Dart tests run locally by Fox). Requirements owner: Fox. Tracker: pending (no tracker chosen yet).
 
 ## Outcome
 
@@ -30,10 +30,10 @@ A pure-Dart package `packages/lunar_calendar` that converts between solar and Vi
 
 | Slice | Content | Status |
 |---|---|---|
-| S0 | Scaffold `packages/lunar_calendar` (pubspec, analysis options, lib, test) | Ready to start |
+| S0 | Scaffold `packages/lunar_calendar` (pubspec, analysis options, lib, test) | Done on 2026-11-06: `supported_range.dart`, fixture loader, smoke test. Fox ran `fvm dart analyze` (no issues) and `fvm dart test` (4 pass); resolved `lints` 6.1.0, `test` 1.33.0 |
 | S1 | Oracle generator `tools/lunar_oracle/oracle.py`, fixtures, anchors, boundary list (tests ORC-001 to 010) | Done |
 | S2 | Independent Python implementation `ours.py` and `compare.py` (tests ORS-001 to 007) | Done |
-| S3 | Dart port of `ours.py` plus Dart tests reading the same JSON fixtures | Blocked: no Dart SDK in the sandbox |
+| S3 | Dart port of `ours.py` plus Dart tests reading the same JSON fixtures | Next. Not blocked: Claude writes the code, Fox runs `fvm dart test` locally |
 | S4 | Differential run against `vnlunar` and `full_calender` (optional comparison) | Not started |
 | S5 | Docs: ADR 0002 update, package README, workflow guide and standards refresh | Not started |
 
@@ -59,4 +59,4 @@ A pure-Dart package `packages/lunar_calendar` that converts between solar and Vi
 
 ## Next action
 
-S0 scaffold, then S3 with local `fvm dart test`. Template cleanup is tracked separately in plan 0002.
+S3: port `ours.py` to Dart in small steps, each checked by Fox with `fvm dart test`. Template cleanup is tracked separately in plan 0002.
