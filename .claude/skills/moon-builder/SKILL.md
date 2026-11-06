@@ -48,7 +48,7 @@ lib/
 
 - Cubit only; sealed Equatable states; one Cubit per page, created in `initState`, closed in `dispose`.
 - Never return widgets from `_buildX()` helpers; extract widget classes. `const` where possible; `ListView.builder` for dynamic lists.
-- No hardcoded colors, paddings, dimensions or user-visible strings: use theme, `AppColors`, `AppDimensions` and `S.of(context)`; add keys to `intl_en.arb` and `intl_vi.arb`, then run `intl_utils:generate`.
+- No hardcoded colors, paddings, dimensions or user-visible strings: use theme, `AppColors`, `AppDimensions` and `S.of(context)`; add keys to `intl_en.arb` and `intl_vi.arb`, then run `fvm flutter gen-l10n`.
 - Functions of at most 20 lines; every `catch` logs through `AppLogger` or rethrows; no `print`, no `!` without a justifying comment, no `.then()`.
 - Comments in English; `///` DartDoc on public API.
 - Use `fvm` for every command. Claude's sandbox has no Dart, so the user runs `fvm dart analyze` and `fvm flutter test`.

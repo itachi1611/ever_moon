@@ -48,7 +48,7 @@ Expected: `analyze` reports no issues; all tests pass, including `test/services/
 
 ## Notes
 
-- `pub get` reports `intl_utils` as discontinued. Not in scope here; decide on a replacement (for example Flutter's built-in `gen-l10n`) before adding many ARB keys.
+- `pub get` reported `intl_utils` as discontinued. Replaced on 2026-11-06 by Flutter `gen-l10n` (`l10n.yaml`): same import `lib/generated/l10n.dart` and class `S`, `nullable-getter: false`. `S.current` does not exist in gen-l10n, so `onValidate` and `NotifyType.title`/`message` now take an `S` argument and the setting page uses `S.of(context)`. The template's `onValidate` rejected every non-empty value (inverted `isValidate` check); fixed and covered by `test/utils/app_validator_test.dart`. The Localizely `flutter_intl` block was removed from `pubspec.yaml`.
 
 ## Risks
 

@@ -64,18 +64,18 @@ class _SettingPageState extends State<SettingPage> {
                   child: SettingsList(
                     sections: [
                       SettingsSection(
-                        title: S.current.lb_general,
+                        title: S.of(context).lb_general,
                         tiles: [
                           SettingsTile.value(
                             leading: const Icon(Icons.language_outlined),
-                            title: S.current.lb_language,
+                            title: S.of(context).lb_language,
                             value: currentLanguage,
                             onTap: () =>
                                 context.push(Routers.languageSheet.routerPath),
                           ),
                           SettingsTile.toggle(
                             leading: const Icon(Icons.dark_mode_outlined),
-                            title: S.current.lb_dark_mode,
+                            title: S.of(context).lb_dark_mode,
                             value: appState.themeMode == ThemeMode.dark,
                             onToggle: (v) =>
                                 context.read<AppCubit>().setThemeMode(
@@ -85,21 +85,21 @@ class _SettingPageState extends State<SettingPage> {
                         ],
                       ),
                       SettingsSection(
-                        title: S.current.lb_about,
+                        title: S.of(context).lb_about,
                         tiles: [
                           SettingsTile.navigation(
                             leading: const Icon(Icons.description_outlined),
-                            title: S.current.lb_terms,
+                            title: S.of(context).lb_terms,
                             onTap: () => context.push('/terms'),
                           ),
                           SettingsTile.navigation(
                             leading: const Icon(Icons.privacy_tip_outlined),
-                            title: S.current.lb_policy,
+                            title: S.of(context).lb_policy,
                             onTap: () => context.push('/privacy'),
                           ),
                           SettingsTile.value(
                             leading: const Icon(Icons.info_outline),
-                            title: S.current.lb_version,
+                            title: S.of(context).lb_version,
                             value: 'v1.0.0',
                             onTap: null,
                           ),

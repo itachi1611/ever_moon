@@ -178,20 +178,22 @@ enum NotifyType {
   /// Informational notification — blue palette.
   info(icon: Icons.info_outline_rounded);
 
-  /// Default title text for this notification type, localized via [S].
-  String get title => switch (this) {
-    success => S.current.lb_flush_success,
-    error => S.current.lb_flush_error,
-    warning => S.current.lb_flush_warning,
-    info => S.current.lb_flush_info,
+  /// Default title text for this notification type, from [strings]
+  /// (`S.of(context)`).
+  String title(S strings) => switch (this) {
+    success => strings.lb_flush_success,
+    error => strings.lb_flush_error,
+    warning => strings.lb_flush_warning,
+    info => strings.lb_flush_info,
   };
 
-  /// Default message text for this notification type, localized via [S].
-  String get message => switch (this) {
-    success => S.current.lb_flush_success,
-    error => S.current.lb_flush_error,
-    warning => S.current.lb_flush_warning,
-    info => S.current.lb_flush_info,
+  /// Default message text for this notification type, from [strings]
+  /// (`S.of(context)`).
+  String message(S strings) => switch (this) {
+    success => strings.lb_flush_success,
+    error => strings.lb_flush_error,
+    warning => strings.lb_flush_warning,
+    info => strings.lb_flush_info,
   };
 
   /// Default icon for this notification type.

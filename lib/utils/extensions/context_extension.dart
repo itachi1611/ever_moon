@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 
 import '../../common/app_enums.dart' show NotifyType;
+import '../../generated/l10n.dart' show S;
 import '../../pages/widgets/transition_dialog_widget.dart';
 
 /// Extension helpers for deriving Material 3 styling from a [BuildContext].
@@ -367,12 +368,12 @@ extension NotifyExtension on BuildContext {
 
       onTap: onTap,
 
-      title: titleText ?? (type.title),
+      title: titleText ?? type.title(S.of(this)),
       titleColor: titleColor ?? onBg,
       titleSize: titleSize,
       titleText: title,
 
-      message: messageText ?? (type.message),
+      message: messageText ?? type.message(S.of(this)),
       messageColor: messageColor ?? onBg,
       messageSize: messageSize,
       messageText: message,

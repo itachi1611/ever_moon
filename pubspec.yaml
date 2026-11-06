@@ -19,7 +19,6 @@ dependencies:
 
   # Localization
   intl: ^0.20.2
-  intl_utils: ^2.8.14
 
   # State management
   bloc: ^9.2.0
@@ -142,11 +141,6 @@ flutter:
         - asset: assets/fonts/Montserrat-VariableFont_wght.ttf
         - asset: assets/fonts/Montserrat-Italic-VariableFont_wght.ttf
           style: italic
-
-flutter_intl:
-  enabled: true
-  localizely:
-    project_id: 4e355a95-c675-4976-910f-82a868fbdb3b
 
 # When leaf_type: string, asset references return raw String paths (e.g., Assets.icons.user returns a string). In this mode the plugin will not auto-add flutter_svg, lottie, or rive.
 # When you style: legacy and leaf_type: class, the generator keeps flat access paths but wraps known asset types with typed helpers:

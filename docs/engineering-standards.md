@@ -16,7 +16,7 @@ Stable rule IDs so that plans, reviews and findings can cite them. The full text
 - EM-CODE-4: Functions of at most 20 lines; zero warnings from `fvm dart analyze`.
 - EM-UI-1: Each distinct UI piece is its own widget class; no `_buildX()` helpers; `const` where possible; `ListView.builder` for dynamic lists.
 - EM-UI-2: No hardcoded colors, paddings, dimensions or user-visible strings; use theme, `AppColors`, `AppDimensions` and `S.of(context)` (Vietnamese primary).
-- EM-GEN-1: Run build_runner after `@JsonSerializable` edits and `intl_utils:generate` after ARB edits; never hand-edit generated files.
+- EM-GEN-1: Run build_runner after `@JsonSerializable` edits and `fvm flutter gen-l10n` after ARB edits (no `S.current`; pass `S` where there is no `BuildContext`); never hand-edit generated files.
 
 ## Domain
 

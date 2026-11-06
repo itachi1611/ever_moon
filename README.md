@@ -22,7 +22,7 @@ cd ever_moon
 fvm install
 fvm flutter pub get
 bash scripts/setup_env.sh        # creates assets/env/.env.<flavor> from the .example files
-fvm flutter pub run intl_utils:generate
+fvm flutter gen-l10n
 fvm flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
