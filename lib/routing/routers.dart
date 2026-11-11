@@ -8,6 +8,9 @@ enum Routers {
   /// Splash screen — app entry point (`/`).
   root('/', 'root'),
 
+  /// First-run intro and notification explanation (`/onboarding`, U7).
+  onboarding('/onboarding', 'onboarding'),
+
   /// Home tab inside the shell (`/home`).
   home('/home', 'home'),
 

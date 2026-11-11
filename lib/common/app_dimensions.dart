@@ -103,6 +103,24 @@ class AppDimensions {
   /// Minimum height of an event item in the day list.
   static const double eventItemHeight = 64;
 
+  /// Icon circle of the splash (Android 12 SplashScreen size).
+  static const double splashMark = 160;
+
+  /// Large disc behind an onboarding illustration.
+  static const double introDisc = 320;
+
+  /// Inner circle of an onboarding illustration.
+  static const double introInnerDisc = 160;
+
+  /// Icon inside the inner circle.
+  static const double introIcon = 72;
+
+  /// Page dot of the onboarding pager.
+  static const double pageDot = 8;
+
+  /// Width of the active page dot.
+  static const double pageDotActive = 24;
+
   /// App mark in the drawer header.
   static const double drawerMark = 40;
 

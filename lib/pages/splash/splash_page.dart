@@ -1,23 +1,24 @@
+import 'dart:async';
+
+import 'package:ever_moon/common/app_config.dart';
+import 'package:ever_moon/common/app_dimensions.dart';
+import 'package:ever_moon/generated/l10n.dart';
+import 'package:ever_moon/routing/routers.dart';
+import 'package:ever_moon/services/firebase_notification_service.dart';
+import 'package:ever_moon/services/notification_access_service.dart';
+import 'package:ever_moon/storage/app_preference.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../common/app_enums.dart' show LoadStatus;
-import '../../routing/routers.dart';
 import 'splash_cubit.dart';
 import 'splash_state.dart';
 
-/// Animated splash screen shown at app startup (`/`).
-///
-/// Creates a [SplashCubit] and immediately calls [SplashCubit.onInitialize].
-/// When the cubit emits [LoadStatus.success], the listener navigates to
-/// [Routers.home].
-///
-/// Status-bar style is synced to the active [Brightness] via
-/// [AnnotatedRegion] so the system icons remain legible.
+/// Entry route (`/`): holds the mark from the native splash for the moment
+/// the first-run flag is read, then goes to the intro or the list
+/// (plan 0005, U7; UI-15).
 class SplashPage extends StatefulWidget {
-  /// Creates a [SplashPage].
+  /// Creates the page.
   const SplashPage({super.key});
 
   @override
@@ -30,8 +31,13 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    _cubit = SplashCubit();
-    _cubit.onInitialize();
+    _cubit = SplashCubit(
+      hasCompletedIntro: AppPreference.instance.isCompleteIntro,
+      access: notificationAccessService,
+      onNotificationsAllowed:
+          FirebaseNotificationService.instance.requestPermissionAndFetchToken,
+    );
+    unawaited(_cubit.start());
   }
 
   @override
@@ -41,50 +47,40 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _cubit,
-      child: BlocConsumer<SplashCubit, SplashState>(
-        listenWhen: (_, curr) => curr.status == LoadStatus.success,
-        listener: (context, state) => context.go(Routers.home.routerPath),
-        builder: (context, state) {
-          final bgColor = Theme.of(context).colorScheme.surface;
-          final isDark = Theme.of(context).brightness == Brightness.dark;
-          final style = state.status == LoadStatus.loading
-              ? FlutterLogoStyle.horizontal
-              : FlutterLogoStyle.markOnly;
+  Widget build(BuildContext context) => BlocProvider.value(
+    value: _cubit,
+    child: BlocListener<SplashCubit, SplashState>(
+      listener: (context, state) {
+        if (state is! SplashReady) return;
+        context.go(
+          state.firstRun
+              ? Routers.onboarding.routerPath
+              : Routers.home.routerPath,
+        );
+      },
+      child: const _SplashMark(),
+    ),
+  );
+}
 
-          return AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle(
-              statusBarColor: bgColor,
-              statusBarIconBrightness: isDark
-                  ? Brightness.light
-                  : Brightness.dark,
-              statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-            ),
-            child: Scaffold(
-              backgroundColor: bgColor,
-              extendBodyBehindAppBar: true,
-              body: SizedBox.expand(
-                child: Center(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    switchInCurve: Curves.easeOut,
-                    switchOutCurve: Curves.easeIn,
-                    transitionBuilder: (child, animation) =>
-                        FadeTransition(opacity: animation, child: child),
-                    child: FlutterLogo(
-                      key: ValueKey(style),
-                      size: 120,
-                      style: style,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
+/// The E8 mark in its circle on the surface, as the native splash shows it.
+class _SplashMark extends StatelessWidget {
+  const _SplashMark();
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: Center(
+      child: Semantics(
+        label: S.of(context).lb_app_opening,
+        child: ClipOval(
+          child: Image.asset(
+            AppConfig.kMarkImage,
+            width: AppDimensions.splashMark,
+            height: AppDimensions.splashMark,
+            excludeFromSemantics: true,
+          ),
+        ),
       ),
-    );
-  }
+    ),
+  );
 }

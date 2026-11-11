@@ -36,6 +36,7 @@ export 'auth/sms_code/sms_code_page.dart';
 export 'anniversary_form/anniversary_form_page.dart';
 export 'anniversary_list/anniversary_list_page.dart';
 export 'calendar/calendar_page.dart';
+export 'onboarding/onboarding_page.dart';
 export 'privacy/privacy_page.dart';
 export 'profile/profile_page.dart';
 export 'setting/setting_page.dart';

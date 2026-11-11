@@ -1,38 +1,47 @@
+import 'package:ever_moon/services/notification_access_service.dart';
+import 'package:ever_moon/utils/app_logger.dart' as logger;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../common/app_enums.dart';
-import '../../services/firebase_notification_service.dart';
 import 'splash_state.dart';
 
-/// Cubit that drives the two-phase splash animation sequence.
+/// Decides the first screen (plan 0005, U7; UI-15, D18).
 ///
-/// Call [onInitialize] from [SplashPage.initState] to kick off the animation.
-/// The cubit emits [LoadStatus.loading] then [LoadStatus.success] in order;
-/// [SplashPage] listens for `success` and navigates to [Routers.home].
+/// Never asks for the notification permission: that happens only on the
+/// onboarding explanation screen or from Settings.
 class SplashCubit extends Cubit<SplashState> {
-  /// Creates [SplashCubit] starting at [LoadStatus.initial].
-  SplashCubit() : super(const SplashState());
-
-  /// Runs the two-phase animation and emits state transitions.
+  /// Creates the Cubit.
   ///
-  /// - Phase 1: waits 2 s, then emits [LoadStatus.loading] (logo expands).
-  /// - Phase 2: waits 1.5 s, then emits [LoadStatus.success] (triggers navigation).
-  ///
-  /// Guards each emit with an [isClosed] check so disposal mid-sequence is safe.
-  Future<void> onInitialize() async {
-    // Request notification permission now that the splash screen is visible.
-    // Fire-and-forget — the system dialog appears over the splash UI (correct
-    // per Apple UX guidelines). Animation is not blocked by user response.
-    FirebaseNotificationService.instance.requestPermissionAndFetchToken();
+  /// [hasCompletedIntro] reads the first-run flag. [onNotificationsAllowed]
+  /// runs on later launches when notifications are already allowed (the
+  /// push token refresh); it must not show any dialog.
+  SplashCubit({
+    required bool Function() hasCompletedIntro,
+    required NotificationAccessService access,
+    Future<void> Function()? onNotificationsAllowed,
+  }) : _hasCompletedIntro = hasCompletedIntro,
+       _access = access,
+       _onNotificationsAllowed = onNotificationsAllowed,
+       super(const SplashChecking());
 
-    // Phase 1 — hold mark only for 2s, then expand to horizontal
-    await Future.delayed(const Duration(seconds: 2));
-    if (isClosed) return;
-    emit(state.copyWith(status: LoadStatus.loading));
+  final bool Function() _hasCompletedIntro;
+  final NotificationAccessService _access;
+  final Future<void> Function()? _onNotificationsAllowed;
 
-    // Phase 2 — hold horizontal for 1.5s, then signal done
-    await Future.delayed(const Duration(milliseconds: 1500));
-    if (isClosed) return;
-    emit(state.copyWith(status: LoadStatus.success));
+  /// Reads the flag and emits [SplashReady].
+  Future<void> start() async {
+    final firstRun = !_hasCompletedIntro();
+    if (!firstRun) await _refreshIfAllowed();
+    if (!isClosed) emit(SplashReady(firstRun: firstRun));
+  }
+
+  Future<void> _refreshIfAllowed() async {
+    if (_onNotificationsAllowed == null) return;
+    try {
+      if (await _access.status() == NotificationAccess.granted) {
+        runQuietly(_onNotificationsAllowed, 'Push token refresh failed');
+      }
+    } catch (error, stackTrace) {
+      logger.err('Notification status could not be read', error, stackTrace);
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ever_moon/pages/widgets/bottom_sheet_widget.dart';
+import 'package:ever_moon/services/firebase_notification_service.dart';
 import 'package:go_router/go_router.dart';
 
 import '../pages/pages.dart';
@@ -25,6 +26,7 @@ final _settingBranchKey = GlobalKey<NavigatorState>(debugLabel: '_kSetting');
 /// Order matters: GoRouter matches routes top-to-bottom.
 List<RouteBase> routes = [
   _splashRoute,
+  _onboardingRoute,
   _profileRoute,
   _forgotPasswordRoute,
   _emailVerificationRoute,
@@ -46,6 +48,21 @@ GoRoute get _splashRoute => GoRoute(
   path: Routers.root.routerPath,
   pageBuilder: (context, state) => TransitionPage(
     child: const SplashPage(),
+    transitionType: PageTransitionType.fade,
+  ),
+);
+
+// First-run intro and notification explanation (plan 0005, U7). Splash
+// sends the first launch here; finishing opens the list.
+GoRoute get _onboardingRoute => GoRoute(
+  name: Routers.onboarding.routerName,
+  path: Routers.onboarding.routerPath,
+  pageBuilder: (context, state) => TransitionPage(
+    child: OnboardingPage(
+      onDone: () => context.go(Routers.home.routerPath),
+      onNotificationsAllowed:
+          FirebaseNotificationService.instance.requestPermissionAndFetchToken,
+    ),
     transitionType: PageTransitionType.fade,
   ),
 );

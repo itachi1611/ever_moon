@@ -1,18 +1,27 @@
 import 'package:equatable/equatable.dart';
-import 'package:ever_moon/common/app_enums.dart';
 
-/// Immutable state for [SplashPage], managed by [SplashCubit].
-class SplashState extends Equatable {
-  /// Current animation phase.
-  final LoadStatus status;
-
-  /// Creates [SplashState] starting at [LoadStatus.initial].
-  const SplashState({this.status = LoadStatus.initial});
-
-  /// Returns a copy of this state with any provided fields replaced.
-  SplashState copyWith({LoadStatus? status}) =>
-      SplashState(status: status ?? this.status);
+/// State of the Flutter splash that follows the native one (plan 0005, U7).
+sealed class SplashState extends Equatable {
+  const SplashState();
 
   @override
-  List<Object?> get props => [status];
+  List<Object?> get props => [];
+}
+
+/// Deciding where to go.
+final class SplashChecking extends SplashState {
+  /// Creates the checking state.
+  const SplashChecking();
+}
+
+/// Decided: the intro on the first launch, otherwise the list (UI-15).
+final class SplashReady extends SplashState {
+  /// Creates the state.
+  const SplashReady({required this.firstRun});
+
+  /// Whether the intro has never been finished.
+  final bool firstRun;
+
+  @override
+  List<Object?> get props => [firstRun];
 }

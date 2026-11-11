@@ -63,9 +63,14 @@ class NotificationService {
     const AndroidInitializationSettings androidSetting =
         AndroidInitializationSettings('notification');
 
-    // iOS settings
+    // iOS settings. No permission prompt at start-up (plan 0005, D18): the
+    // onboarding screen or Settings asks, through NotificationAccessService.
     const DarwinInitializationSettings iosSetting =
-        DarwinInitializationSettings();
+        DarwinInitializationSettings(
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false,
+        );
 
     // Initialize setting for android and ios
     const InitializationSettings initializationSettings =

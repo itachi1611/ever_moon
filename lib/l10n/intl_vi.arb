@@ -175,5 +175,20 @@
   "lb_month_tile_count": "{count} ngày giỗ",
   "lb_month_tile_festivals": "{count} ngày lễ",
   "lb_open_month": "Mở lịch tháng",
-  "lb_month_name_pattern": "MMMM"
+  "lb_month_name_pattern": "MMMM",
+  "lb_app_opening": "Evermoon đang mở",
+  "lb_skip": "Bỏ qua",
+  "lb_continue": "Tiếp tục",
+  "lb_start": "Bắt đầu",
+  "lb_intro1_title": "Ngày giỗ theo âm lịch",
+  "lb_intro1_body": "Chỉ cần ngày và tháng âm.",
+  "lb_intro2_title": "Nhắc đúng lúc",
+  "lb_intro2_body": "Trước 1, 3 hoặc 7 ngày.",
+  "lb_intro3_title": "Rằm, mùng 1, lễ Tết",
+  "lb_intro3_body": "Đánh dấu sẵn trên lịch.",
+  "lb_page_of": "Trang {page} trên {total}",
+  "lb_notify_title": "Bật thông báo",
+  "lb_notify_body": "Để không lỡ ngày giỗ nào.",
+  "lb_allow": "Cho phép",
+  "lb_later": "Để sau"
 }

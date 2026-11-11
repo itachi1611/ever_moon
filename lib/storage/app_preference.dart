@@ -81,7 +81,7 @@ class AppPreference {
   /// Removes [AppPreferenceKey.kTest] from storage.
   Future<void> removeTest() => removeKey(AppPreferenceKey.kTest);
 
-  /// Persists [value] under [AppPreferenceKey.kSeenIntro].
+  /// Persists [value] under [AppPreferenceKey.kCompletedIntro].
   Future<void> setCompleteIntro(bool value) =>
       _prefs.setBool(AppPreferenceKey.kCompletedIntro.key, value);
 
@@ -90,7 +90,7 @@ class AppPreference {
   bool isCompleteIntro() =>
       _prefs.getBool(AppPreferenceKey.kCompletedIntro.key) ?? false;
 
-  /// Removes [AppPreferenceKey.kSeenIntro] from storage.
+  /// Removes [AppPreferenceKey.kCompletedIntro] from storage.
   Future<void> removeCompleteIntro() =>
       removeKey(AppPreferenceKey.kCompletedIntro);
 }
