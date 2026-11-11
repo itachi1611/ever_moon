@@ -1,4 +1,4 @@
-// Rule tests for ADR 0001 on a synthetic calendar (plan 0003, AR-1 to AR-6).
+// Rule tests for ADR 0001 on a synthetic calendar (plan 0003, AR-1 to AR-6; plan 0005, AR-8).
 // The fake's dates are arbitrary; only the month and day choices matter.
 import 'package:ever_moon/models/anniversary_date.dart';
 import 'package:ever_moon/services/lunar/anniversary_resolver.dart';
@@ -16,7 +16,11 @@ void main() {
   final resolver = AnniversaryResolver(calendar);
 
   const diedInLeap4 = AnniversaryDate(
-      lunarDay: 10, lunarMonth: 4, deathYear: 2001, diedInLeapMonth: true);
+    lunarDay: 10,
+    lunarMonth: 4,
+    deathYear: 2001,
+    diedInLeapMonth: true,
+  );
 
   group('month choice', () {
     test('AR-1 no death year uses the regular month', () {
@@ -25,25 +29,44 @@ void main() {
     });
 
     test('AR-1 not died in a leap month uses the regular month', () {
-      const date = AnniversaryDate(lunarDay: 10, lunarMonth: 4, deathYear: 2001);
+      const date = AnniversaryDate(
+        lunarDay: 10,
+        lunarMonth: 4,
+        deathYear: 2001,
+      );
       expect(resolver.lunarDateIn(date, 2004), const LunarDate(2004, 4, 10));
     });
 
     test('AR-2 leap death in a year with the same leap month uses it', () {
-      expect(resolver.lunarDateIn(diedInLeap4, 2004),
-          const LunarDate(2004, 4, 10, isLeapMonth: true));
+      expect(
+        resolver.lunarDateIn(diedInLeap4, 2004),
+        const LunarDate(2004, 4, 10, isLeapMonth: true),
+      );
     });
 
     test('AR-3 leap death in a year without that leap month uses regular', () {
-      expect(resolver.lunarDateIn(diedInLeap4, 2002), const LunarDate(2002, 4, 10));
-      expect(resolver.lunarDateIn(diedInLeap4, 2003), const LunarDate(2003, 4, 10));
+      expect(
+        resolver.lunarDateIn(diedInLeap4, 2002),
+        const LunarDate(2002, 4, 10),
+      );
+      expect(
+        resolver.lunarDateIn(diedInLeap4, 2003),
+        const LunarDate(2003, 4, 10),
+      );
     });
 
     test('AR-5 a flag that cannot apply is ignored', () {
       // 2002 repeats month 6, not month 4.
       const wrongFlag = AnniversaryDate(
-          lunarDay: 10, lunarMonth: 4, deathYear: 2002, diedInLeapMonth: true);
-      expect(resolver.lunarDateIn(wrongFlag, 2004), const LunarDate(2004, 4, 10));
+        lunarDay: 10,
+        lunarMonth: 4,
+        deathYear: 2002,
+        diedInLeapMonth: true,
+      );
+      expect(
+        resolver.lunarDateIn(wrongFlag, 2004),
+        const LunarDate(2004, 4, 10),
+      );
     });
   });
 
@@ -60,9 +83,15 @@ void main() {
 
     test('AR-4 day 30 in a 30-day leap month is not shifted', () {
       const date = AnniversaryDate(
-          lunarDay: 30, lunarMonth: 4, deathYear: 2001, diedInLeapMonth: true);
-      expect(resolver.lunarDateIn(date, 2004),
-          const LunarDate(2004, 4, 30, isLeapMonth: true));
+        lunarDay: 30,
+        lunarMonth: 4,
+        deathYear: 2001,
+        diedInLeapMonth: true,
+      );
+      expect(
+        resolver.lunarDateIn(date, 2004),
+        const LunarDate(2004, 4, 30, isLeapMonth: true),
+      );
     });
   });
 
@@ -75,11 +104,18 @@ void main() {
 
     test('AR-5 normalize keeps a valid flag and clears the others', () {
       expect(resolver.normalize(diedInLeap4), diedInLeap4);
-      const noYear =
-          AnniversaryDate(lunarDay: 1, lunarMonth: 4, diedInLeapMonth: true);
+      const noYear = AnniversaryDate(
+        lunarDay: 1,
+        lunarMonth: 4,
+        diedInLeapMonth: true,
+      );
       expect(resolver.normalize(noYear).diedInLeapMonth, isFalse);
       const noLeap = AnniversaryDate(
-          lunarDay: 1, lunarMonth: 4, deathYear: 2003, diedInLeapMonth: true);
+        lunarDay: 1,
+        lunarMonth: 4,
+        deathYear: 2003,
+        diedInLeapMonth: true,
+      );
       expect(resolver.normalize(noLeap).diedInLeapMonth, isFalse);
     });
   });
@@ -88,8 +124,10 @@ void main() {
     const date = AnniversaryDate(lunarDay: 10, lunarMonth: 4);
 
     test('solarDateIn converts the chosen lunar date', () {
-      expect(resolver.solarDateIn(date, 2002),
-          calendar.toSolar(const LunarDate(2002, 4, 10)));
+      expect(
+        resolver.solarDateIn(date, 2002),
+        calendar.toSolar(const LunarDate(2002, 4, 10)),
+      );
     });
 
     test('AR-6 today, later this year, or next year', () {
@@ -98,10 +136,24 @@ void main() {
       expect(thisYear, isNotNull);
       final onDay = thisYear ?? DateTime.utc(0);
       expect(resolver.nextOccurrence(date, onDay), thisYear);
-      expect(resolver.nextOccurrence(
-          date, onDay.subtract(const Duration(days: 1))), thisYear);
-      expect(resolver.nextOccurrence(date, onDay.add(const Duration(days: 1))),
-          nextYear);
+      expect(
+        resolver.nextOccurrence(date, onDay.subtract(const Duration(days: 1))),
+        thisYear,
+      );
+      expect(
+        resolver.nextOccurrence(date, onDay.add(const Duration(days: 1))),
+        nextYear,
+      );
+    });
+
+    test('AR-8 nextHolding pairs the lunar date with its solar day', () {
+      final day =
+          calendar.toSolar(const LunarDate(2004, 4, 1)) ?? DateTime.utc(0);
+      final holding = resolver.nextHolding(diedInLeap4, day);
+      const leap = LunarDate(2004, 4, 10, isLeapMonth: true);
+      expect(holding?.lunar, leap);
+      expect(holding?.solar, calendar.toSolar(leap));
+      expect(resolver.nextOccurrence(diedInLeap4, day), holding?.solar);
     });
 
     test('AR-6 null outside the supported range', () {

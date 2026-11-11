@@ -72,4 +72,10 @@ class AppDimensions {
 
   /// Lunar date badge height on an anniversary card.
   static const double dateBadgeHeight = 64;
+
+  /// Disc behind the illustration of an empty state.
+  static const double emptyStateDisc = 96;
+
+  /// Icon inside the empty-state disc.
+  static const double emptyStateIcon = 48;
 }

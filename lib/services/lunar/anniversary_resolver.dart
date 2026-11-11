@@ -1,6 +1,10 @@
 import 'package:ever_moon/models/anniversary_date.dart';
 import 'package:ever_moon/services/lunar/lunar_calendar_service.dart';
 
+/// One holding of an anniversary: the lunar date it falls on that year and
+/// the matching Gregorian day (UTC midnight).
+typedef AnniversaryHolding = ({LunarDate lunar, DateTime solar});
+
 /// Turns an [AnniversaryDate] into real dates, following ADR 0001.
 ///
 /// All leap-month and day-30 decisions live here so the rule can change in
@@ -24,7 +28,8 @@ class AnniversaryResolver {
   /// apply, so stored values are always meaningful.
   AnniversaryDate normalize(AnniversaryDate date) {
     final deathYear = date.deathYear;
-    final applies = deathYear != null &&
+    final applies =
+        deathYear != null &&
         canBeLeapMonth(deathYear: deathYear, lunarMonth: date.lunarMonth);
     return applies ? date : date.withDiedInLeapMonth(false);
   }
@@ -42,8 +47,12 @@ class AnniversaryResolver {
     if (_calendar.toSolar(candidate) != null) return candidate;
     if (date.lunarDay != _lastDay) return null;
     // Day 30 in a 29-day month is held on day 29 (ADR 0001).
-    return LunarDate(lunarYear, candidate.month, _lastDay - 1,
-        isLeapMonth: candidate.isLeapMonth);
+    return LunarDate(
+      lunarYear,
+      candidate.month,
+      _lastDay - 1,
+      isLeapMonth: candidate.isLeapMonth,
+    );
   }
 
   /// Gregorian date (UTC midnight) of the anniversary in [lunarYear].
@@ -54,13 +63,21 @@ class AnniversaryResolver {
 
   /// First occurrence on or after the Gregorian day [today] (time ignored),
   /// as UTC midnight; `null` outside the supported range.
-  DateTime? nextOccurrence(AnniversaryDate date, DateTime today) {
+  DateTime? nextOccurrence(AnniversaryDate date, DateTime today) =>
+      nextHolding(date, today)?.solar;
+
+  /// Like [nextOccurrence], with the lunar date it is held on that year
+  /// (which may be the leap month or day 29, see ADR 0001).
+  AnniversaryHolding? nextHolding(AnniversaryDate date, DateTime today) {
     final currentYear = _calendar.toLunar(today)?.year;
     if (currentYear == null) return null;
     final day = DateTime.utc(today.year, today.month, today.day);
     for (final year in [currentYear, currentYear + 1]) {
-      final solar = solarDateIn(date, year);
-      if (solar != null && !solar.isBefore(day)) return solar;
+      final lunar = lunarDateIn(date, year);
+      final solar = lunar == null ? null : _calendar.toSolar(lunar);
+      if (lunar != null && solar != null && !solar.isBefore(day)) {
+        return (lunar: lunar, solar: solar);
+      }
     }
     return null;
   }

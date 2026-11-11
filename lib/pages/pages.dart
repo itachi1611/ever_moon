@@ -4,7 +4,7 @@
 /// - [ShellPage] — root scaffold with bottom navigation bar
 ///
 /// **Tab screens**
-/// - [HomePage] / [HomeCubit] / [HomeState]
+/// - [AnniversaryListPage] — upcoming anniversaries (read-only)
 /// - [SettingPage] / [SettingCubit] / [SettingState]
 ///
 /// **Standalone screens**
@@ -33,7 +33,7 @@ export 'auth/login/login_page.dart';
 export 'auth/phone_input/phone_input_page.dart';
 export 'auth/register/register_page.dart';
 export 'auth/sms_code/sms_code_page.dart';
-export 'home/home_page.dart';
+export 'anniversary_list/anniversary_list_page.dart';
 export 'privacy/privacy_page.dart';
 export 'profile/profile_page.dart';
 export 'setting/setting_page.dart';

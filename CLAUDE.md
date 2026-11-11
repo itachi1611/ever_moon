@@ -135,7 +135,7 @@ lib/
 ├── pages/                     # One folder per screen: <page>_page.dart + _cubit.dart + _state.dart
 │   ├── shell/                 # ShellPage — StatefulShellRoute.indexedStack with bottom nav
 │   ├── splash/                # Entry animation, then /home
-│   ├── home/                  # Home tab (template demo list/grid, to be replaced)
+│   ├── anniversary_list/      # Upcoming anniversaries (plan 0005 U2), shell branch 0
 │   ├── setting/ profile/
 │   ├── auth/                  # login, register, forgot_password, phone_input,
 │   │                          #   sms_code, email_verification (firebase_ui_auth)
@@ -274,7 +274,7 @@ AppPage (StatefulWidget)
 Router
   / (root)   → SplashPage → context.go('/home')
   /home ...  → ShellPage (StatefulShellRoute.indexedStack)
-               ├── branch 0: HomePage
+               ├── branch 0: AnniversaryListPage
                └── branch 1: SettingPage
   + standalone routes: profile, auth/*, terms, privacy, notFound
 ```

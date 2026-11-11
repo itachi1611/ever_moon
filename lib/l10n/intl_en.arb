@@ -63,5 +63,148 @@
   "lb_version": "Version",
   "@lb_version": {
     "description": "Label text for the Terms and Conditions section."
+  },
+  "lb_upcoming_title": "Upcoming anniversaries",
+  "@lb_upcoming_title": {
+    "description": "Title of the upcoming anniversaries list."
+  },
+  "lb_upcoming_summary": "{count, plural, =1{1 person} other{{count} people}}",
+  "@lb_upcoming_summary": {
+    "description": "Summary under the list title: number of anniversaries.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lb_upcoming_summary_today": "{count, plural, =1{1 person} other{{count} people}} · {today, plural, =1{1 anniversary today} other{{today} anniversaries today}}",
+  "@lb_upcoming_summary_today": {
+    "description": "Summary when some anniversaries fall today.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "today": {
+        "type": "int"
+      }
+    }
+  },
+  "lb_section_today": "Today",
+  "@lb_section_today": {
+    "description": "Section label for anniversaries that fall today."
+  },
+  "lb_section_upcoming": "Upcoming",
+  "@lb_section_upcoming": {
+    "description": "Section label for later anniversaries."
+  },
+  "lb_today_chip": "Today",
+  "@lb_today_chip": {
+    "description": "Chip on an anniversary that falls today."
+  },
+  "lb_lunar_month_short": "month {month}",
+  "@lb_lunar_month_short": {
+    "description": "Month line in the lunar date badge.",
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "lb_lunar_date": "{day}/{month} lunar",
+  "@lb_lunar_date": {
+    "description": "Full lunar date of an anniversary.",
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "lb_lunar_date_leap": "{day}/{month} leap lunar",
+  "@lb_lunar_date_leap": {
+    "description": "Full lunar date when it falls in the leap month.",
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "lb_days_left": "{count, plural, =1{day left} other{days left}}",
+  "@lb_days_left": {
+    "description": "Unit under the countdown number.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lb_anniversary_semantics": "{name}, {lunar}, {solar}, {countdown}",
+  "@lb_anniversary_semantics": {
+    "description": "Screen reader sentence for an anniversary card.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "lunar": {
+        "type": "String"
+      },
+      "solar": {
+        "type": "String"
+      },
+      "countdown": {
+        "type": "String"
+      }
+    }
+  },
+  "lb_countdown_semantics": "{count, plural, =1{in 1 day} other{in {count} days}}",
+  "@lb_countdown_semantics": {
+    "description": "Spoken countdown for screen readers.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lb_empty_title": "No anniversaries yet",
+  "@lb_empty_title": {
+    "description": "Empty state title."
+  },
+  "lb_empty_body": "Add the first anniversary. Evermoon reminds you on the right lunar day every year.",
+  "@lb_empty_body": {
+    "description": "Empty state body."
+  },
+  "lb_add_anniversary": "Add anniversary",
+  "@lb_add_anniversary": {
+    "description": "Button that opens the add form."
+  },
+  "lb_add": "Add",
+  "@lb_add": {
+    "description": "Label of the add FAB."
+  },
+  "lb_load_failed": "The list could not be loaded.",
+  "@lb_load_failed": {
+    "description": "Shown when reading the list failed."
+  },
+  "lb_retry": "Try again",
+  "@lb_retry": {
+    "description": "Retry button."
+  },
+  "lb_lunar_month_short_leap": "leap {month}",
+  "lb_solar_date_pattern": "EEEE, MMMM d, yyyy",
+  "@lb_lunar_month_short_leap": {
+    "description": "Month line in the date badge when the date is in the leap month.",
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "@lb_solar_date_pattern": {
+    "description": "intl DateFormat pattern for the Gregorian date on a card. Not shown as text; translate the pattern, not the letters."
   }
 }

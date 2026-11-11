@@ -63,5 +63,25 @@
   "lb_version": "Phiên bản",
   "@lb_version": {
     "description": "Label text for the Terms and Conditions section."
-  }
+  },
+  "lb_upcoming_title": "Ngày giỗ sắp tới",
+  "lb_upcoming_summary": "{count} người",
+  "lb_upcoming_summary_today": "{count} người · {today} ngày giỗ hôm nay",
+  "lb_section_today": "Hôm nay",
+  "lb_section_upcoming": "Sắp tới",
+  "lb_today_chip": "Hôm nay",
+  "lb_lunar_month_short": "tháng {month}",
+  "lb_lunar_date": "{day} tháng {month} âm lịch",
+  "lb_lunar_date_leap": "{day} tháng {month} nhuận âm lịch",
+  "lb_days_left": "ngày nữa",
+  "lb_anniversary_semantics": "{name}, {lunar}, {solar}, {countdown}",
+  "lb_countdown_semantics": "còn {count} ngày",
+  "lb_empty_title": "Chưa có ngày giỗ nào",
+  "lb_empty_body": "Thêm ngày giỗ đầu tiên. Evermoon sẽ nhắc bạn đúng ngày âm lịch mỗi năm.",
+  "lb_add_anniversary": "Thêm ngày giỗ",
+  "lb_add": "Thêm",
+  "lb_load_failed": "Không tải được danh sách.",
+  "lb_retry": "Thử lại",
+  "lb_lunar_month_short_leap": "tháng {month} nhuận",
+  "lb_solar_date_pattern": "EEEE, dd/MM/yyyy"
 }

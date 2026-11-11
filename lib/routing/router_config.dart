@@ -136,7 +136,7 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
   navigatorContainerBuilder: (context, navigationShell, children) =>
       ShellPage(shell: navigationShell, children: children),
   branches: [
-    // Branch 0 — Home
+    // Branch 0 — upcoming anniversaries (plan 0005, U2)
     StatefulShellBranch(
       navigatorKey: _homeBranchKey,
       routes: [
@@ -144,7 +144,7 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
           name: Routers.home.routerName,
           path: Routers.home.routerPath,
           pageBuilder: (context, state) => TransitionPage(
-            child: const HomePage(),
+            child: const AnniversaryListPage(),
             transitionType: PageTransitionType.fade,
           ),
         ),
