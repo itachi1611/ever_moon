@@ -15,6 +15,16 @@ enum Routers {
   /// GoRoute is the child `new` of [home].
   anniversaryNew('/home/new', 'anniversaryNew'),
 
+  /// Calendar tab inside the shell (`/calendar`, plan 0005 U5).
+  calendar('/calendar', 'calendar'),
+
+  /// Add form over the calendar (`/calendar/new`, D12: empty like the list's).
+  calendarNew('/calendar/new', 'calendarNew'),
+
+  /// Edit form over the calendar (`/calendar/edit/:id`, D5, D15). Go there
+  /// with `goNamed` and the `id` path parameter.
+  anniversaryEdit('/calendar/edit/:id', 'anniversaryEdit'),
+
   /// Settings tab inside the shell (`/setting`).
   setting('/setting', 'setting'),
 

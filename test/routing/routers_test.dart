@@ -21,6 +21,12 @@ void main() {
       );
     });
 
+    test('calendar add and edit sit under the calendar (D5, D15)', () {
+      final base = Routers.calendar.routerPath;
+      expect(Routers.calendarNew.routerPath, '$base/new');
+      expect(Routers.anniversaryEdit.routerPath, '$base/edit/:id');
+    });
+
     test('removed template routes are gone', () {
       final names = Routers.values.map((r) => r.routerName).toSet();
       expect(

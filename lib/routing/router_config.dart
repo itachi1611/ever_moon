@@ -17,6 +17,7 @@ final shellKey = GlobalKey<StatefulNavigationShellState>(debugLabel: '_kShell');
 
 // Branch navigator keys — one per drawer destination in [ShellPage].
 final _homeBranchKey = GlobalKey<NavigatorState>(debugLabel: '_kHome');
+final _calendarBranchKey = GlobalKey<NavigatorState>(debugLabel: '_kCalendar');
 final _settingBranchKey = GlobalKey<NavigatorState>(debugLabel: '_kSetting');
 
 /// Top-level route list consumed by [GoRouter].
@@ -155,7 +156,29 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
       ],
     ),
 
-    // Branch 1 — Settings
+    // Branch 1 — calendar (plan 0005, U5)
+    StatefulShellBranch(
+      navigatorKey: _calendarBranchKey,
+      routes: [
+        GoRoute(
+          name: Routers.calendar.routerName,
+          path: Routers.calendar.routerPath,
+          pageBuilder: (context, state) => TransitionPage(
+            child: CalendarPage(
+              onAdd: () => context.go(Routers.calendarNew.routerPath),
+              onEdit: (id) => context.goNamed(
+                Routers.anniversaryEdit.routerName,
+                pathParameters: {'id': id},
+              ),
+            ),
+            transitionType: PageTransitionType.fade,
+          ),
+          routes: [_calendarNewRoute, _anniversaryEditRoute],
+        ),
+      ],
+    ),
+
+    // Branch 2 — Settings
     StatefulShellBranch(
       navigatorKey: _settingBranchKey,
       routes: [
@@ -181,6 +204,33 @@ GoRoute get _anniversaryNewRoute => GoRoute(
   pageBuilder: (context, state) => TransitionPage(
     child: AnniversaryFormPage(
       onClose: () => context.go(Routers.home.routerPath),
+    ),
+    transitionType: PageTransitionType.sharedAxisHorizontal,
+  ),
+);
+
+// Add form over the calendar; the same empty form as from the list (D12).
+GoRoute get _calendarNewRoute => GoRoute(
+  parentNavigatorKey: rootNavigatorKey,
+  name: Routers.calendarNew.routerName,
+  path: 'new', // Routers.calendarNew = calendar + '/new'
+  pageBuilder: (context, state) => TransitionPage(
+    child: AnniversaryFormPage(
+      onClose: () => context.go(Routers.calendar.routerPath),
+    ),
+    transitionType: PageTransitionType.sharedAxisHorizontal,
+  ),
+);
+
+// Edit form, reached by swiping an anniversary on the calendar (D15).
+GoRoute get _anniversaryEditRoute => GoRoute(
+  parentNavigatorKey: rootNavigatorKey,
+  name: Routers.anniversaryEdit.routerName,
+  path: 'edit/:id', // Routers.anniversaryEdit = calendar + '/edit/:id'
+  pageBuilder: (context, state) => TransitionPage(
+    child: AnniversaryFormPage(
+      anniversaryId: state.pathParameters['id'],
+      onClose: () => context.go(Routers.calendar.routerPath),
     ),
     transitionType: PageTransitionType.sharedAxisHorizontal,
   ),

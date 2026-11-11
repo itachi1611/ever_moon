@@ -2,6 +2,7 @@ import 'package:ever_moon/common/app_config.dart';
 import 'package:ever_moon/common/app_dimensions.dart';
 import 'package:ever_moon/generated/l10n.dart';
 import 'package:ever_moon/pages/widgets/localized_dates.dart';
+import 'package:ever_moon/pages/widgets/lunar_texts.dart';
 import 'package:ever_moon/services/lunar/lunar_calendar_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,6 +53,11 @@ class AppDrawer extends StatelessWidget {
         child: const Icon(Icons.dark_mode),
       ),
       label: Text(s.lb_nav_anniversaries),
+    ),
+    NavigationDrawerDestination(
+      icon: const Icon(Icons.calendar_month_outlined),
+      selectedIcon: const Icon(Icons.calendar_month),
+      label: Text(s.lb_nav_calendar),
     ),
     NavigationDrawerDestination(
       icon: const Icon(Icons.settings_outlined),
@@ -145,7 +151,7 @@ class _TodayCard extends StatelessWidget {
     final lunar = state.lunarToday;
     if (lunar == null) return const SizedBox.shrink();
     final s = S.of(context);
-    final lunarText = _lunarDateText(s, lunar);
+    final lunarText = lunarDateText(s, lunar);
     final solarText = formatLocalizedDate(
       context,
       state.solarToday,
@@ -208,7 +214,11 @@ class _LunarBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
-    final month = _lunarMonthText(S.of(context), lunar);
+    final month = lunarMonthText(
+      S.of(context),
+      lunar.month,
+      isLeapMonth: lunar.isLeapMonth,
+    );
     return _BadgeBox(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -226,14 +236,6 @@ class _LunarBadge extends StatelessWidget {
     );
   }
 }
-
-String _lunarDateText(S s, LunarDate lunar) => lunar.isLeapMonth
-    ? s.lb_lunar_date_leap(lunar.day, lunar.month)
-    : s.lb_lunar_date(lunar.day, lunar.month);
-
-String _lunarMonthText(S s, LunarDate lunar) => lunar.isLeapMonth
-    ? s.lb_lunar_month_short_leap(lunar.month)
-    : s.lb_lunar_month_short(lunar.month);
 
 class _BadgeBox extends StatelessWidget {
   const _BadgeBox({required this.child});

@@ -87,8 +87,10 @@ void main() {
     expect(find.text('HÔM NAY'), findsOneWidget);
     expect(find.text('5 tháng 4 âm lịch'), findsOneWidget);
     expect(find.text('Ngày giỗ'), findsOneWidget);
-    await tester.tap(find.text('Cài đặt'));
+    await tester.tap(find.text('Lịch'));
     expect(picked, 1);
+    await tester.tap(find.text('Cài đặt'));
+    expect(picked, 2);
   });
 
   testWidgets('the menu button opens the shell drawer', (tester) async {

@@ -82,6 +82,27 @@ class AppDimensions {
   /// Most a number picker menu may grow before it scrolls.
   static const double pickerMenuHeight = 320;
 
+  /// Ordinary outline (cards, tiles).
+  static const double borderThin = 1;
+
+  /// Outline that marks the selected or current item.
+  static const double borderThick = 2;
+
+  /// Height of a day cell in the month grid.
+  static const double dayCellHeight = 56;
+
+  /// Anniversary or holiday dot under a day cell.
+  static const double markDot = 6;
+
+  /// Dot in the calendar legend and in event items.
+  static const double legendDot = 10;
+
+  /// Fixed height of a year-view month tile, so the grid stays aligned.
+  static const double yearTileHeight = 108;
+
+  /// Minimum height of an event item in the day list.
+  static const double eventItemHeight = 64;
+
   /// App mark in the drawer header.
   static const double drawerMark = 40;
 

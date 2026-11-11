@@ -448,6 +448,14 @@ class CalendarColorExtension extends ThemeExtension<CalendarColorExtension> {
     required this.onHolidayContainer,
   });
 
+  /// The extension of the current theme; falls back to the built-in set
+  /// for the theme's brightness when a theme does not register it.
+  static CalendarColorExtension of(BuildContext context) {
+    final theme = Theme.of(context);
+    return theme.extension<CalendarColorExtension>() ??
+        (theme.brightness == Brightness.dark ? dark : light);
+  }
+
   /// Dot under a holiday and the red lunar number on days 1 and 15.
   final Color holidayMark;
 
