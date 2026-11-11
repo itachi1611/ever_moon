@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:ever_moon/pages/widgets/bottom_sheet_widget.dart';
 import 'package:go_router/go_router.dart';
 
-import '../common/app_colors.dart';
 import '../pages/pages.dart';
 import 'routers.dart';
 
@@ -35,7 +34,6 @@ List<RouteBase> routes = [
   _shellRoute,
   _termRoute,
   _privacyRoute,
-  _imagePreviewRoute,
   _languageSheetRoute,
   ..._dialogRoutes,
   _notFoundRoute,
@@ -187,30 +185,6 @@ GoRoute get _privacyRoute => GoRoute(
     child: const PrivacyPage(),
     transitionType: PageTransitionType.sharedAxisHorizontal,
   ),
-);
-
-GoRoute get _imagePreviewRoute => GoRoute(
-  name: Routers.imagePreview.routerName,
-  path: Routers.imagePreview.routerPath,
-  pageBuilder: (context, state) {
-    // Pushed via HeroImageWidget with extra: {'heroTag': String, 'child': Widget}
-    // — Widget can't be encoded in a URL, so it must travel through `extra`.
-    final extra = state.extra as Map<String, dynamic>?;
-    assert(
-      extra != null && extra['heroTag'] is String && extra['child'] is Widget,
-      'imagePreview route requires extra: {heroTag: String, child: Widget} — '
-      'push it via HeroImageWidget, not directly.',
-    );
-    return TransitionPage(
-      opaque: false,
-      barrierColor: AppColors.inkBlack,
-      child: ImagePreviewPage(
-        heroTag: extra!['heroTag'] as String,
-        child: extra['child'] as Widget,
-      ),
-      transitionType: PageTransitionType.fade,
-    );
-  },
 );
 
 // Bottom sheet

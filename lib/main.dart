@@ -127,10 +127,13 @@ Future<void> main() async {
       };
 
       LicenseRegistry.addLicense(() async* {
-        final String license = await rootBundle.loadString(
-          'assets/fonts/OFL.txt',
-        );
-        yield LicenseEntryWithLineBreaks(<String>['app_font'], license);
+        for (final (family, file) in const [
+          ('Lora', 'assets/fonts/OFL-Lora.txt'),
+          ('Be Vietnam Pro', 'assets/fonts/OFL-BeVietnamPro.txt'),
+        ]) {
+          final license = await rootBundle.loadString(file);
+          yield LicenseEntryWithLineBreaks(<String>[family], license);
+        }
       });
 
       runApp(const AppPage());

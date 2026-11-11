@@ -13,12 +13,9 @@
 /// - [RegisterPage] — Firebase UI Auth registration screen
 /// - [PrivacyPage] — Privacy Policy rendered from Markdown asset
 /// - [TermsPage] — Terms of Service rendered from Markdown asset
-/// - `ImagePreviewPage` — full-screen Hero image viewer, opened by
-///   [HeroImageWidget] via `Routers.imagePreview`
 ///
 /// **Shared widgets**
 /// - [AnimatedBranchContainer] — animated tab body for [StatefulShellRoute]
-/// - [CachedImageWidget] — themed wrapper over `cached_network_image`
 /// - [HeroImageWidget] — Hero-wraps any image widget, tap to open
 ///   `ImagePreviewPage`
 /// - [NotFoundPage] — 404 fallback
@@ -37,7 +34,6 @@ export 'auth/phone_input/phone_input_page.dart';
 export 'auth/register/register_page.dart';
 export 'auth/sms_code/sms_code_page.dart';
 export 'home/home_page.dart';
-export 'image_preview/image_preview_page.dart';
 export 'privacy/privacy_page.dart';
 export 'profile/profile_page.dart';
 export 'setting/setting_page.dart';
@@ -49,9 +45,7 @@ export 'widgets/animations_wrapper/fade_through_wrapper.dart';
 export 'widgets/animations_wrapper/fade_wrapper.dart';
 export 'widgets/animations_wrapper/open_container_wrapper.dart';
 export 'widgets/animations_wrapper/shared_axis_transition_wrapper.dart';
-export 'widgets/cached_image_widget.dart';
 export 'widgets/confirm_dialog_widget.dart';
-export 'widgets/hero_image_widget.dart';
 export 'widgets/language_sheet_widget.dart';
 export 'widgets/not_found_page.dart';
 export 'widgets/route_dialog_widget.dart';

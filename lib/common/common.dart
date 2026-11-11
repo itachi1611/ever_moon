@@ -12,5 +12,8 @@ library common;
 export 'app_colors.dart';
 export 'app_config.dart';
 export 'app_constants.dart';
+export 'app_dimensions.dart';
 export 'app_env.dart';
+export 'app_shadows.dart';
+export 'app_text_style.dart';
 export 'app_themes.dart';

@@ -1,6 +1,7 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:ever_moon/base.dart' show NotifyColorExtension, RouterExtension;
+import 'package:ever_moon/base.dart'
+    show CalendarColorExtension, NotifyColorExtension, RouterExtension;
 import 'package:ever_moon/utils/extensions/widget_extension.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -102,6 +103,14 @@ extension ContextExtension on BuildContext {
   /// always registered by [M3Theme], so that only happens under a bare theme.
   NotifyColorExtension get notifyColorScheme =>
       Theme.of(this).extension<NotifyColorExtension>()!;
+
+  /// Holiday colors for the calendar ([CalendarColorExtension]).
+  ///
+  /// Falls back to the light set under a bare theme, so a missing extension
+  /// shows red marks instead of crashing.
+  CalendarColorExtension get calendarColors =>
+      Theme.of(this).extension<CalendarColorExtension>() ??
+      CalendarColorExtension.light;
 
   /// `true` when the current [ThemeData.brightness] is [Brightness.dark].
   ///

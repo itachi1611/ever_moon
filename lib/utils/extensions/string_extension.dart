@@ -24,7 +24,7 @@ extension NullableStringExtension on String? {
   /// Usage: use as a single null-and-empty check instead of writing
   /// `value != null && value.isNotEmpty` at every call site — e.g. deciding
   /// whether an optional `semanticsLabel`/`tooltip` should be applied (see
-  /// `ActionWidget`'s `_Wrap`).
+  /// a wrapped label).
   ///
   /// Example:
   /// ```dart

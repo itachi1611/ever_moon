@@ -20,9 +20,6 @@ enum Routers {
   /// Privacy Policy page (`/privacy`).
   privacy('/privacy', 'privacy'),
 
-  /// Hero image viewer page (`/imagePreview`).
-  imagePreview('/imagePreview', 'imagePreview'),
-
   /// Bottom sheet
   languageSheet('/languageSheet', 'languageSheet'),
 
