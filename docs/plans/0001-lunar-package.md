@@ -8,15 +8,15 @@ A pure-Dart package `packages/lunar_calendar` that converts between solar and Vi
 
 ## Decisions
 
-| ID | Decision | State |
-|---|---|---|
-| D1 | Astronomy computed in Dart at run time (not a generated table) | Decided: A |
-| D2 | Supported range: lunar years 1800 to 2199 | Decided |
-| D3 | Package name `lunar_calendar` | Decided |
-| D4 | Anniversary resolver (ADR 0001) lives in the app, not the package | Proposed |
-| D5 | SDK constraint for the package `pubspec.yaml` | Decided: `>=3.10.0 <4.0.0`, same as the app; `.fvmrc` is `stable` (lock requires Dart 3.12, Flutter 3.44) |
-| D6 | Official published source for Tết dates, for an extra anchor | Open |
-| D7 | Convention for events within about a minute of local midnight | Decided: author's convention (Meeus new moon, UTC+7), see ADR 0002 |
+| ID | Decision                                                          | State                                                                                                     |
+|----|-------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
+| D1 | Astronomy computed in Dart at run time (not a generated table)    | Decided: A                                                                                                |
+| D2 | Supported range: lunar years 1800 to 2199                         | Decided                                                                                                   |
+| D3 | Package name `lunar_calendar`                                     | Decided                                                                                                   |
+| D4 | Anniversary resolver (ADR 0001) lives in the app, not the package | Proposed                                                                                                  |
+| D5 | SDK constraint for the package `pubspec.yaml`                     | Decided: `>=3.10.0 <4.0.0`, same as the app; `.fvmrc` is `stable` (lock requires Dart 3.12, Flutter 3.44) |
+| D6 | Official published source for Tết dates, for an extra anchor      | Open                                                                                                      |
+| D7 | Convention for events within about a minute of local midnight     | Decided: author's convention (Meeus new moon, UTC+7), see ADR 0002                                        |
 
 ## Acceptance criteria
 
@@ -28,14 +28,14 @@ A pure-Dart package `packages/lunar_calendar` that converts between solar and Vi
 
 ## Slices
 
-| Slice | Content | Status |
-|---|---|---|
-| S0 | Scaffold `packages/lunar_calendar` (pubspec, analysis options, lib, test) | Done on 2026-11-06: `supported_range.dart`, fixture loader, smoke test. Fox ran `fvm dart analyze` (no issues) and `fvm dart test` (4 pass); resolved `lints` 6.1.0, `test` 1.33.0 |
-| S1 | Oracle generator `tools/lunar_oracle/oracle.py`, fixtures, anchors, boundary list (tests ORC-001 to 010) | Done |
-| S2 | Independent Python implementation `ours.py` and `compare.py` (tests ORS-001 to 007) | Done |
-| S3 | Dart port of `ours.py` plus Dart tests reading the same JSON fixtures | Done on 2026-11-06: `lib/src/astronomy/`, `lib/src/calendar/`, public `VietnameseLunarCalendar`. Fox ran `fvm dart analyze` (no issues) and `fvm dart test` (18 pass). Mutation check passed: with `vietnamTimeZoneHours = 8`, 8 tests fail, including Tết 1985 (gives the Chinese date 1985-02-20), the 1984 month 11 span, 1984 gaining a leap month, LC-1 and LC-3 |
-| S4 | Differential run against `vnlunar` and `full_calender` (optional comparison) | Not started |
-| S5 | Docs: ADR 0002 update, package README, workflow guide and standards refresh | Done on 2026-11-06: `packages/lunar_calendar/README.md`, ADR 0002 Results section, `docs/agent-engineering.md` (git and verification), `Routers` name in the standards index |
+| Slice | Content                                                                                                  | Status                                                                                                                                                                                                                                                                                                                                                                |
+|-------|----------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| S0    | Scaffold `packages/lunar_calendar` (pubspec, analysis options, lib, test)                                | Done on 2026-11-06: `supported_range.dart`, fixture loader, smoke test. Fox ran `fvm dart analyze` (no issues) and `fvm dart test` (4 pass); resolved `lints` 6.1.0, `test` 1.33.0                                                                                                                                                                                    |
+| S1    | Oracle generator `tools/lunar_oracle/oracle.py`, fixtures, anchors, boundary list (tests ORC-001 to 010) | Done                                                                                                                                                                                                                                                                                                                                                                  |
+| S2    | Independent Python implementation `ours.py` and `compare.py` (tests ORS-001 to 007)                      | Done                                                                                                                                                                                                                                                                                                                                                                  |
+| S3    | Dart port of `ours.py` plus Dart tests reading the same JSON fixtures                                    | Done on 2026-11-06: `lib/src/astronomy/`, `lib/src/calendar/`, public `VietnameseLunarCalendar`. Fox ran `fvm dart analyze` (no issues) and `fvm dart test` (18 pass). Mutation check passed: with `vietnamTimeZoneHours = 8`, 8 tests fail, including Tết 1985 (gives the Chinese date 1985-02-20), the 1984 month 11 span, 1984 gaining a leap month, LC-1 and LC-3 |
+| S4    | Differential run against `vnlunar` and `full_calender` (optional comparison)                             | Not started                                                                                                                                                                                                                                                                                                                                                           |
+| S5    | Docs: ADR 0002 update, package README, workflow guide and standards refresh                              | Done on 2026-11-06: `packages/lunar_calendar/README.md`, ADR 0002 Results section, `docs/agent-engineering.md` (git and verification), `Routers` name in the standards index                                                                                                                                                                                          |
 
 ## Progress
 

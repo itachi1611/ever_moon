@@ -19,7 +19,7 @@ Options checked on pub.dev on 2026-11-06: `drift` 2.35 (about 2.5k likes, 1.9M d
 
 - Typed tables, schema versions with migrations, and reactive queries for the list screen.
 - Tests run against an in-memory SQLite database, not mocks.
-- Generated code (`*.g.dart`) is gitignored: after a fresh clone or a table change, run `fvm flutter pub run build_runner build --delete-conflicting-outputs` before `analyze` and `test`.
+- Generated code (`*.g.dart`) is gitignored: after a fresh clone or a table change, run `fvm dart run build_runner build` before `analyze` and `test`.
 - Soft-deleted rows stay in the table until a later cleanup or sync step removes them.
 
 ## Alternatives considered

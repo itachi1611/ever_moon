@@ -8,13 +8,13 @@ The app can answer, for any anniversary stored as lunar day and month (plus an o
 
 ## Decisions
 
-| ID | Decision | State |
-|---|---|---|
-| D1 | The resolver lives in the app, not in `packages/lunar_calendar` (plan 0001, D4) | Decided |
-| D2 | `LunarCalendarService` is an interface with one engine-backed implementation; features use the top-level getter `lunarCalendarService` | Decided |
+| ID | Decision                                                                                                                                                      | State   |
+|----|---------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| D1 | The resolver lives in the app, not in `packages/lunar_calendar` (plan 0001, D4)                                                                               | Decided |
+| D2 | `LunarCalendarService` is an interface with one engine-backed implementation; features use the top-level getter `lunarCalendarService`                        | Decided |
 | D3 | The service re-exports the package's `LunarDate` value instead of a duplicate app type; features import only the service file, never `package:lunar_calendar` | Decided |
-| D4 | `diedInLeapMonth` is normalized to `false` unless the death year is known and has a leap month with the same number (ADR 0001) | Decided |
-| D5 | Anniversary entity, persistence and stable IDs are out of scope; the resolver works on a value type `AnniversaryDate` that the future entity will carry | Decided |
+| D4 | `diedInLeapMonth` is normalized to `false` unless the death year is known and has a leap month with the same number (ADR 0001)                                | Decided |
+| D5 | Anniversary entity, persistence and stable IDs are out of scope; the resolver works on a value type `AnniversaryDate` that the future entity will carry       | Decided |
 
 ## Acceptance criteria
 
@@ -29,12 +29,12 @@ The app can answer, for any anniversary stored as lunar day and month (plus an o
 
 ## Slices
 
-| Slice | Content | Status |
-|---|---|---|
-| A1 | Path dependency on `lunar_calendar`; `LunarCalendarService`, `EngineLunarCalendarService`, getter | Done: Fox ran `fvm flutter pub get` (`lunar_calendar` resolved from path) and `fvm flutter analyze` (no issues) |
-| A2 | `AnniversaryDate` value, `AnniversaryResolver`, tests (fake service and fixture-based integration) | Done: `fvm flutter test`, 19 pass (3 routing, 16 in `test/services/lunar/`) |
-| A3 | Anniversary entity with stable ID and local persistence | Plan 0004 |
-| A4 | Local reminders on the exact day (ADR 0001, reminders v1) | Later plan |
+| Slice | Content                                                                                            | Status                                                                                                          |
+|-------|----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| A1    | Path dependency on `lunar_calendar`; `LunarCalendarService`, `EngineLunarCalendarService`, getter  | Done: Fox ran `fvm flutter pub get` (`lunar_calendar` resolved from path) and `fvm flutter analyze` (no issues) |
+| A2    | `AnniversaryDate` value, `AnniversaryResolver`, tests (fake service and fixture-based integration) | Done: `fvm flutter test`, 19 pass (3 routing, 16 in `test/services/lunar/`)                                     |
+| A3    | Anniversary entity with stable ID and local persistence                                            | Plan 0004                                                                                                       |
+| A4    | Local reminders on the exact day (ADR 0001, reminders v1)                                          | Later plan                                                                                                      |
 
 ## Verification
 

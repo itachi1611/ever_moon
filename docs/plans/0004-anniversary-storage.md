@@ -8,14 +8,14 @@ Anniversaries can be created, read, updated, soft-deleted and watched as a live 
 
 ## Decisions
 
-| ID | Decision | State |
-|---|---|---|
-| D1 | Database: Drift (ADR 0003) | Decided by Fox |
-| D2 | Entity fields v1: `id` (UUID v4), `name`, `AnniversaryDate` (day, month, optional death year, leap flag), optional `note`, `reminderEnabled` (default true), `createdAt`, `updatedAt`, `deletedAt` | Decided |
-| D3 | Deceased profiles (relationship, burial place, offerings) stay deferred (product brief) | Decided |
-| D4 | The repository normalizes the leap flag on every write through `AnniversaryResolver.normalize`, so stored data always follows ADR 0001 | Decided |
-| D5 | Timestamps come from an injected clock (UTC) so tests are deterministic | Decided |
-| D6 | Delete is soft (`deletedAt`); reads and the live list exclude deleted rows | Decided |
+| ID | Decision                                                                                                                                                                                           | State          |
+|----|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
+| D1 | Database: Drift (ADR 0003)                                                                                                                                                                         | Decided by Fox |
+| D2 | Entity fields v1: `id` (UUID v4), `name`, `AnniversaryDate` (day, month, optional death year, leap flag), optional `note`, `reminderEnabled` (default true), `createdAt`, `updatedAt`, `deletedAt` | Decided        |
+| D3 | Deceased profiles (relationship, burial place, offerings) stay deferred (product brief)                                                                                                            | Decided        |
+| D4 | The repository normalizes the leap flag on every write through `AnniversaryResolver.normalize`, so stored data always follows ADR 0001                                                             | Decided        |
+| D5 | Timestamps come from an injected clock (UTC) so tests are deterministic                                                                                                                            | Decided        |
+| D6 | Delete is soft (`deletedAt`); reads and the live list exclude deleted rows                                                                                                                         | Decided        |
 
 ## Acceptance criteria
 
@@ -29,17 +29,17 @@ Anniversaries can be created, read, updated, soft-deleted and watched as a live 
 
 ## Slices
 
-| Slice | Content | Status |
-|---|---|---|
-| B1 | Dependencies (`drift`, `drift_flutter`, `drift_dev`, `uuid`), `AppDatabase` with the `anniversaries` table | Done: resolved `drift` 2.34.4, `drift_dev` 2.34.0, `drift_flutter` 0.3.1; `build_runner` generated `app_database.g.dart` |
-| B2 | `Anniversary` entity, `AnniversaryRepository` interface and Drift implementation, getter | Done: `fvm flutter analyze` no issues |
-| B3 | Repository tests (ST-1 to ST-7) | Done: 8 repository tests pass; full suite 34 pass |
+| Slice | Content                                                                                                    | Status                                                                                                                   |
+|-------|------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| B1    | Dependencies (`drift`, `drift_flutter`, `drift_dev`, `uuid`), `AppDatabase` with the `anniversaries` table | Done: resolved `drift` 2.34.4, `drift_dev` 2.34.0, `drift_flutter` 0.3.1; `build_runner` generated `app_database.g.dart` |
+| B2    | `Anniversary` entity, `AnniversaryRepository` interface and Drift implementation, getter                   | Done: `fvm flutter analyze` no issues                                                                                    |
+| B3    | Repository tests (ST-1 to ST-7)                                                                            | Done: 8 repository tests pass; full suite 34 pass                                                                        |
 
 ## Verification
 
 ```bash
 fvm flutter pub get
-fvm flutter pub run build_runner build --delete-conflicting-outputs
+fvm dart run build_runner build
 fvm flutter analyze
 fvm flutter test
 ```

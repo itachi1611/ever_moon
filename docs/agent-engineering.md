@@ -4,15 +4,15 @@ How Claude works on Evermoon. `CLAUDE.md` points here. Explicit task limits and 
 
 ## Routing
 
-| Request | Skill |
-|---|---|
-| Full implementation of a change | `agent-engineering:deliver-change` |
-| Plan or revise a plan | `agent-engineering:plan-change` |
-| Implement an accepted plan or slice | `agent-engineering:implement-change` |
-| Verify against acceptance criteria | `agent-engineering:verify-change` |
-| Independent review | `agent-engineering:review-change` |
-| Fix validated findings | `agent-engineering:remediate-findings` |
-| Commit, push, draft pull request | `agent-engineering:publish-change` (only when authorized) |
+| Request                             | Skill                                                     |
+|-------------------------------------|-----------------------------------------------------------|
+| Full implementation of a change     | `agent-engineering:deliver-change`                        |
+| Plan or revise a plan               | `agent-engineering:plan-change`                           |
+| Implement an accepted plan or slice | `agent-engineering:implement-change`                      |
+| Verify against acceptance criteria  | `agent-engineering:verify-change`                         |
+| Independent review                  | `agent-engineering:review-change`                         |
+| Fix validated findings              | `agent-engineering:remediate-findings`                    |
+| Commit, push, draft pull request    | `agent-engineering:publish-change` (only when authorized) |
 
 A phase skill stops at its own boundary. If a needed skill is missing, report it; do not install it.
 

@@ -8,13 +8,13 @@ Vietnamese lunar calendar (UTC+7), lunar years 1800 to 2199, with a leap-month q
 
 ## Options evaluated
 
-| Option | Notes | Verdict |
-|---|---|---|
-| `vnlunar` (BSD-3) | Covers 1800 to 2199; exposes `Lunar.date(...leapMonth)`. Low adoption. | Comparison target only |
-| `full_calender` (MIT) | Leap-month support unconfirmed. | Comparison target only |
-| `lunar`, `tyme`, `chinese_lunar_calendar` | Chinese calendar (UTC+8); can differ from the Vietnamese calendar on some dates. | Excluded |
-| `lunar_calendar`, `vietnam_holidays` (pub.dev, old) | Outdated. | Excluded |
-| Own pure-Dart package | Full control, API shaped to ADR 0001, verifiable. More code to own. | Chosen |
+| Option                                              | Notes                                                                            | Verdict                |
+|-----------------------------------------------------|----------------------------------------------------------------------------------|------------------------|
+| `vnlunar` (BSD-3)                                   | Covers 1800 to 2199; exposes `Lunar.date(...leapMonth)`. Low adoption.           | Comparison target only |
+| `full_calender` (MIT)                               | Leap-month support unconfirmed.                                                  | Comparison target only |
+| `lunar`, `tyme`, `chinese_lunar_calendar`           | Chinese calendar (UTC+8); can differ from the Vietnamese calendar on some dates. | Excluded               |
+| `lunar_calendar`, `vietnam_holidays` (pub.dev, old) | Outdated.                                                                        | Excluded               |
+| Own pure-Dart package                               | Full control, API shaped to ADR 0001, verifiable. More code to own.              | Chosen                 |
 
 Adoption and activity figures were read from the pub.dev API at the time of the analysis and can change.
 

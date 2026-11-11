@@ -20,7 +20,7 @@ Riskiest assumption: do younger people really want to keep the anniversary calen
 - Correct lunar calendar display with the matching solar date and weekday.
 - Create yearly anniversary events on lunar dates (day and month required, year optional).
 - System events: the 1st and 15th of each lunar month, and traditional Tết festivals (the user only toggles reminders).
-- Local notification on the exact anniversary day. No "tiên thường" (day-before) reminder.
+- Local notification on the exact anniversary day. No (day-before) reminder.
 - Home screen is an "upcoming" list with a countdown.
 - Offline-first.
 
@@ -65,20 +65,20 @@ Decided 2026-11-05. Groups stay gated by the existing rule: build them only afte
 
 1. **v1 (offline):** no login required. Events and reminders are stored on the device; reminders are local notifications.
 2. **Optional login for backup and sync:** restore after changing phones, multiple devices. Stable IDs; last write wins by `updatedAt`; deletes use `deletedAt`.
-3. **Share card for one anniversary:** a card or link sent through Zalo or similar; the receiver needs no account and can add it to their own calendar. Also the cheap test of demand.
+3. **Share card for one anniversary:** a card or link sent through Zalo or similar; the receiver needs no account and can add it to their own calendar. Also, the cheap test of demand.
 4. **Family groups (phase 2):** roles, successor and ownership flows as in section 6. Extra group features agreed in principle: assign a host ("chủ giỗ") per anniversary, attendance confirmation and contribution checklist, notes and photos about the deceased (burial place, favorite offerings), and a change history (who edited what). Owners can send notices to members through FCM, for example to merge a giỗ with another family event.
 
 Technical direction: Firebase (auth, Firestore for sync and groups, FCM, Crashlytics). Two Firebase projects, `evermoon-dev` and `evermoon-prod`. FCM is sent only from a Cloud Function that verifies the caller is an owner (Blaze plan on prod). Android is the main platform; iOS is not built for now (no Apple Developer account, so no iOS push). Store requirements once accounts exist: in-app account deletion and a privacy policy that covers data about deceased people and family members.
 
 ## 7. Risks and things to verify
 
-| Item | Approach | Status |
-|---|---|---|
-| Lunar calendar accuracy | Test against an independent oracle for lunar years 1800 to 2199 plus published anchors | Oracle and Python reference done; Dart pending |
-| Edge cases near midnight | Pinned list of 13 months in 6 years; decided: follow the author's convention | Documented |
-| Family custom for leap months | Ask elders in the family | Not started |
-| Demand from younger relatives | 3 to 5 relatives try the personal version | Not started |
-| Reliable local notifications (iOS limits the number of scheduled notifications) | Schedule a short window and resync periodically | Needs design |
+| Item                                                                            | Approach                                                                               | Status                                         |
+|---------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|------------------------------------------------|
+| Lunar calendar accuracy                                                         | Test against an independent oracle for lunar years 1800 to 2199 plus published anchors | Oracle and Python reference done; Dart pending |
+| Edge cases near midnight                                                        | Pinned list of 13 months in 6 years; decided: follow the author's convention           | Documented                                     |
+| Family custom for leap months                                                   | Ask elders in the family                                                               | Not started                                    |
+| Demand from younger relatives                                                   | 3 to 5 relatives try the personal version                                              | Not started                                    |
+| Reliable local notifications (iOS limits the number of scheduled notifications) | Schedule a short window and resync periodically                                        | Needs design                                   |
 
 ## 8. Next steps
 
