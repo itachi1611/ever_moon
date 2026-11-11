@@ -31,11 +31,11 @@ enum Routers {
   /// Settings tab inside the shell (`/setting`).
   setting('/setting', 'setting'),
 
-  /// Terms of Service page (`/terms`).
-  terms('/terms', 'terms'),
+  /// Terms of Service page, over Settings (`/setting/terms`).
+  terms('/setting/terms', 'terms'),
 
-  /// Privacy Policy page (`/privacy`).
-  privacy('/privacy', 'privacy'),
+  /// Privacy Policy page, over Settings (`/setting/privacy`).
+  privacy('/setting/privacy', 'privacy'),
 
   /// Bottom sheet
   languageSheet('/languageSheet', 'languageSheet'),

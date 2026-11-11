@@ -5,7 +5,7 @@
 ///
 /// **Tab screens**
 /// - [AnniversaryListPage] — upcoming anniversaries (read-only)
-/// - [SettingPage] / [SettingCubit] / [SettingState]
+/// - [SettingPage] — language, theme, notifications, system events, About
 ///
 /// **Standalone screens**
 /// - [SplashPage] / [SplashCubit] / [SplashState]

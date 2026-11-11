@@ -35,8 +35,6 @@ List<RouteBase> routes = [
   _loginRoute,
   _registerRoute,
   _shellRoute,
-  _termRoute,
-  _privacyRoute,
   _languageSheetRoute,
   ..._dialogRoutes,
   _notFoundRoute,
@@ -206,6 +204,8 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
             child: const SettingPage(),
             transitionType: PageTransitionType.fade,
           ),
+          // Children of Settings so Back returns there (D14).
+          routes: [_termRoute, _privacyRoute],
         ),
       ],
     ),
@@ -255,8 +255,9 @@ GoRoute get _anniversaryEditRoute => GoRoute(
 
 // Pages
 GoRoute get _termRoute => GoRoute(
+  parentNavigatorKey: rootNavigatorKey,
   name: Routers.terms.routerName,
-  path: Routers.terms.routerPath,
+  path: 'terms', // Routers.terms = setting + '/terms'
   pageBuilder: (context, state) => TransitionPage(
     child: const TermsPage(),
     transitionType: PageTransitionType.sharedAxisHorizontal,
@@ -264,8 +265,9 @@ GoRoute get _termRoute => GoRoute(
 );
 
 GoRoute get _privacyRoute => GoRoute(
+  parentNavigatorKey: rootNavigatorKey,
   name: Routers.privacy.routerName,
-  path: Routers.privacy.routerPath,
+  path: 'privacy', // Routers.privacy = setting + '/privacy'
   pageBuilder: (context, state) => TransitionPage(
     child: const PrivacyPage(),
     transitionType: PageTransitionType.sharedAxisHorizontal,

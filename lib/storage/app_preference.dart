@@ -70,6 +70,20 @@ class AppPreference {
   /// Clears the entire [SharedPreferences] store, including keys outside [AppPreferenceKey].
   Future<void> clearAll() => _prefs.clear();
 
+  /// The bool stored under [key], or `null` when none is stored.
+  bool? getBool(AppPreferenceKey key) => _prefs.getBool(key.key);
+
+  /// Stores [value] under [key].
+  Future<void> setBool(AppPreferenceKey key, bool value) =>
+      _prefs.setBool(key.key, value);
+
+  /// The string stored under [key], or `null` when none is stored.
+  String? getString(AppPreferenceKey key) => _prefs.getString(key.key);
+
+  /// Stores [value] under [key].
+  Future<void> setString(AppPreferenceKey key, String value) =>
+      _prefs.setString(key.key, value);
+
   // Key-specific helpers — add one set (set / get / remove) per AppPreferenceKey.
   /// Persists [value] under [AppPreferenceKey.kTest].
   Future<void> setTest(bool value) =>

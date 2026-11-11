@@ -1,23 +1,31 @@
+import 'package:ever_moon/generated/l10n.dart';
+import 'package:ever_moon/pages/shell/shell_scope.dart';
+import 'package:ever_moon/services/notification_access_service.dart';
+import 'package:ever_moon/storage/settings_store.dart';
 import 'package:flutter/material.dart';
-import 'package:ever_moon/base.dart';
-import 'package:ever_moon/common/app_enums.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:setting_ui_builder/setting_ui_builder.dart'
-    show SettingsList, SettingsTile, SettingsSection;
+import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../generated/l10n.dart';
-import '../shell/shell_scope.dart';
 import 'setting_cubit.dart';
 import 'setting_state.dart';
+import 'widgets/settings_sections.dart';
 
-/// The Settings tab screen, hosted inside the navigation shell at [Routers.setting].
+/// Settings (plan 0005, U6; design: Settings): language, theme,
+/// notifications, system events and About.
 ///
-/// Displays language, theme, and app-info tiles using the `setting_ui_builder` package.
-/// Instantiates and owns its [SettingCubit]; the cubit is closed in [dispose].
+/// Owns its [SettingCubit]; theme and language go through `AppCubit`.
 class SettingPage extends StatefulWidget {
-  /// Creates a [SettingPage].
-  const SettingPage({super.key});
+  /// Creates the page; tests pass [store], [access] and [version].
+  const SettingPage({super.key, this.store, this.access, this.version});
+
+  /// Preferences; the app-wide store when `null`.
+  final SettingsStore? store;
+
+  /// Notification permission; the plugin-backed one when `null`.
+  final NotificationAccessService? access;
+
+  /// App version; read from the package when `null`.
+  final Future<String> Function()? version;
 
   @override
   State<SettingPage> createState() => _SettingPageState();
@@ -25,98 +33,44 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   late final SettingCubit _cubit;
+  late final AppLifecycleListener _lifecycle;
+
+  static Future<String> _packageVersion() async =>
+      (await PackageInfo.fromPlatform()).version;
 
   @override
   void initState() {
     super.initState();
-    _cubit = SettingCubit();
+    _cubit = SettingCubit(
+      store: widget.store ?? settingsStore,
+      access: widget.access ?? notificationAccessService,
+      version: widget.version ?? _packageVersion,
+    )..load();
+    // The user may come back from the system settings with a new answer.
+    _lifecycle = AppLifecycleListener(onResume: _cubit.refreshAccess);
   }
 
   @override
   void dispose() {
+    _lifecycle.dispose();
     _cubit.close();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _cubit,
-      child: BlocBuilder<SettingCubit, SettingState>(
-        builder: (context, _) {
-          // React to locale changes from AppCubit.
-          return BlocBuilder<AppCubit, AppState>(
-            buildWhen: (pre, cur) =>
-                pre.locale != cur.locale || pre.themeMode != cur.themeMode,
-            builder: (context, appState) {
-              final currentLanguage = AppLanguage.values
-                  .firstWhere(
-                    (e) =>
-                        e.locale.languageCode == appState.locale.languageCode,
-                    orElse: () => AppLanguage.values.first,
-                  )
-                  .label;
-
-              return Scaffold(
-                appBar: AppBar(
-                  leading: MenuButton.maybe(context),
-                  title: Text(S.of(context).lb_settings),
-                ),
-                body: NotificationListener<ScrollNotification>(
-                  onNotification: (scrollNotification) =>
-                      _cubit.notifyScroll(scrollNotification),
-                  child: SettingsList(
-                    sections: [
-                      SettingsSection(
-                        title: S.of(context).lb_general,
-                        tiles: [
-                          SettingsTile.value(
-                            leading: const Icon(Icons.language_outlined),
-                            title: S.of(context).lb_language,
-                            value: currentLanguage,
-                            onTap: () =>
-                                context.push(Routers.languageSheet.routerPath),
-                          ),
-                          SettingsTile.toggle(
-                            leading: const Icon(Icons.dark_mode_outlined),
-                            title: S.of(context).lb_dark_mode,
-                            value: appState.themeMode == ThemeMode.dark,
-                            onToggle: (v) =>
-                                context.read<AppCubit>().setThemeMode(
-                                  v ? ThemeMode.dark : ThemeMode.light,
-                                ),
-                          ),
-                        ],
-                      ),
-                      SettingsSection(
-                        title: S.of(context).lb_about,
-                        tiles: [
-                          SettingsTile.navigation(
-                            leading: const Icon(Icons.description_outlined),
-                            title: S.of(context).lb_terms,
-                            onTap: () => context.push('/terms'),
-                          ),
-                          SettingsTile.navigation(
-                            leading: const Icon(Icons.privacy_tip_outlined),
-                            title: S.of(context).lb_policy,
-                            onTap: () => context.push('/privacy'),
-                          ),
-                          SettingsTile.value(
-                            leading: const Icon(Icons.info_outline),
-                            title: S.of(context).lb_version,
-                            value: 'v1.0.0',
-                            onTap: null,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
+  Widget build(BuildContext context) => BlocProvider.value(
+    value: _cubit,
+    child: Scaffold(
+      appBar: AppBar(
+        leading: MenuButton.maybe(context),
+        title: Text(S.of(context).lb_settings),
+      ),
+      body: BlocBuilder<SettingCubit, SettingState>(
+        builder: (context, state) => switch (state) {
+          SettingLoading() => const Center(child: CircularProgressIndicator()),
+          SettingLoaded() => SettingsSections(state: state),
         },
       ),
-    );
-  }
+    ),
+  );
 }

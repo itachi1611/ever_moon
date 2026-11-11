@@ -7,6 +7,7 @@ import '../common/app_env.dart';
 import '../common/app_themes.dart';
 import '../generated/l10n.dart' show S;
 import '../routing/app_router.dart' show appRouter;
+import '../storage/settings_store.dart' show settingsStore;
 import 'app_cubit.dart';
 import 'app_state.dart';
 
@@ -30,13 +31,13 @@ class AppPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => AppCubit(),
+      create: (_) => AppCubit(settingsStore),
       child: BlocBuilder<AppCubit, AppState>(
         buildWhen: (pre, cur) =>
             pre.locale != cur.locale || pre.themeMode != cur.themeMode,
         builder: (context, state) {
           return MaterialApp.router(
-            title: 'Flutter Base',
+            onGenerateTitle: (context) => S.of(context).lb_app_name,
             debugShowCheckedModeBanner: AppEnv.showDebugBanner,
             themeMode: state.themeMode,
             theme: _lightTheme,

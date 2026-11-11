@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
+import '../../generated/l10n.dart';
 import '../../utils/extensions/context_extension.dart' show ContextExtension;
 
 /// Displays the Terms of Service loaded from `assets/docs/terms.md`.
@@ -18,7 +19,7 @@ class TermsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Terms of Service')),
+      appBar: AppBar(title: Text(S.of(context).lb_terms)),
       body: FutureBuilder<String>(
         future: _content,
         builder: (context, snapshot) => switch (snapshot.connectionState) {

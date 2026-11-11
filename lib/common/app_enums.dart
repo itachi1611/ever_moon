@@ -53,7 +53,28 @@ enum AppPreferenceKey {
   kTest('kTest'),
 
   /// Whether the user has completed (or skipped) the onboarding intro.
-  kCompletedIntro('kCompletedIntro');
+  kCompletedIntro('kCompletedIntro'),
+
+  /// Theme mode name: system, light or dark (plan 0005, U6).
+  kThemeMode('kThemeMode'),
+
+  /// Language code of the app locale.
+  kLanguage('kLanguage'),
+
+  /// Reminder sound name.
+  kReminderSound('kReminderSound'),
+
+  /// Whether reminders vibrate.
+  kVibrate('kVibrate'),
+
+  /// Whether mùng 1 is reminded.
+  kRemindFirstDay('kRemindFirstDay'),
+
+  /// Whether rằm is reminded.
+  kRemindFullMoon('kRemindFullMoon'),
+
+  /// Whether Tết and traditional festivals are reminded.
+  kRemindFestivals('kRemindFestivals');
 
   /// The raw preference key string.
   final String key;
