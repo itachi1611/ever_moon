@@ -12,4 +12,7 @@ class AppConfig {
   ///
   /// Must match a `family` declared under `flutter > fonts` in pubspec.yaml.
   static const String kDisplayFont = 'Lora';
+
+  /// The E8 mark (launcher icon art) shown in the drawer header.
+  static const String kMarkImage = 'assets/images/evermoon_mark.png';
 }

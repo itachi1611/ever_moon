@@ -82,6 +82,9 @@ class AppDimensions {
   /// Most a number picker menu may grow before it scrolls.
   static const double pickerMenuHeight = 320;
 
+  /// App mark in the drawer header.
+  static const double drawerMark = 40;
+
   /// Small icon inside a field or note row.
   static const double fieldIcon = 22;
 }

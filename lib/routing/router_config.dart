@@ -12,10 +12,10 @@ import 'routers.dart';
 /// to push above the shell (e.g. full-screen dialogs) can use the root navigator.
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: '_kRoot');
 
-/// Key for the [StatefulNavigationShell] that hosts the bottom-nav branches.
+/// Key for the [StatefulNavigationShell] that hosts the drawer branches.
 final shellKey = GlobalKey<StatefulNavigationShellState>(debugLabel: '_kShell');
 
-// Branch navigator keys — one per tab in [ShellPage].
+// Branch navigator keys — one per drawer destination in [ShellPage].
 final _homeBranchKey = GlobalKey<NavigatorState>(debugLabel: '_kHome');
 final _settingBranchKey = GlobalKey<NavigatorState>(debugLabel: '_kSetting');
 
@@ -128,7 +128,8 @@ GoRoute get _registerRoute => GoRoute(
   ),
 );
 
-// Shell — home with bottom navigation bar
+// Shell — branches behind the navigation drawer. The branch order must match
+// the drawer's destination order (AppDrawer).
 StatefulShellRoute get _shellRoute => StatefulShellRoute(
   parentNavigatorKey: rootNavigatorKey,
   key: shellKey,
@@ -144,9 +145,12 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
           name: Routers.home.routerName,
           path: Routers.home.routerPath,
           pageBuilder: (context, state) => TransitionPage(
-            child: const AnniversaryListPage(),
+            child: AnniversaryListPage(
+              onAdd: () => context.go(Routers.anniversaryNew.routerPath),
+            ),
             transitionType: PageTransitionType.fade,
           ),
+          routes: [_anniversaryNewRoute],
         ),
       ],
     ),
@@ -166,6 +170,20 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
       ],
     ),
   ],
+);
+
+// Add form over the list. A child of home so Back returns to the list; on
+// the root navigator so it covers the drawer shell.
+GoRoute get _anniversaryNewRoute => GoRoute(
+  parentNavigatorKey: rootNavigatorKey,
+  name: Routers.anniversaryNew.routerName,
+  path: 'new', // Routers.anniversaryNew = home + '/new'
+  pageBuilder: (context, state) => TransitionPage(
+    child: AnniversaryFormPage(
+      onClose: () => context.go(Routers.home.routerPath),
+    ),
+    transitionType: PageTransitionType.sharedAxisHorizontal,
+  ),
 );
 
 // Pages

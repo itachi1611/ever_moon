@@ -282,5 +282,17 @@
   "lb_form_unavailable": "This anniversary could not be found.",
   "@lb_form_unavailable": {"description": "Shown when the record to edit is missing."},
   "lb_short_date_pattern": "EEEE, MMMM d",
-  "@lb_short_date_pattern": {"description": "intl DateFormat pattern for a date without the year, in the reminder summary. Translate the pattern, not the letters."}
+  "@lb_short_date_pattern": {"description": "intl DateFormat pattern for a date without the year, in the reminder summary. Translate the pattern, not the letters."},
+  "lb_app_name": "Evermoon",
+  "@lb_app_name": {"description": "App name in the drawer header; not translated."},
+  "lb_nav_anniversaries": "Anniversaries",
+  "@lb_nav_anniversaries": {"description": "Drawer destination: the upcoming list."},
+  "lb_settings": "Settings",
+  "@lb_settings": {"description": "Drawer destination and title of the Settings page."},
+  "lb_today_caps": "TODAY",
+  "@lb_today_caps": {"description": "Overline of the today card in the drawer."},
+  "lb_today_count": "{count} today",
+  "@lb_today_count": {"description": "Anniversaries that fall today, next to the drawer destination.", "placeholders": {"count": {"type": "int"}}},
+  "lb_today_card_semantics": "Today, {lunar}, {solar}",
+  "@lb_today_card_semantics": {"description": "Screen reader sentence for the today card.", "placeholders": {"lunar": {"type": "String"}, "solar": {"type": "String"}}}
 }

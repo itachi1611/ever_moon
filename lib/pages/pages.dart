@@ -1,7 +1,7 @@
 /// All screens, cubits, states, and shared widgets of the app.
 ///
 /// **Shell**
-/// - [ShellPage] — root scaffold with bottom navigation bar
+/// - [ShellPage] — root scaffold with the navigation drawer
 ///
 /// **Tab screens**
 /// - [AnniversaryListPage] — upcoming anniversaries (read-only)

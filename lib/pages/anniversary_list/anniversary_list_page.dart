@@ -1,5 +1,6 @@
 import 'package:ever_moon/common/app_dimensions.dart';
 import 'package:ever_moon/generated/l10n.dart';
+import 'package:ever_moon/pages/shell/shell_scope.dart';
 import 'package:ever_moon/repositories/anniversary_repository.dart';
 import 'package:ever_moon/services/lunar/anniversary_resolver.dart';
 import 'package:ever_moon/services/lunar/lunar_calendar_service.dart';
@@ -14,8 +15,8 @@ import 'widgets/upcoming_list_view.dart';
 /// Upcoming anniversaries, soonest first (plan 0005, U2). Replaces the
 /// template Home tab.
 ///
-/// Owns its [AnniversaryListCubit]. The add action appears once [onAdd] is
-/// wired to the form route (U3/U4).
+/// Owns its [AnniversaryListCubit]. The route passes [onAdd] to open the
+/// add form; the menu button appears inside the shell.
 class AnniversaryListPage extends StatefulWidget {
   /// Creates the page; tests pass a [repository], [resolver] and [today].
   const AnniversaryListPage({
@@ -70,6 +71,10 @@ class _AnniversaryListPageState extends State<AnniversaryListPage> {
   Widget build(BuildContext context) => BlocProvider.value(
     value: _cubit,
     child: Scaffold(
+      appBar: AppBar(
+        leading: MenuButton.maybe(context),
+        title: Text(S.of(context).lb_upcoming_title),
+      ),
       body: _ListBody(onAdd: widget.onAdd, onRetry: _cubit.start),
       floatingActionButton: widget.onAdd == null
           ? null

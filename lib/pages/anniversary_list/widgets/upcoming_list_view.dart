@@ -53,7 +53,7 @@ class UpcomingListView extends StatelessWidget {
   ];
 }
 
-/// Screen title and the "N người · M ngày giỗ hôm nay" summary.
+/// The "N người · M ngày giỗ hôm nay" summary under the app bar title.
 class UpcomingHeader extends StatelessWidget {
   /// Creates the header for [people] entries, [today] of them today.
   const UpcomingHeader({super.key, required this.people, required this.today});
@@ -69,21 +69,11 @@ class UpcomingHeader extends StatelessWidget {
     final s = S.of(context);
     final text = Theme.of(context).textTheme;
     final muted = Theme.of(context).colorScheme.onSurfaceVariant;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppDimensions.space4,
-      children: [
-        Semantics(
-          header: true,
-          child: Text(s.lb_upcoming_title, style: text.headlineSmall),
-        ),
-        Text(
-          today == 0
-              ? s.lb_upcoming_summary(people)
-              : s.lb_upcoming_summary_today(people, today),
-          style: text.bodyMedium?.copyWith(color: muted),
-        ),
-      ],
+    return Text(
+      today == 0
+          ? s.lb_upcoming_summary(people)
+          : s.lb_upcoming_summary_today(people, today),
+      style: text.bodyMedium?.copyWith(color: muted),
     );
   }
 }

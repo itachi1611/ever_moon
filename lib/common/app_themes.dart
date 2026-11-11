@@ -526,6 +526,9 @@ extension _AppThemeExtension on ColorScheme {
     scaffoldBackgroundColor: surface,
     canvasColor: surface,
     splashFactory: InkSparkle.splashFactory,
+    drawerTheme: const DrawerThemeData(
+      width: AppDimensions.navigationDrawerWidth,
+    ),
     // Design system TextField: outlined, extra-small corners, tinted fill.
     inputDecorationTheme: InputDecorationThemeData(
       filled: true,

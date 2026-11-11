@@ -123,6 +123,7 @@ flutter:
   assets:
     - assets/docs/
     - assets/fonts/
+    - assets/images/
     - assets/env/.env.dev
     - assets/env/.env.prod
 

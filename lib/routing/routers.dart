@@ -11,6 +11,10 @@ enum Routers {
   /// Home tab inside the shell (`/home`).
   home('/home', 'home'),
 
+  /// Add form over the upcoming list (`/home/new`, plan 0005 D5). Its
+  /// GoRoute is the child `new` of [home].
+  anniversaryNew('/home/new', 'anniversaryNew'),
+
   /// Settings tab inside the shell (`/setting`).
   setting('/setting', 'setting'),
 

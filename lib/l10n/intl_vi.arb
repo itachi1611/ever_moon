@@ -121,5 +121,11 @@
   "lb_save_failed": "Không lưu được. Vui lòng thử lại.",
   "lb_delete_failed": "Không xoá được. Vui lòng thử lại.",
   "lb_form_unavailable": "Không tìm thấy ngày giỗ này.",
-  "lb_short_date_pattern": "EEEE, dd/MM"
+  "lb_short_date_pattern": "EEEE, dd/MM",
+  "lb_app_name": "Evermoon",
+  "lb_nav_anniversaries": "Ngày giỗ",
+  "lb_settings": "Cài đặt",
+  "lb_today_caps": "HÔM NAY",
+  "lb_today_count": "{count} hôm nay",
+  "lb_today_card_semantics": "Hôm nay, {lunar}, {solar}"
 }

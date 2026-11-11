@@ -14,10 +14,19 @@ void main() {
       expect(names.toSet().length, names.length);
     });
 
+    test('the add form path sits under home (D5)', () {
+      expect(
+        Routers.anniversaryNew.routerPath,
+        '${Routers.home.routerPath}/new',
+      );
+    });
+
     test('removed template routes are gone', () {
       final names = Routers.values.map((r) => r.routerName).toSet();
-      expect(names.intersection({'intro', 'service', 'explore', 'aiSupport'}),
-          isEmpty);
+      expect(
+        names.intersection({'intro', 'service', 'explore', 'aiSupport'}),
+        isEmpty,
+      );
     });
   });
 }

@@ -7,6 +7,7 @@ import 'package:setting_ui_builder/setting_ui_builder.dart'
     show SettingsList, SettingsTile, SettingsSection;
 
 import '../../generated/l10n.dart';
+import '../shell/shell_scope.dart';
 import 'setting_cubit.dart';
 import 'setting_state.dart';
 
@@ -57,7 +58,10 @@ class _SettingPageState extends State<SettingPage> {
                   .label;
 
               return Scaffold(
-                backgroundColor: AppColors.oldLace,
+                appBar: AppBar(
+                  leading: MenuButton.maybe(context),
+                  title: Text(S.of(context).lb_settings),
+                ),
                 body: NotificationListener<ScrollNotification>(
                   onNotification: (scrollNotification) =>
                       _cubit.notifyScroll(scrollNotification),

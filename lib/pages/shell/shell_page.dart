@@ -1,27 +1,120 @@
+import 'package:ever_moon/repositories/anniversary_repository.dart';
+import 'package:ever_moon/services/lunar/anniversary_resolver.dart';
+import 'package:ever_moon/services/lunar/lunar_calendar_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../widgets/animated_bottom_navigation_widget.dart';
 import '../widgets/transition_shell_widget.dart' show ShellTransitionType;
+import 'app_drawer.dart';
+import 'shell_cubit.dart';
+import 'shell_scope.dart';
 
-/// Root scaffold for the bottom-navigation shell.
+/// Root scaffold of the shell: the branch on screen plus the modal
+/// navigation drawer (plan 0005, D13).
 ///
-/// Wraps [AnimatedBranchContainer] (the tab body) and a [NavigationBar].
-/// Re-tapping the active tab calls `shell.goBranch(index, initialLocation: true)`
-/// which pops nested routes back to the branch root.
+/// Pages open the drawer through [ShellScope] (their menu button). Picking
+/// the current destination again returns that branch to its first page.
 ///
-/// Built by [router_config.dart]'s `navigatorContainerBuilder` callback;
-/// not instantiated directly in app code.
-class ShellPage extends StatelessWidget {
+/// Built by `router_config.dart`'s `navigatorContainerBuilder`; not
+/// instantiated directly in app code.
+class ShellPage extends StatefulWidget {
+  /// Creates the shell for [shell] with its prebuilt branch [children].
+  const ShellPage({super.key, required this.shell, required this.children});
+
   /// The [StatefulNavigationShell] provided by GoRouter.
   final StatefulNavigationShell shell;
 
   /// Prebuilt branch widgets from GoRouter's navigator container builder.
   final List<Widget> children;
 
-  /// Creates a [ShellPage].
-  const ShellPage({super.key, required this.shell, required this.children});
+  @override
+  State<ShellPage> createState() => _ShellPageState();
+}
+
+class _ShellPageState extends State<ShellPage> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  late final ShellCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = ShellCubit(
+      anniversaryRepository,
+      lunarCalendarService,
+      AnniversaryResolver(lunarCalendarService),
+    )..start();
+  }
+
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
+
+  void _openDrawer() => _scaffoldKey.currentState?.openDrawer();
+
+  /// Dates in the header are recomputed each time the drawer opens.
+  void _onDrawerChanged(bool open) {
+    if (open) _cubit.refresh();
+  }
+
+  void _select(int index) {
+    _scaffoldKey.currentState?.closeDrawer();
+    widget.shell.goBranch(
+      index,
+      initialLocation: index == widget.shell.currentIndex,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => BlocProvider.value(
+    value: _cubit,
+    child: _SystemBars(
+      child: Scaffold(
+        key: _scaffoldKey,
+        onDrawerChanged: _onDrawerChanged,
+        drawer: AppDrawer(
+          selectedIndex: widget.shell.currentIndex,
+          onSelected: _select,
+        ),
+        body: ShellScope(
+          openDrawer: _openDrawer,
+          child: _Branches(
+            currentIndex: widget.shell.currentIndex,
+            children: widget.children,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _Branches extends StatelessWidget {
+  const _Branches({required this.currentIndex, required this.children});
+
+  final int currentIndex;
+  final List<Widget> children;
+
+  // Each page's app bar handles the top inset.
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    top: false,
+    child: AnimatedBranchContainer(
+      currentIndex: currentIndex,
+      transitionType: ShellTransitionType.fade,
+      children: children,
+    ),
+  );
+}
+
+/// Status bar icons that stay legible on the current brightness.
+class _SystemBars extends StatelessWidget {
+  const _SystemBars({required this.child});
+
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -33,42 +126,7 @@ class ShellPage extends StatelessWidget {
         statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
         statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
       ),
-      child: SafeArea(
-        child: Scaffold(
-          body: AnimatedBranchContainer(
-            currentIndex: shell.currentIndex,
-            transitionType: ShellTransitionType.fade,
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeInOut,
-            children: children,
-          ),
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: shell.currentIndex,
-            onDestinationSelected: (index) => shell.goBranch(
-              index,
-              // Re-tap active tab → pop to branch root
-              initialLocation: index == shell.currentIndex,
-            ),
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-            animationDuration: const Duration(milliseconds: 150),
-            height: 60,
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home),
-                label: 'Home',
-                tooltip: 'Home',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.settings_outlined),
-                selectedIcon: Icon(Icons.settings),
-                label: 'Settings',
-                tooltip: 'Settings',
-              ),
-            ],
-          ),
-        ),
-      ),
+      child: child,
     );
   }
 }
