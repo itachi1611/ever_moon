@@ -73,7 +73,7 @@ Each entry documents: what it does, which platforms support it, minimum API leve
 ### `Permission.locationAlways`
 - Location access **at all times**, including background.
 - **Android 10+ (API 29+):** `ACCESS_BACKGROUND_LOCATION`
-  > ⚠️ On Android 10+, the user must first grant foreground location (`locationWhenInUse`). Requesting `locationAlways` afterwards will show an additional dialog or open the location settings page for the user to manually select "Allow all the time".
+  > ⚠️ On Android 10+, the user must first grant foreground location (`locationWhenInUse`). Requesting `locationAlways` afterward will show an additional dialog or open the location settings page for the user to manually select "Allow all the time".
 - **Android below API 29:** `ACCESS_FINE_LOCATION` + `ACCESS_COARSE_LOCATION`
 - **iOS:** `CoreLocation` — `kCLAuthorizationStatusAuthorizedAlways`
 - **Use cases:** Geofencing, live delivery tracking, fitness tracking that continues in background.
@@ -95,11 +95,11 @@ Each entry documents: what it does, which platforms support it, minimum API leve
 
 > **Android media permission strategy by API level:**
 >
-> | API level | Images | Video | Audio |
-> |---|---|---|---|
-> | < 29 (Android 9-) | `READ_EXTERNAL_STORAGE` | `READ_EXTERNAL_STORAGE` | `READ_EXTERNAL_STORAGE` |
+> | API level             | Images                  | Video                   | Audio                   |
+> |-----------------------|-------------------------|-------------------------|-------------------------|
+> | < 29 (Android 9-)     | `READ_EXTERNAL_STORAGE` | `READ_EXTERNAL_STORAGE` | `READ_EXTERNAL_STORAGE` |
 > | 29–32 (Android 10–12) | `READ_EXTERNAL_STORAGE` | `READ_EXTERNAL_STORAGE` | `READ_EXTERNAL_STORAGE` |
-> | 33+ (Android 13+) | `READ_MEDIA_IMAGES` | `READ_MEDIA_VIDEO` | `READ_MEDIA_AUDIO` |
+> | 33+ (Android 13+)     | `READ_MEDIA_IMAGES`     | `READ_MEDIA_VIDEO`      | `READ_MEDIA_AUDIO`      |
 >
 > Recommended runtime check:
 > ```dart

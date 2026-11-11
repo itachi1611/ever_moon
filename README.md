@@ -4,7 +4,7 @@ Flutter app to register yearly events on Vietnamese lunar dates, mainly death an
 
 - Product context: [docs/PRODUCT_BRIEF.md](docs/PRODUCT_BRIEF.md)
 - Project rules, architecture and conventions: [CLAUDE.md](CLAUDE.md)
-- Decisions: [docs/adr/](docs/adr/) · Plans: [docs/plans/](docs/plans/) · Platform differences: [docs/platform-notes.md](docs/platform-notes.md)
+- Decisions: [docs/adr/](docs/adr) · Plans: [docs/plans/](docs/plans) · Platform differences: [docs/platform-notes.md](docs/platform-notes.md)
 
 ## Status
 
@@ -38,9 +38,9 @@ fvm flutter run --flavor prod -t lib/main_prod.dart
 fvm flutter build apk --flavor prod -t lib/main_prod.dart --release
 ```
 
-| Flavor | Android / iOS id | Firebase project |
-|--------|------------------|------------------|
-| dev    | `com.fox.evermoon.dev` | `evermoon-dev` |
+| Flavor | Android / iOS id       | Firebase project |
+|--------|------------------------|------------------|
+| dev    | `com.fox.evermoon.dev` | `evermoon-dev`   |
 | prod   | `com.fox.evermoon`     | `evermoon-2cc28` |
 
 ## Firebase
