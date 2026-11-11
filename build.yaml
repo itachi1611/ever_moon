@@ -1,0 +1,11 @@
+# Drift schema snapshots and migration test scaffolding
+# (`fvm dart run drift_dev make-migrations`), see ADR 0003.
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          databases:
+            app_database: lib/storage/database/app_database.dart
+          schema_dir: drift_schemas/
+          test_dir: test/drift/

@@ -30,7 +30,7 @@ dependencies:
   # Storage & database
   shared_preferences: ^2.5.5
   get_storage: ^2.1.1
-  drift: ^2.26.0
+  drift: ^2.35.4
   drift_flutter: '>=0.2.0 <0.4.0'
   uuid: ^4.5.1
 
@@ -109,7 +109,7 @@ dev_dependencies:
   build_runner: ^2.15.0
   retrofit_generator: ^10.2.5
   json_serializable: ^6.8.0
-  drift_dev: ^2.26.0
+  drift_dev: ^2.35.3
 
 flutter:
   config:

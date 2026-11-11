@@ -20,6 +20,7 @@ Options checked on pub.dev on 2026-11-06: `drift` 2.35 (about 2.5k likes, 1.9M d
 - Typed tables, schema versions with migrations, and reactive queries for the list screen.
 - Tests run against an in-memory SQLite database, not mocks.
 - Generated code (`*.g.dart`) is gitignored: after a fresh clone or a table change, run `fvm dart run build_runner build` before `analyze` and `test`.
+- Schema changes (from v2, plan 0005 U2a): bump `schemaVersion`, run `fvm dart run drift_dev make-migrations`, write the new step in `AppDatabase.migration` and fill in the data test in `test/drift/app_database/migration_test.dart`. The snapshots in `drift_schemas/`, `app_database.steps.dart` and `test/drift/` are committed; the configuration is in `build.yaml`. `drift` and `drift_dev` must move together (2.35.x since 2026-11-11; drift_dev 2.34.0 did not compile against drift 2.34.4).
 - Soft-deleted rows stay in the table until a later cleanup or sync step removes them.
 
 ## Alternatives considered

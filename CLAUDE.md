@@ -83,6 +83,9 @@ fvm dart run build_runner build
 # Watch mode for code generation
 fvm dart run build_runner watch
 
+# Drift schema change: bump schemaVersion, then snapshot and scaffold the migration (ADR 0003)
+fvm dart run drift_dev make-migrations
+
 # Build APK (per flavor + entry file)
 fvm flutter build apk --flavor dev -t lib/main_dev.dart --release
 
