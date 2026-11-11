@@ -24,6 +24,6 @@ Options checked on pub.dev on 2026-11-06: `drift` 2.35 (about 2.5k likes, 1.9M d
 
 ## Alternatives considered
 
-- `sqflite`: most used, no code generation, but hand-written SQL and mapping, manual migrations and change streams, and `sqflite_common_ffi` for tests.
+- `sqflite`: most used, no code generation, but handwritten SQL and mapping, manual migrations and change streams, and `sqflite_common_ffi` for tests.
 - `hive_ce`: quickest to start, but weak querying and no real schema migrations, which matter once sync and groups arrive.
 - `isar`: original package is largely abandoned; the fork adds a dependency on a smaller community.
