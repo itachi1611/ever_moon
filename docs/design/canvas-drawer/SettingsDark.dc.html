@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Cài đặt (tối)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Lora:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin: 0}
+a{color:#5354AD}a:hover{color:#3B3B94}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; background: {{c.surf}}; color: {{c.on}}; font-family: 'Be Vietnam Pro', system-ui, sans-serif; overflow: hidden">
+  <header style="padding: 24px 16px 8px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 4px; margin-left: -12px"><a href="DrawerOpenDark.dc.html" aria-label="{{t.openMenu}}" style="width: 48px; height: 48px; flex: none; border-radius: 24px; color: {{c.on}}; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></a><h1 style="margin: 0; font-family: Lora, Georgia, serif; font-size: 24px; line-height: 32px; font-weight: 400; letter-spacing: -0.2px">{{t.title}}</h1></div>
+  </header>
+
+  <main style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 32px; display: flex; flex-direction: column; gap: 8px">
+    <h2 style="margin: 12px 4px 4px; font-size: 14px; line-height: 20px; font-weight: 600; color: {{c.pri}}">{{t.general}}</h2>
+    <section style="border-radius: 16px; background: {{c.card}}; display: flex; flex-direction: column">
+      <div style="padding: 16px 16px; display: flex; flex-direction: column; gap: 12px">
+        <span id="lang-label" style="font-size: 16px; line-height: 24px">{{t.language}}</span>
+        <div role="radiogroup" aria-labelledby="lang-label" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid {{c.outline}}; border-radius: 20px; overflow: hidden">
+          <sc-for list="{{langs}}" as="o" hint-placeholder-count="2">
+            <button type="button" role="radio" aria-checked="{{o.checked}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="height: 1px; margin: 0 16px; background: {{c.divider}}"></div>
+      <div style="padding: 16px 16px; display: flex; flex-direction: column; gap: 12px">
+        <span id="theme-label" style="font-size: 16px; line-height: 24px">{{t.theme}}</span>
+        <div role="radiogroup" aria-labelledby="theme-label" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid {{c.outline}}; border-radius: 20px; overflow: hidden">
+          <sc-for list="{{themes}}" as="o" hint-placeholder-count="3">
+            <button type="button" role="radio" aria-checked="{{o.checked}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <h2 style="margin: 16px 4px 4px; font-size: 14px; line-height: 20px; font-weight: 600; color: {{c.pri}}">{{t.notifySection}}</h2>
+    <section style="border-radius: 16px; background: {{c.card}}; display: flex; flex-direction: column">
+      <button type="button" onClick="{{openSheet}}" style="width: 100%; min-height: 56px; padding: 0 16px; border: 0; background: transparent; color: {{c.on}}; font-family: inherit; text-align: left; display: flex; align-items: center; gap: 16px">
+        <span style="flex: 1; font-size: 16px; line-height: 24px">{{t.sound}}</span>
+        <span style="font-size: 14px; line-height: 20px; color: {{c.var}}">{{soundLabel}}</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+      <div style="height: 1px; margin: 0 16px; background: {{c.divider}}"></div>
+      <div style="min-height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 16px">
+        <span id="vibrate-label" style="flex: 1; font-size: 16px; line-height: 24px">{{t.vibrate}}</span>
+        <button type="button" role="switch" aria-checked="{{sw.vibrate.on}}" aria-labelledby="vibrate-label" onClick="{{sw.vibrate.toggle}}" style="{{sw.vibrate.track}}"><span style="{{sw.vibrate.thumb}}"></span></button>
+      </div>
+    </section>
+    <p style="margin: 0 4px; font-size: 14px; line-height: 20px; color: {{c.var}}">{{t.notifyHint}}</p>
+
+    <h2 style="margin: 16px 4px 4px; font-size: 14px; line-height: 20px; font-weight: 600; color: {{c.pri}}">{{t.systemSection}}</h2>
+    <section style="border-radius: 16px; background: {{c.card}}; display: flex; flex-direction: column">
+      <sc-for list="{{systemRows}}" as="r" hint-placeholder-count="3">
+        <div style="{{r.rowStyle}}">
+          <span id="{{r.id}}" style="flex: 1; font-size: 16px; line-height: 24px">{{r.label}}</span>
+          <button type="button" role="switch" aria-checked="{{r.sw.on}}" aria-labelledby="{{r.id}}" onClick="{{r.sw.toggle}}" style="{{r.sw.track}}"><span style="{{r.sw.thumb}}"></span></button>
+        </div>
+      </sc-for>
+    </section>
+
+    <h2 style="margin: 16px 4px 4px; font-size: 14px; line-height: 20px; font-weight: 600; color: {{c.pri}}">{{t.about}}</h2>
+    <section style="border-radius: 16px; background: {{c.card}}; display: flex; flex-direction: column">
+      <a href="#" style="min-height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 16px; text-decoration: none; color: {{c.on}}; font-size: 16px; line-height: 24px"><span style="flex: 1">{{t.terms}}</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+      <div style="height: 1px; margin: 0 16px; background: {{c.divider}}"></div>
+      <a href="#" style="min-height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 16px; text-decoration: none; color: {{c.on}}; font-size: 16px; line-height: 24px"><span style="flex: 1">{{t.privacy}}</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+      <div style="height: 1px; margin: 0 16px; background: {{c.divider}}"></div>
+      <div style="min-height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 16px; font-size: 16px; line-height: 24px"><span style="flex: 1">{{t.version}}</span><span style="font-size: 14px; color: {{c.var}}">1.0.0</span></div>
+    </section>
+  </main>
+
+  <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{ false }}">
+    <button type="button" aria-label="{{t.close}}" onClick="{{closeSheet}}" style="position: absolute; inset: 0; border: 0; padding: 0; background: rgba(0, 0, 0, 0.32)"></button>
+    <section role="dialog" aria-labelledby="sheet-title" style="position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 16px 24px; border-radius: 28px 28px 0 0; background: {{c.sheet}}; display: flex; flex-direction: column; gap: 4px">
+      <span aria-hidden="true" style="align-self: center; width: 32px; height: 4px; margin-bottom: 12px; border-radius: 2px; background: {{c.outline}}"></span>
+      <h2 id="sheet-title" style="margin: 0 8px 8px; font-family: Lora, Georgia, serif; font-size: 22px; line-height: 28px; font-weight: 400">{{t.soundTitle}}</h2>
+      <sc-for list="{{sounds}}" as="s" hint-placeholder-count="3">
+        <button type="button" role="radio" aria-checked="{{s.checked}}" onClick="{{s.pick}}" style="min-height: 56px; padding: 0 8px; border: 0; border-radius: 12px; background: transparent; color: {{c.on}}; font-family: inherit; font-size: 16px; line-height: 24px; text-align: left; display: flex; align-items: center; gap: 16px">
+          <span style="{{s.ring}}"><span style="{{s.dot}}"></span></span>
+          <span>{{s.label}}</span>
+        </button>
+      </sc-for>
+      <button type="button" onClick="{{closeSheet}}" style="margin-top: 8px; align-self: flex-end; height: 40px; padding: 0 24px; border: 0; border-radius: 20px; background: {{c.pri}}; color: {{c.onPri}}; font-family: inherit; font-size: 14px; font-weight: 600">{{t.done}}</button>
+    </section>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { lang: 'vi', theme: 'dark', vibrate: true, mung1: false, ram: true, tet: true, sound: 0, sheetOpen: false };
+  }
+  palette() {
+    const light = { surf: '#FCF8FF', card: '#F6F2FB', sheet: '#F6F2FB', on: '#1B1B21', var: '#464651', outline: '#777683', divider: '#C7C5D3', pri: '#5354AD', onPri: '#FFFFFF', sel: '#D5E8E6', onSel: '#566866', offTrack: '#E4E1E9' };
+    const dark = { surf: '#131318', card: '#1F1F25', sheet: '#2A292F', on: '#E4E1E9', var: '#C7C5D3', outline: '#918F9D', divider: '#464651', pri: '#C1C1FF', onPri: '#24227C', sel: '#D3E6E4', onSel: '#566866', offTrack: '#35343A' };
+    return this.state.theme === 'dark' ? dark : light;
+  }
+  strings() {
+    const vi = { openMenu: 'Mở menu', title: 'Cài đặt', general: 'Chung', language: 'Ngôn ngữ', theme: 'Giao diện', system: 'Hệ thống', light: 'Sáng', dark: 'Tối', notifySection: 'Thông báo', notifyHint: 'Giờ nhắc và số ngày nhắc trước được đặt riêng cho từng sự kiện.', sound: 'Âm thanh', vibrate: 'Rung', systemSection: 'Rằm, mùng 1 và lễ Tết', mung1: 'Mùng 1 hằng tháng', ram: 'Rằm hằng tháng', tet: 'Tết và lễ cổ truyền', about: 'Thông tin', terms: 'Điều khoản sử dụng', privacy: 'Chính sách quyền riêng tư', version: 'Phiên bản', soundTitle: 'Âm thanh nhắc', done: 'Xong', close: 'Đóng', sounds: ['Mặc định của máy', 'Chuông nhẹ', 'Không âm thanh'] };
+    const en = { openMenu: 'Open menu', title: 'Settings', general: 'General', language: 'Language', theme: 'Theme', system: 'System', light: 'Light', dark: 'Dark', notifySection: 'Notifications', notifyHint: 'Reminder time and days before are set on each event.', sound: 'Sound', vibrate: 'Vibrate', systemSection: 'Full moon, new moon and Tết', mung1: 'First day of each lunar month', ram: 'Full moon (15th) each month', tet: 'Tết and traditional festivals', about: 'About', terms: 'Terms of use', privacy: 'Privacy policy', version: 'Version', soundTitle: 'Reminder sound', done: 'Done', close: 'Close', sounds: ['Device default', 'Soft bell', 'Silent'] };
+    return this.state.lang === 'en' ? en : vi;
+  }
+  sw(key, c) {
+    const on = this.state[key];
+    return {
+      on: on ? 'true' : 'false',
+      toggle: () => this.setState({ [key]: !this.state[key] }),
+      track: 'width: 52px; height: 32px; flex: none; padding: 0; box-sizing: border-box; border-radius: 16px; position: relative; ' + (on ? 'border: 0; background: ' + c.pri : 'border: 2px solid ' + c.outline + '; background: ' + c.offTrack),
+      thumb: 'position: absolute; top: ' + (on ? '4px; right: 4px; width: 24px; height: 24px; border-radius: 12px; background: ' + c.onPri : '6px; left: 6px; width: 16px; height: 16px; border-radius: 8px; background: ' + c.outline)
+    };
+  }
+  segment(value, current, label, key, isLast, c) {
+    const sel = value === current;
+    return {
+      label, checked: sel ? 'true' : 'false',
+      pick: () => this.setState({ [key]: value }),
+      style: 'height: 40px; border: 0; ' + (isLast ? '' : 'border-right: 1px solid ' + c.outline + '; ') + 'background: ' + (sel ? c.sel : 'transparent') + '; color: ' + (sel ? c.onSel : c.on) + '; font-family: inherit; font-size: 14px; font-weight: ' + (sel ? '600' : '500')
+    };
+  }
+  renderVals() {
+    const t = this.strings();
+    const c = this.palette();
+    const s = this.state;
+    return {
+      t, c,
+      langs: [this.segment('vi', s.lang, 'Tiếng Việt', 'lang', false, c), this.segment('en', s.lang, 'English', 'lang', true, c)],
+      themes: [this.segment('system', s.theme, t.system, 'theme', false, c), this.segment('light', s.theme, t.light, 'theme', false, c), this.segment('dark', s.theme, t.dark, 'theme', true, c)],
+      sw: { vibrate: this.sw('vibrate', c) },
+      systemRows: ['mung1', 'ram', 'tet'].map((k, i) => ({ id: 'sys-' + k, label: t[k], sw: this.sw(k, c), rowStyle: 'min-height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 16px; ' + (i > 0 ? 'border-top: 1px solid ' + c.divider : '') })),
+      soundLabel: t.sounds[s.sound],
+      sheetOpen: s.sheetOpen,
+      openSheet: () => this.setState({ sheetOpen: true }),
+      closeSheet: () => this.setState({ sheetOpen: false }),
+      sounds: t.sounds.map((label, i) => ({
+        label, checked: i === s.sound ? 'true' : 'false',
+        pick: () => this.setState({ sound: i }),
+        ring: 'width: 20px; height: 20px; flex: none; box-sizing: border-box; border-radius: 10px; border: 2px solid ' + (i === s.sound ? c.pri : c.var) + '; display: flex; align-items: center; justify-content: center',
+        dot: 'width: 10px; height: 10px; border-radius: 5px; background: ' + (i === s.sound ? c.pri : 'transparent')
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Evermoon tokens</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Lora:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin: 0}
+a{color:#5354AD}a:hover{color:#3B3B94}
+</style>
+</helmet>
+<div style="width: 880px; height: 1100px; box-sizing: border-box; padding: 40px; background: #FCF8FF; color: #1B1B21; font-family: 'Be Vietnam Pro', system-ui, sans-serif; display: flex; flex-direction: column; gap: 24px">
+  <div style="display: flex; flex-direction: column; gap: 4px">
+    <h1 style="margin: 0; font-family: Lora, Georgia, serif; font-size: 28px; line-height: 36px; font-weight: 400">Tokens</h1>
+    <p style="margin: 0; font-size: 14px; line-height: 20px; color: #464651">Source: the Evermoon design system (Fox's Theme Builder colors, Material 3 scales). Code: app_themes.dart, app_dimensions.dart.</p>
+  </div>
+
+  <section style="display: flex; flex-direction: column; gap: 12px">
+    <h2 style="margin: 0; font-family: Lora, Georgia, serif; font-size: 16px; line-height: 24px; font-weight: 500; color: #464651">Color roles (light / dark)</h2>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px">
+      <sc-for list="{{colors}}" as="c" hint-placeholder-count="12">
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; height: 44px; border-radius: 12px; overflow: hidden; border: 1px solid #C7C5D3">
+            <div style="flex: 1; background: {{c.light}}"></div>
+            <div style="flex: 1; background: {{c.dark}}"></div>
+          </div>
+          <span style="font-size: 14px; line-height: 20px; font-weight: 500">{{c.role}}</span>
+          <span style="font-size: 12px; line-height: 16px; color: #464651; font-family: ui-monospace, monospace">{{c.light}} / {{c.dark}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-family: Lora, Georgia, serif; font-size: 16px; line-height: 24px; font-weight: 500; color: #464651">M3 type scale</h2>
+      <span style="font-family: Lora, Georgia, serif; font-size: 24px; line-height: 32px">Headline small 24/32 · Lora</span>
+      <span style="font-family: Lora, Georgia, serif; font-size: 22px; line-height: 28px">Title large 22/28 · Lora</span>
+      <span style="font-family: Lora, Georgia, serif; font-size: 16px; line-height: 24px; font-weight: 500">Title medium 16/24 · Lora 500</span>
+      <span style="font-size: 16px; line-height: 24px">Body large 16/24 · Be Vietnam Pro</span>
+      <span style="font-size: 14px; line-height: 20px">Body medium 14/20</span>
+      <span style="font-size: 14px; line-height: 20px; font-weight: 500">Label large 14/20 · 500</span>
+      <span style="font-size: 12px; line-height: 16px; font-weight: 500">Label medium 12/16 · 500</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-family: Lora, Georgia, serif; font-size: 16px; line-height: 24px; font-weight: 500; color: #464651">Spacing, shape, size</h2>
+      <span style="font-size: 14px; line-height: 20px">Spacing (4 dp grid): 4 · 8 · 12 · 16 · 24 · 32; phone margin 16</span>
+      <span style="font-size: 14px; line-height: 20px">Corners: field 4 · chip 8 · card 12 · FAB 16 · dialog 28 · button full</span>
+      <span style="font-size: 14px; line-height: 20px">Touch target 48 · top app bar 64 · nav bar 80 (indicator 64×32)</span>
+      <span style="font-size: 14px; line-height: 20px">FAB 56 · text field 56 · button 40</span>
+      <span style="font-size: 14px; line-height: 20px">Date badge 56×64</span>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":880,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      colors: [
+        { role: 'surface', light: '#FCF8FF', dark: '#131318' },
+        { role: 'surface-container-low', light: '#F6F2FB', dark: '#1B1B21' },
+        { role: 'on-surface', light: '#1B1B21', dark: '#E4E1E9' },
+        { role: 'on-surface-variant', light: '#464651', dark: '#C7C5D3' },
+        { role: 'primary', light: '#5354AD', dark: '#C1C1FF' },
+        { role: 'primary-container', light: '#9FA0FF', dark: '#9FA0FF' },
+        { role: 'secondary-container', light: '#D5E8E6', dark: '#D3E6E4' },
+        { role: 'today-container (tertiary-container)', light: '#FFF3E3', dark: '#ECE1D1' },
+        { role: 'outline', light: '#777683', dark: '#918F9D' },
+        { role: 'outline-variant', light: '#C7C5D3', dark: '#464651' },
+        { role: 'error', light: '#AB3337', dark: '#FFB3B0' },
+        { role: 'surface-container-high', light: '#EAE7EF', dark: '#2A292F' },
+        { role: 'on-today-container (on-tertiary-fixed)', light: '#201B11', dark: '#201B11' },
+        { role: 'holiday-mark', light: '#C62828', dark: '#FFB4A9' },
+        { role: 'holiday-container', light: '#FFDAD6', dark: '#5C1A16' },
+        { role: 'feedback-success', light: '#E8F5E9', dark: '#1B5E20' },
+        { role: 'feedback-warning', light: '#FFF3E0', dark: '#5D3A00' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

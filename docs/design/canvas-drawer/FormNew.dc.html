@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Thêm ngày giỗ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Lora:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin: 0}
+a{color:#5354AD}a:hover{color:#3B3B94}
+input,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; background: #FCF8FF; color: #1B1B21; font-family: 'Be Vietnam Pro', system-ui, sans-serif; overflow: hidden">
+  <header style="height: 64px; flex: none; padding: 0 8px; display: flex; align-items: center; gap: 4px">
+    <a href="Main.dc.html" aria-label="Quay lại" style="width: 48px; height: 48px; border-radius: 24px; color: #1B1B21; display: flex; align-items: center; justify-content: center">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+    </a>
+    <h1 style="margin: 0; font-family: Lora, Georgia, serif; font-size: 22px; line-height: 28px; font-weight: 400">Thêm ngày giỗ</h1>
+  </header>
+
+  <form style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 104px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="name" style="font-size: 14px; line-height: 20px; font-weight: 600">Tên người mất</label>
+      <input id="name" value="Ông nội" style="height: 56px; flex: none; box-sizing: border-box; padding: 0 16px; border: 1px solid #777683; border-radius: 4px; background: #F6F2FB; color: #1B1B21; font-size: 16px">
+    </div>
+
+    <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+      <legend style="padding: 0; margin-bottom: 8px; font-size: 14px; line-height: 20px; font-weight: 600">Ngày mất (âm lịch)</legend>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+        <button type="button" aria-label="Ngày âm, đang chọn 27" style="height: 56px; padding: 0 16px; border: 1px solid #777683; border-radius: 4px; background: #F6F2FB; color: #1B1B21; font-family: inherit; display: flex; align-items: center; justify-content: space-between">
+          <span style="display: flex; flex-direction: column; align-items: flex-start"><span style="font-size: 12px; line-height: 16px; color: #464651">Ngày</span><span style="font-size: 22px; line-height: 28px; font-weight: 700">27</span></span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#464651" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+        </button>
+        <button type="button" aria-label="Tháng âm, đang chọn 9" style="height: 56px; padding: 0 16px; border: 1px solid #777683; border-radius: 4px; background: #F6F2FB; color: #1B1B21; font-family: inherit; display: flex; align-items: center; justify-content: space-between">
+          <span style="display: flex; flex-direction: column; align-items: flex-start"><span style="font-size: 12px; line-height: 16px; color: #464651">Tháng</span><span style="font-size: 22px; line-height: 28px; font-weight: 700">9</span></span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#464651" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+        </button>
+      </div>
+    </fieldset>
+
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="year" style="font-size: 14px; line-height: 20px; font-weight: 600">Năm mất (âm lịch) <span style="font-weight: 400; color: #464651">· không bắt buộc</span></label>
+      <input id="year" value="2001" inputmode="numeric" style="height: 56px; flex: none; box-sizing: border-box; padding: 0 16px; border: 1px solid #777683; border-radius: 4px; background: #F6F2FB; color: #1B1B21; font-size: 16px">
+      <span style="font-size: 14px; line-height: 20px; color: #464651">Để trống nếu gia đình không nhớ năm.</span>
+    </div>
+
+    <div style="padding: 16px 16px; border-radius: 12px; background: #FFF3E3; color: #201B11; display: flex; align-items: center; gap: 12px">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <span id="leap-label" style="font-size: 16px; line-height: 22px; font-weight: 600">Mất vào tháng 9 nhuận</span>
+        <span style="font-size: 14px; line-height: 20px; color: #4D463A">Năm này có hai tháng 9. Bật nếu người mất trong tháng nhuận.</span>
+      </div>
+      <button type="button" role="switch" aria-checked="{{sw.leap.on}}" aria-labelledby="leap-label" onClick="{{sw.leap.toggle}}" style="{{sw.leap.track}}"><span style="{{sw.leap.thumb}}"></span></button>
+    </div>
+
+    <div style="padding: 12px 16px; border-radius: 12px; background: #F6F2FB; border: 1px dashed #777683; display: flex; gap: 12px; align-items: center">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5354AD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>
+      <span style="font-size: 14px; line-height: 20px">Năm nay rơi vào <strong style="font-weight: 600">Thứ Sáu, 06/11/2026</strong></span>
+    </div>
+
+    <section style="padding: 4px 16px 12px; border-radius: 16px; background: #F6F2FB; display: flex; flex-direction: column">
+      <div style="min-height: 56px; display: flex; align-items: center; gap: 12px">
+        <span id="remind-label" style="flex: 1; font-size: 16px; line-height: 22px; font-weight: 600">Nhắc tôi</span>
+        <button type="button" role="switch" aria-checked="{{sw.remind.on}}" aria-labelledby="remind-label" onClick="{{sw.remind.toggle}}" style="{{sw.remind.track}}"><span style="{{sw.remind.thumb}}"></span></button>
+      </div>
+      <sc-if value="{{remind}}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <span id="lead-label" style="font-size: 14px; line-height: 20px; color: #464651">Nhắc trước</span>
+            <div role="radiogroup" aria-labelledby="lead-label" style="display: flex; flex-wrap: wrap; gap: 8px">
+              <sc-for list="{{leads}}" as="o" hint-placeholder-count="4">
+                <button type="button" role="radio" aria-checked="{{o.checked}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button>
+              </sc-for>
+            </div>
+          </div>
+          <button type="button" style="min-height: 56px; padding: 0 16px; border: 1px solid #777683; border-radius: 4px; background: #FCF8FF; color: #1B1B21; font-family: inherit; display: flex; align-items: center; gap: 12px; text-align: left">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#464651" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+            <span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 12px; line-height: 16px; color: #464651">Giờ nhắc</span><span style="font-size: 16px; line-height: 24px; font-weight: 600">07:00</span></span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#464651" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+          </button>
+          <span style="font-size: 14px; line-height: 20px; color: #464651">{{remindSummary}}</span>
+        </div>
+      </sc-if>
+    </section>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="address" style="font-size: 14px; line-height: 20px; font-weight: 600">Địa chỉ <span style="font-weight: 400; color: #464651">· không bắt buộc</span></label>
+      <input id="address" placeholder="Ví dụ: nhà bác cả" style="height: 56px; flex: none; box-sizing: border-box; padding: 0 16px; border: 1px solid #777683; border-radius: 4px; background: #F6F2FB; color: #1B1B21; font-size: 16px">
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="note" style="font-size: 14px; line-height: 20px; font-weight: 600">Ghi chú <span style="font-weight: 400; color: #464651">· không bắt buộc</span></label>
+      <textarea id="note" rows="3" placeholder="Ví dụ: chuẩn bị mâm cỗ, mời họ hàng" style="box-sizing: border-box; padding: 16px 16px; border: 1px solid #777683; border-radius: 4px; background: #F6F2FB; color: #1B1B21; font-size: 16px; line-height: 24px; resize: none"></textarea>
+    </div>
+  </form>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 16px 16px; background: #FCF8FF; border-top: 1px solid #C7C5D3">
+    <a href="Main.dc.html" style="width: 100%; height: 48px; border-radius: 24px; background: #5354AD; color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center">Lưu ngày giỗ</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { remind: true, lead: 0, leap: false };
+  }
+  sw(key) {
+    const on = this.state[key];
+    return {
+      on: on ? 'true' : 'false',
+      toggle: () => this.setState({ [key]: !this.state[key] }),
+      track: 'width: 52px; height: 32px; flex: none; padding: 0; box-sizing: border-box; border-radius: 16px; position: relative; ' + (on ? 'border: 0; background: #5354AD' : 'border: 2px solid #777683; background: #E4E1E9'),
+      thumb: 'position: absolute; top: ' + (on ? '4px; right: 4px; width: 24px; height: 24px; border-radius: 12px; background: #FFFFFF' : '6px; left: 6px; width: 16px; height: 16px; border-radius: 8px; background: #777683')
+    };
+  }
+  leadOption(days, label) {
+    const sel = this.state.lead === days;
+    return {
+      label, checked: sel ? 'true' : 'false',
+      pick: () => this.setState({ lead: days }),
+      style: 'height: 36px; padding: 0 16px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500; ' + (sel ? 'border: 0; background: #D5E8E6; color: #576967' : 'border: 1px solid #777683; background: transparent; color: #464651')
+    };
+  }
+  renderVals() {
+    const s = this.state;
+    // Illustrative only: plain subtraction from the placeholder date 06/11/2026.
+    const remindDates = { 0: 'Thứ Sáu, 06/11', 1: 'Thứ Năm, 05/11', 3: 'Thứ Ba, 03/11', 7: 'Thứ Sáu, 30/10' };
+    const leadText = s.lead === 0 ? 'đúng ngày giỗ' : s.lead + ' ngày trước';
+    return {
+      sw: { leap: this.sw('leap'), remind: this.sw('remind') },
+      remind: s.remind,
+      leads: [this.leadOption(0, 'Đúng ngày'), this.leadOption(1, '1 ngày'), this.leadOption(3, '3 ngày'), this.leadOption(7, '7 ngày')],
+      remindSummary: 'Nhắc lúc 07:00, ' + leadText + ' (' + remindDates[s.lead] + ').'
+    };
+  }
+}
+</script>
+</body>
+</html>

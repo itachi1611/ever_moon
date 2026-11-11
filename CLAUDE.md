@@ -14,7 +14,7 @@ Documents you generate go in `docs/` and are written in English only. Chat with 
 
 ## Base template
 
-This repo was cloned from the author's Flutter base template (`itachi1611/flutter_temp_bloc` lineage). The sections from "Commands" to "App entry point flow" describe the template as cloned and are being trimmed slice by slice. The approved cleanup decisions and slice status are in `docs/plans/0002-template-cleanup.md`; platform differences are in `docs/platform-notes.md`. Done so far: C1 to C5 (extra packages, `ja`, AI, demo pages, `uat`, remote config, rename, env, tests), C6 packages, C7 docs, C8 iOS on Swift Package Manager only (no CocoaPods) with `uat` removed from Xcode. Pending decision: which unreferenced images in `assets/images` to delete. Firebase projects: `evermoon-dev` and `evermoon-2cc28` (prod), configured with `scripts/config_firebase.sh` (`google-services.json` and `GoogleService-Info.plist` are gitignored; `lib/firebase/*/firebase_options.dart` and `firebase.json` are committed). Android is the main target; flavors will be `dev` and `prod` only.
+This repo was cloned from the author's Flutter base template (`itachi1611/flutter_temp_bloc` lineage). The sections from "Commands" to "App entry point flow" describe the template as cloned and are being trimmed slice by slice. The approved cleanup decisions and slice status are in `docs/plans/0002-template-cleanup.md`; platform differences are in `docs/platform-notes.md`. Done so far: C1 to C5 (extra packages, `ja`, AI, demo pages, `uat`, remote config, rename, env, tests), C6 packages, C7 docs, C8 iOS on Swift Package Manager only (no CocoaPods) with `uat` removed from Xcode. C9 removed unused template assets, widgets and packages, and set the launcher icon (`docs/design/icon/`). Firebase projects: `evermoon-dev` and `evermoon-2cc28` (prod), configured with `scripts/config_firebase.sh` (`google-services.json` and `GoogleService-Info.plist` are gitignored; `lib/firebase/*/firebase_options.dart` and `firebase.json` are committed). Android is the main target; flavors will be `dev` and `prod` only.
 
 ## Domain rules (decided, do not re-litigate without the user)
 
@@ -30,7 +30,8 @@ This repo was cloned from the author's Flutter base template (`itachi1611/flutte
 - Needs an engine query "does lunar year Y have a leap month, and which number?". The own package (see Lunar engine) must expose it.
 
 **Reminders (v1)**
-- Remind on the exact anniversary day only. No "tiên thường" (day-before) logic. Optional lead-days may be added later.
+- Per event: on/off, days before (0, 1, 3 or 7; 0 = on the day) and time of day (default 07:00). Decided by Fox on 2026-11-11 (plan 0005, D9), replacing the earlier "exact day only" rule.
+- Every event repeats yearly on its lunar date. No one-off events and no repeat option (D10).
 
 **System events** (no user creation, only toggle reminders): mùng 1, rằm, traditional Tết festivals.
 
@@ -136,10 +137,9 @@ lib/
 │   ├── auth/                  # login, register, forgot_password, phone_input,
 │   │                          #   sms_code, email_verification (firebase_ui_auth)
 │   ├── privacy/ terms/        # Markdown-rendered legal pages
-│   ├── image_preview/         # Full-screen Hero image viewer
 │   ├── widgets/               # Shared page-level widgets (TransitionPage, wrappers, error widget)
 │   └── pages.dart             # Barrel
-├── models/                    # Entities (picked_file, flow_fab_menu)
+├── models/                    # Entities (anniversary, anniversary_date, picked_file)
 │   └── responses/             # array_response, object_response, error_response
 ├── repositories/              # Data layer: anniversary_repository (Drift, soft delete, UUID IDs)
 ├── network/
@@ -185,7 +185,7 @@ packages/                      # Local packages (path deps)
 | Markdown           | `flutter_markdown_plus` (privacy / terms pages)                                                 |
 | UI helpers         | `another_flushbar`, `gap`, `fluttertoast`                                                       |
 | Device/app info    | `device_info_plus`, `package_info_plus`                                                         |
-| Image / files      | `cached_network_image`, `flutter_cache_manager`, `image_picker`, `file_picker`                  |
+| Image / files      | `image_picker`, `file_picker`                                                                   |
 | Path & permissions | `path_provider`, `external_path`, `path`, `permission_handler`                                  |
 | Browser            | `url_launcher`                                                                                  |
 | Environment config | `flutter_dotenv` — loads `assets/env/.env.<flavor>` via `AppEnv.load`                           |
@@ -273,7 +273,7 @@ Router
   /home ...  → ShellPage (StatefulShellRoute.indexedStack)
                ├── branch 0: HomePage
                └── branch 1: SettingPage
-  + standalone routes: profile, auth/*, terms, privacy, imagePreview, notFound
+  + standalone routes: profile, auth/*, terms, privacy, notFound
 ```
 
 ---

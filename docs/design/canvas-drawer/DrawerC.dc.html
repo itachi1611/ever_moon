@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Drawer C — có danh sách sắp tới</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Lora:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5354AD}a:hover{color:#3B3B94}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; background: #FCF8FF; color: #1B1B21; font-family: 'Be Vietnam Pro', system-ui, sans-serif; overflow: hidden">
+  <header style="padding: 28px 20px 12px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 4px; margin-left: -12px"><button aria-label="Mở menu" style="width: 48px; height: 48px; flex: none; border: 0; border-radius: 24px; background: transparent; color: #1B1B21; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button><h1 style="margin: 0; font-family: Lora, Georgia, serif; font-size: 24px; line-height: 32px; font-weight: 400; letter-spacing: -0.2px">Ngày giỗ sắp tới</h1></div>
+    <p style="margin: 0; font-size: 14px; line-height: 20px; color: #464651">4 người · 1 ngày giỗ hôm nay</p>
+  </header>
+
+  <main style="flex: 1; padding: 8px 16px 120px; display: flex; flex-direction: column; gap: 12px; overflow: hidden">
+    <h2 style="margin: 8px 4px 0; font-size: 14px; line-height: 20px; font-family: Lora, Georgia, serif; font-weight: 500; letter-spacing: 0.1px; color: #655D51">Hôm nay</h2>
+    <article style="display: flex; gap: 14px; align-items: center; padding: 16px; border-radius: 12px; background: #FFF3E3; border: 1.5px solid #D0C5B6">
+      <div style="width: 60px; height: 64px; flex: none; border-radius: 12px; background: #5354AD; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center">
+        <span style="font-size: 24px; line-height: 28px; font-weight: 700">10</span>
+        <span style="font-size: 12px; line-height: 16px; font-weight: 500">tháng 4</span>
+      </div>
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-family: Lora, Georgia, serif; font-size: 16px; line-height: 24px; font-weight: 500">Ông nội</span>
+        <span style="font-size: 14px; line-height: 20px; color: #655D51">10 tháng 4 âm lịch</span>
+        <span style="font-size: 14px; line-height: 20px; color: #655D51">Thứ Sáu, 06/11/2026</span>
+      </div>
+      <span style="flex: none; padding: 6px 12px; border-radius: 999px; background: #5354AD; color: #FFFFFF; font-size: 14px; line-height: 20px; font-weight: 600">Hôm nay</span>
+    </article>
+
+    <h2 style="margin: 12px 4px 0; font-size: 14px; line-height: 20px; font-family: Lora, Georgia, serif; font-weight: 500; letter-spacing: 0.1px; color: #464651">Sắp tới</h2>
+    <sc-for list="{{items}}" as="item" hint-placeholder-count="3">
+      <article style="display: flex; gap: 14px; align-items: center; padding: 16px; border-radius: 12px; background: #F6F2FB; border: 1px solid #C7C5D3">
+        <div style="width: 60px; height: 64px; flex: none; border-radius: 12px; background: #E4E1E9; color: #1B1B21; display: flex; flex-direction: column; align-items: center; justify-content: center">
+          <span style="font-size: 24px; line-height: 28px; font-weight: 700">{{item.day}}</span>
+          <span style="font-size: 12px; line-height: 16px; font-weight: 500; color: #464651">{{item.monthShort}}</span>
+        </div>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-family: Lora, Georgia, serif; font-size: 16px; line-height: 24px; font-weight: 500">{{item.name}}</span>
+          <span style="font-size: 14px; line-height: 20px; color: #464651">{{item.lunar}}</span>
+          <span style="font-size: 14px; line-height: 20px; color: #464651">{{item.solar}}</span>
+        </div>
+        <div style="flex: none; display: flex; flex-direction: column; align-items: flex-end">
+          <span style="font-size: 22px; line-height: 28px; font-weight: 700; color: #5354AD">{{item.days}}</span>
+          <span style="font-size: 13px; line-height: 18px; color: #464651">ngày nữa</span>
+        </div>
+      </article>
+    </sc-for>
+  </main>
+
+  <button aria-label="Thêm ngày giỗ" style="position: absolute; right: 16px; bottom: 16px; height: 56px; padding: 0 22px 0 18px; border: 0; border-radius: 16px; background: #5354AD; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Thêm
+  </button>
+
+  <a href="Main.dc.html" aria-label="Đóng menu" style="position: absolute; inset: 0; background: rgba(0, 0, 0, 0.32)"></a>
+  <nav aria-label="Điều hướng chính" style="position: absolute; left: 0; top: 0; bottom: 0; width: 316px; box-sizing: border-box; padding: 16px 12px; background: #F6F2FB; border-radius: 0 16px 16px 0; display: flex; flex-direction: column">
+    <div style="padding: 12px 8px 8px; display: flex; align-items: center; gap: 12px">
+      <span style="width: 40px; height: 40px; border-radius: 20px; background: #5354AD; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></span>
+      <div style="display: flex; flex-direction: column"><span style="font-family: Lora, Georgia, serif; font-size: 20px; line-height: 26px; color: #1B1B21">Evermoon</span><span style="font-size: 12px; line-height: 16px; color: #464651">10 tháng 4 âm lịch · hôm nay</span></div>
+    </div>
+    <span style="padding: 16px 8px 6px; font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #464651">Xem</span>
+    <a href="#" aria-current="page" style="position: relative; height: 52px; padding: 0 16px 0 20px; border-radius: 12px; display: flex; align-items: center; gap: 14px; text-decoration: none; font-size: 15px; line-height: 20px; background: #E1DFFF; color: #32328A; font-weight: 600"><span style="position: absolute; left: 0; top: 12px; bottom: 12px; width: 4px; border-radius: 0 4px 4px 0; background: #5354AD"></span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg><span>Ngày giỗ</span><span style="margin-left: auto; font-size: 14px; line-height: 20px; color: #32328A">4</span></a>
+    <a href="#" style="position: relative; height: 52px; padding: 0 16px 0 20px; border-radius: 12px; display: flex; align-items: center; gap: 14px; text-decoration: none; font-size: 15px; line-height: 20px; background: transparent; color: #1B1B21; font-weight: 500"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg><span>Lịch</span></a>
+    <a href="#" style="position: relative; height: 52px; padding: 0 16px 0 20px; border-radius: 12px; display: flex; align-items: center; gap: 14px; text-decoration: none; font-size: 15px; line-height: 20px; background: transparent; color: #1B1B21; font-weight: 500"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"></path></svg><span>Cài đặt</span></a>
+    <span style="padding: 16px 8px 6px; font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #464651">Sắp tới</span>
+    <ul style="margin: 0; padding: 0 4px; list-style: none">
+      <li style="display: flex; align-items: center; gap: 12px; padding: 8px 4px">
+        <span style="width: 44px; height: 44px; flex: none; border-radius: 10px; background: #EAE7EF; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font-size: 16px; line-height: 20px; font-weight: 700; color: #1B1B21">22</span><span style="font-size: 10px; line-height: 12px; color: #464651">th.4</span></span>
+        <span style="flex: 1; min-width: 0; font-size: 14px; line-height: 20px; color: #1B1B21; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Bà nội</span>
+        <span style="flex: none; font-size: 13px; line-height: 18px; color: #464651">12 ngày</span></li>
+      <li style="display: flex; align-items: center; gap: 12px; padding: 8px 4px">
+        <span style="width: 44px; height: 44px; flex: none; border-radius: 10px; background: #EAE7EF; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font-size: 16px; line-height: 20px; font-weight: 700; color: #1B1B21">3</span><span style="font-size: 10px; line-height: 12px; color: #464651">th.6</span></span>
+        <span style="flex: 1; min-width: 0; font-size: 14px; line-height: 20px; color: #1B1B21; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Cụ ông Nguyễn Văn An</span>
+        <span style="flex: none; font-size: 13px; line-height: 18px; color: #464651">37 ngày</span></li>
+      <li style="display: flex; align-items: center; gap: 12px; padding: 8px 4px">
+        <span style="width: 44px; height: 44px; flex: none; border-radius: 10px; background: #EAE7EF; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font-size: 16px; line-height: 20px; font-weight: 700; color: #1B1B21">15</span><span style="font-size: 10px; line-height: 12px; color: #464651">th.8</span></span>
+        <span style="flex: 1; min-width: 0; font-size: 14px; line-height: 20px; color: #1B1B21; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Bác cả</span>
+        <span style="flex: none; font-size: 13px; line-height: 18px; color: #464651">101 ngày</span></li>
+    </ul>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      items: [
+        { day: '22', monthShort: 'tháng 4', name: 'Bà nội', lunar: '22 tháng 4 âm lịch', solar: 'Thứ Tư, 18/11/2026', days: '12' },
+        { day: '3', monthShort: 'tháng 6', name: 'Cụ ông Nguyễn Văn An', lunar: '3 tháng 6 âm lịch', solar: 'Chủ Nhật, 13/12/2026', days: '37' },
+        { day: '15', monthShort: 'tháng 8', name: 'Bác cả', lunar: '15 tháng 8 âm lịch', solar: 'Thứ Hai, 15/02/2027', days: '101' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

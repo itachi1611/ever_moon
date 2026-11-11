@@ -1,0 +1,44 @@
+<!-- @dsCard height=288 -->
+<style>
+.cover{position:relative;width:960px;height:288px;background:var(--surface);overflow:hidden;font-family:var(--font-body)}
+.cover svg{position:absolute;inset:0}
+.b-primary{fill:var(--primary)}
+.b-primary-container{fill:var(--primary-container)}
+.b-tertiary-container{fill:var(--tertiary-container)}
+.b-secondary-container{fill:var(--secondary-container)}
+.b-ink{fill:var(--on-surface)}
+.d-moon{fill:var(--tertiary-container)}
+.d-cut-primary{fill:var(--primary)}
+.d-phase{fill:var(--on-primary-container)}
+.d-cut-pc{fill:var(--primary-container)}
+.tile{rx:var(--corner-medium)}
+.name{position:absolute;left:40px;bottom:40px;max-width:440px;display:flex;flex-direction:column;gap:var(--space-8)}
+.name h1{margin:0;font-family:var(--font-display);font-weight:500;font-size:96px;line-height:.95;color:var(--on-surface);letter-spacing:-1px}
+.name p{margin:0;font-size:14px;line-height:20px;color:var(--on-surface-variant)}
+</style>
+<div class="cover">
+<svg width="960" height="288" viewBox="0 0 960 288" aria-hidden="true">
+<!--
+blocks: primary 200x200, primary-container 224x120, tertiary-container 104x152, secondary-container 104x72, on-surface 200x72; sides are multiples of space-8/space-16
+arrangement: one tall primary slab with satellites, two blocks bleeding off the right and bottom edges, gaps of space-16
+pattern: literal motif (the moon) - a crescent cut from discs on the slab and four moon phases on primary-container; chosen because the product is the lunar calendar
+steps and radii: gaps space-16, phase pitch 48 (space-16 x 3), tiles corner-medium, discs half their side
+-->
+<rect class="b-primary tile" x="520" y="0" width="200" height="200"></rect>
+<rect class="b-primary-container tile" x="736" y="0" width="240" height="120"></rect>
+<rect class="b-tertiary-container tile" x="736" y="136" width="104" height="168"></rect>
+<rect class="b-secondary-container tile" x="856" y="136" width="120" height="72"></rect>
+<rect class="b-ink tile" x="520" y="216" width="200" height="88"></rect>
+<circle class="d-moon" cx="612" cy="100" r="64"></circle>
+<circle class="d-cut-primary" cx="640" cy="84" r="58"></circle>
+<circle class="d-phase" cx="784" cy="60" r="16"></circle>
+<circle class="d-phase" cx="832" cy="60" r="16"></circle>
+<circle class="d-cut-pc" cx="840" cy="60" r="14"></circle>
+<circle class="d-phase" cx="880" cy="60" r="16"></circle>
+<circle class="d-cut-pc" cx="896" cy="60" r="16"></circle>
+<circle class="d-phase" cx="928" cy="60" r="16"></circle>
+<circle class="d-cut-pc" cx="928" cy="60" r="12"></circle>
+</svg>
+<div class="name"><h1>Evermoon</h1><p>Nhắc ngày giỗ đúng ngày âm lịch, mỗi năm.</p></div>
+</div>
+<script>/* static cover */</script>

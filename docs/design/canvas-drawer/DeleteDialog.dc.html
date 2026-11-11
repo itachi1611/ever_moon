@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Xác nhận xoá</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Lora:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin: 0}
+a{color:#5354AD}a:hover{color:#3B3B94}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; background: #FCF8FF; color: #1B1B21; font-family: 'Be Vietnam Pro', system-ui, sans-serif; overflow: hidden">
+  <div aria-hidden="true" style="padding: 16px 16px; display: flex; flex-direction: column; gap: 16px">
+    <div style="height: 30px; width: 180px; border-radius: 8px; background: #E4E1E9"></div>
+    <div style="height: 52px; border-radius: 12px; background: #F6F2FB; border: 1.5px solid #777683"></div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+      <div style="height: 64px; border-radius: 12px; background: #F6F2FB; border: 1.5px solid #777683"></div>
+      <div style="height: 64px; border-radius: 12px; background: #F6F2FB; border: 1.5px solid #777683"></div>
+    </div>
+    <div style="height: 52px; border-radius: 12px; background: #F6F2FB; border: 1.5px solid #777683"></div>
+    <div style="height: 96px; border-radius: 12px; background: #F6F2FB; border: 1.5px solid #777683"></div>
+  </div>
+
+  <div style="position: absolute; inset: 0; background: rgba(0, 0, 0, 0.32); display: flex; align-items: center; justify-content: center; padding: 24px">
+    <section role="dialog" aria-modal="true" aria-labelledby="dlg-title" aria-describedby="dlg-body" style="width: 100%; box-sizing: border-box; padding: 24px; border-radius: 28px; background: #EAE7EF; display: flex; flex-direction: column; gap: 12px">
+      <h2 id="dlg-title" style="margin: 0; font-family: Lora, Georgia, serif; font-size: 22px; line-height: 28px; font-weight: 400">Xoá ngày giỗ của Bà nội?</h2>
+      <p id="dlg-body" style="margin: 0; font-size: 16px; line-height: 24px; color: #464651">Ngày giỗ và lời nhắc sẽ không còn hiện trong ứng dụng. Bạn có thể thêm lại bất cứ lúc nào.</p>
+      <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px">
+        <a href="FormEdit.dc.html" style="height: 48px; padding: 0 12px; border-radius: 24px; background: transparent; color: #5354AD; font-size: 16px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Giữ lại</a>
+        <a href="Main.dc.html" style="height: 48px; padding: 0 12px; border-radius: 24px; background: transparent; color: #AB3337; font-size: 16px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Xoá</a>
+      </div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

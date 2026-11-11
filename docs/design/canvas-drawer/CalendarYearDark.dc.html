@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Lịch năm (tối)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Lora:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin: 0}
+a{color:#C1C1FF}a:hover{color:#E1DFFF}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; background: #131318; color: #E4E1E9; font-family: 'Be Vietnam Pro', system-ui, sans-serif; overflow: hidden">
+  <header style="padding: 24px 16px 8px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; align-items: center; gap: 4px; margin-left: -12px"><button aria-label="Mở menu" style="width: 48px; height: 48px; flex: none; border: 0; border-radius: 24px; background: transparent; color: #E4E1E9; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button><h1 style="margin: 0; font-family: Lora, Georgia, serif; font-size: 24px; line-height: 32px; font-weight: 400">Lịch</h1></div>
+    <div role="tablist" aria-label="Kiểu xem" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid #918F9D; border-radius: 20px; overflow: hidden">
+      <a href="CalendarYearDark.dc.html" role="tab" aria-selected="true" style="height: 40px; border: 0; border-right: 1px solid #918F9D; border-radius: 0; background: #D3E6E4; color: #566866; font-family: inherit; font-size: 14px; font-weight: 600; box-shadow: none; text-decoration: none; display: flex; align-items: center; justify-content: center">Năm</a>
+      <a href="CalendarMonthDark.dc.html" role="tab" aria-selected="false" style="height: 40px; border: 0; border-right: 1px solid #918F9D; border-radius: 0; background: transparent; color: #C7C5D3; font-family: inherit; font-size: 14px; font-weight: 500; text-decoration: none; display: flex; align-items: center; justify-content: center">Tháng</a>
+      <a href="CalendarWeekDark.dc.html" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 0; background: transparent; color: #C7C5D3; font-family: inherit; font-size: 14px; font-weight: 500; text-decoration: none; display: flex; align-items: center; justify-content: center">Tuần</a>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <button aria-label="Năm trước" style="width: 48px; height: 48px; border: 0; border-radius: 24px; background: transparent; color: #E4E1E9; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <span style="font-family: Lora, Georgia, serif; font-size: 16px; line-height: 24px; font-weight: 500">Năm 2026</span>
+        <span style="font-size: 14px; line-height: 20px; color: #C7C5D3">9 ngày giỗ · 9 ngày lễ trong năm</span>
+      </div>
+      <button aria-label="Năm sau" style="width: 48px; height: 48px; border: 0; border-radius: 24px; background: transparent; color: #E4E1E9; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+  </header>
+  <main style="flex: 1; min-height: 0; padding: 4px 16px 96px; display: flex; flex-direction: column; gap: 12px">
+    <div aria-hidden="true" style="display: flex; gap: 16px; padding: 0 4px; font-size: 12px; line-height: 16px; color: #C7C5D3">
+      <span style="display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 4px; background: #C1C1FF"></span>Ngày giỗ</span>
+      <span style="display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 4px; background: #FFB4A9"></span>Mùng 1, rằm, lễ Tết</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 104px; gap: 12px">
+      <sc-for list="{{months}}" as="m" hint-placeholder-count="12">
+        <a href="CalendarMonthDark.dc.html" aria-label="{{m.label}}" style="{{m.box}}">
+          <span style="font-size: 16px; line-height: 22px; font-weight: 600">{{m.name}}</span>
+          <span style="{{m.line1Style}}">{{m.line1}}</span>
+          <span style="font-size: 12px; line-height: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #FFB4A9">{{m.line2}}</span>
+          <span style="align-self: end; display: flex; gap: 4px; height: 8px">
+            <sc-for list="{{m.dots}}" as="dot" hint-placeholder-count="2">
+              <span style="{{dot.style}}"></span>
+            </sc-for>
+          </span>
+        </a>
+      </sc-for>
+    </div>
+    <p style="margin: 0 4px; font-size: 12px; line-height: 16px; color: #C7C5D3">Chạm vào một tháng để mở lịch tháng đó và xem, sửa hoặc xoá từng ngày giỗ.</p>
+  </main>
+
+  <a href="FormDark.dc.html" aria-label="Thêm ngày giỗ vào ngày đang chọn" style="position: absolute; right: 16px; bottom: 16px; height: 56px; padding: 0 24px 0 16px; border-radius: 16px; background: #C1C1FF; color: #24227C; text-decoration: none; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+    Thêm
+  </a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  renderVals() {
+    // Illustrative counts per solar month. Holidays are named festivals only; plain mùng 1 and rằm are not counted.
+    const anniv = [1, 0, 1, 0, 2, 0, 0, 1, 0, 0, 3, 1];
+    const holiday = [1, 2, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0];
+    const current = 10;
+    const months = anniv.map((n, i) => {
+      const h = holiday[i];
+      const dots = [];
+      for (let k = 0; k < Math.min(n, 3); k++) dots.push({ style: 'width: 8px; height: 8px; border-radius: 4px; background: #C1C1FF' });
+      for (let k = 0; k < Math.min(h, 3); k++) dots.push({ style: 'width: 8px; height: 8px; border-radius: 4px; background: #FFB4A9' });
+      return {
+        name: 'Tháng ' + (i + 1),
+        line1: n === 0 ? 'Không có giỗ' : n + ' ngày giỗ',
+        line2: h === 0 ? '' : h + ' ngày lễ',
+        label: 'Tháng ' + (i + 1) + ': ' + (n === 0 ? 'không có giỗ' : n + ' ngày giỗ') + (h ? ', ' + h + ' ngày lễ' : '') + '. Mở lịch tháng.',
+        dots,
+        box: 'box-sizing: border-box; height: 100%; padding: 12px 12px; border-radius: 12px; text-decoration: none; color: #E4E1E9; display: grid; grid-template-rows: 22px 18px 18px 1fr; row-gap: 4px; ' + (i === current ? 'background: #1B1B21; border: 2px solid #C1C1FF;' : 'background: #1B1B21; border: 1px solid #464651;'),
+        line1Style: 'font-size: 12px; line-height: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ' + (n === 0 ? '#918F9D' : '#C7C5D3'),
+      };
+    });
+    return { months };
+  }
+}
+</script>
+</body>
+</html>

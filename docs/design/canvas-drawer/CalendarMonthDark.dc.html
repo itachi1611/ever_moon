@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Lịch tháng (tối)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Lora:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin: 0}
+a{color:#C1C1FF}a:hover{color:#E1DFFF}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; background: #131318; color: #E4E1E9; font-family: 'Be Vietnam Pro', system-ui, sans-serif; overflow: hidden">
+  <header style="padding: 24px 16px 8px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; align-items: center; gap: 4px; margin-left: -12px"><a href="DrawerOpenDark.dc.html" aria-label="Mở menu" style="width: 48px; height: 48px; flex: none; border-radius: 24px; color: #E4E1E9; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></a><h1 style="margin: 0; font-family: Lora, Georgia, serif; font-size: 24px; line-height: 32px; font-weight: 400">Lịch</h1></div>
+    <div role="tablist" aria-label="Kiểu xem" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid #918F9D; border-radius: 20px; overflow: hidden">
+      <a href="CalendarYearDark.dc.html" role="tab" aria-selected="false" style="height: 40px; border: 0; border-right: 1px solid #918F9D; border-radius: 0; background: transparent; color: #C7C5D3; font-family: inherit; font-size: 14px; font-weight: 500; text-decoration: none; display: flex; align-items: center; justify-content: center">Năm</a>
+      <a href="CalendarMonthDark.dc.html" role="tab" aria-selected="true" style="height: 40px; border: 0; border-right: 1px solid #918F9D; border-radius: 0; background: #D3E6E4; color: #566866; font-family: inherit; font-size: 14px; font-weight: 600; box-shadow: none; text-decoration: none; display: flex; align-items: center; justify-content: center">Tháng</a>
+      <a href="CalendarWeekDark.dc.html" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 0; background: transparent; color: #C7C5D3; font-family: inherit; font-size: 14px; font-weight: 500; text-decoration: none; display: flex; align-items: center; justify-content: center">Tuần</a>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <button aria-label="Tháng trước" style="width: 48px; height: 48px; border: 0; border-radius: 24px; background: transparent; color: #E4E1E9; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <span style="font-family: Lora, Georgia, serif; font-size: 16px; line-height: 24px; font-weight: 500">Tháng 11, 2026</span>
+        <span style="font-size: 14px; line-height: 20px; color: #C7C5D3">Tháng 9 – tháng 10 âm lịch</span>
+      </div>
+      <button aria-label="Tháng sau" style="width: 48px; height: 48px; border: 0; border-radius: 24px; background: transparent; color: #E4E1E9; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+  </header>
+  <section style="padding: 0 16px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; font-size: 12px; line-height: 24px; font-weight: 600; color: #C7C5D3">
+      <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span style="color: #C1C1FF">CN</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: 4px">
+      <sc-for list="{{cells}}" as="c" hint-placeholder-count="42">
+        <button type="button" aria-label="{{c.label}}" onClick="{{c.pick}}" style="{{c.box}}">
+          <span style="{{c.solarStyle}}">{{c.solar}}</span>
+          <span style="{{c.lunarStyle}}">{{c.lunar}}</span>
+          <span style="height: 6px; margin-top: 4px; display: flex; gap: 4px"><span style="{{c.dotA}}"></span><span style="{{c.dotH}}"></span></span>
+        </button>
+      </sc-for>
+    </div>
+    <div aria-hidden="true" style="display: flex; gap: 16px; padding: 0 4px; font-size: 12px; line-height: 16px; color: #C7C5D3">
+      <span style="display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 4px; background: #C1C1FF"></span>Ngày giỗ</span>
+      <span style="display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 4px; background: #FFB4A9"></span>Mùng 1, rằm, lễ Tết</span>
+    </div>
+  </section>
+
+  <section style="flex: 1; min-height: 0; overflow-y: auto; margin-top: 8px; padding: 0 16px 88px; display: flex; flex-direction: column; gap: 8px">
+    <h2 style="margin: 0 4px; font-size: 14px; line-height: 20px; font-family: Lora, Georgia, serif; font-weight: 500; color: #E4E1E9">{{dayTitle}}</h2>
+    <sc-for list="{{dayEvents}}" as="ev" hint-placeholder-count="1">
+      <sc-if value="{{ev.isAnniv}}" hint-placeholder-val="{{ true }}">
+        <div style="position: relative; border-radius: 12px; overflow: hidden; background: #FFB3B0">
+          <div aria-hidden="{{ev.hideActions}}" style="position: absolute; inset: 0; display: flex; justify-content: space-between">
+            <button type="button" onClick="{{ev.askDelete}}" style="width: 96px; border: 0; background: #FFB3B0; color: #680010; font-family: inherit; font-size: 14px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>Xoá</button>
+            <a href="FormEditDark.dc.html" style="width: 96px; background: #C1C1FF; color: #24227C; text-decoration: none; font-size: 14px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13 7l4 4"></path></svg>Sửa</a>
+          </div>
+          <div onPointerDown="{{ev.down}}" onPointerMove="{{ev.move}}" onPointerUp="{{ev.up}}" onPointerCancel="{{ev.up}}" style="{{ev.face}}">
+            <span aria-hidden="true" style="width: 10px; height: 10px; flex: none; border-radius: 5px; background: #C1C1FF"></span>
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-family: Lora, Georgia, serif; font-size: 16px; line-height: 22px; font-weight: 500">{{ev.name}}</span><span style="font-size: 14px; line-height: 20px; color: #C7C5D3">{{ev.sub}}</span></span>
+            <span style="flex: none; padding: 4px 12px; border-radius: 8px; background: #35343A; color: #E4E1E9; font-size: 12px; line-height: 16px; font-weight: 600">Ngày giỗ</span>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ev.isHoliday}}" hint-placeholder-val="{{ false }}">
+        <div style="min-height: 60px; box-sizing: border-box; padding: 12px 16px; border-radius: 12px; background: #5C1A16; color: #FFDAD6; display: flex; align-items: center; gap: 12px">
+          <span aria-hidden="true" style="width: 10px; height: 10px; flex: none; border-radius: 5px; background: #FFB4A9"></span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-size: 16px; line-height: 22px; font-weight: 600">{{ev.name}}</span><span style="font-size: 14px; line-height: 20px">{{ev.sub}}</span></span>
+          <span style="flex: none; padding: 4px 12px; border-radius: 8px; border: 1px solid #FFB4A9; color: #FFDAD6; font-size: 12px; line-height: 16px; font-weight: 600">Ngày lễ</span>
+        </div>
+      </sc-if>
+    </sc-for>
+    <sc-if value="{{noEvents}}" hint-placeholder-val="{{ false }}">
+      <p style="margin: 4px; font-size: 14px; line-height: 20px; color: #C7C5D3">Không có sự kiện trong ngày này.</p>
+    </sc-if>
+    <sc-if value="{{hasEvents}}" hint-placeholder-val="{{ true }}">
+      <p style="margin: 0 4px; font-size: 12px; line-height: 16px; color: #C7C5D3">Vuốt sang trái để sửa, sang phải để xoá ngày giỗ. Ngày lễ không sửa được.</p>
+    </sc-if>
+  </section>
+
+  <a href="FormDark.dc.html" aria-label="Thêm ngày giỗ vào ngày đang chọn" style="position: absolute; right: 16px; bottom: 16px; height: 56px; padding: 0 24px 0 16px; border-radius: 16px; background: #C1C1FF; color: #24227C; text-decoration: none; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+    Thêm
+  </a>
+  <sc-if value="{{confirmOpen}}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; background: rgba(0, 0, 0, 0.32); display: flex; align-items: center; justify-content: center; padding: 24px">
+      <section role="dialog" aria-modal="true" aria-labelledby="dlg-title" style="width: 100%; box-sizing: border-box; padding: 24px; border-radius: 28px; background: #2A292F; display: flex; flex-direction: column; gap: 12px">
+        <h2 id="dlg-title" style="margin: 0; font-family: Lora, Georgia, serif; font-size: 22px; line-height: 28px; font-weight: 400">Xoá ngày giỗ của {{confirmName}}?</h2>
+        <p style="margin: 0; font-size: 16px; line-height: 24px; color: #C7C5D3">Ngày giỗ và lời nhắc sẽ không còn hiện trong ứng dụng. Bạn có thể thêm lại bất cứ lúc nào.</p>
+        <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px">
+          <button type="button" onClick="{{cancelDelete}}" style="height: 48px; padding: 0 12px; border: 0; border-radius: 24px; background: transparent; color: #C1C1FF; font-family: inherit; font-size: 16px; font-weight: 600">Giữ lại</button>
+          <button type="button" onClick="{{confirmDelete}}" style="height: 48px; padding: 0 12px; border: 0; border-radius: 24px; background: transparent; color: #FFB3B0; font-family: inherit; font-size: 16px; font-weight: 600">Xoá</button>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = Object.assign(this.swipeState(), { selected: 24 });
+  }
+  swipeState() {
+    return { drag: null, open: {}, deleted: {}, confirm: null };
+  }
+  decorate(ev, faceBg) {
+    const s = this.state;
+    const isDrag = s.drag && s.drag.id === ev.id;
+    const offset = isDrag ? s.drag.dx : (s.open[ev.id] || 0);
+    return Object.assign({}, ev, {
+      isAnniv: ev.kind === 'anniv',
+      isHoliday: ev.kind === 'holiday',
+      hideActions: offset === 0 ? 'true' : 'false',
+      face: 'position: relative; min-height: 60px; box-sizing: border-box; padding: 12px 16px; background: ' + faceBg + '; border: 1px solid #464651; border-radius: 12px; display: flex; align-items: center; gap: 12px; touch-action: pan-y; user-select: none; cursor: grab; transform: translateX(' + offset + 'px); transition: ' + (isDrag ? 'none' : 'transform 180ms ease-out'),
+      down: (e) => { if (e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId); this.setState({ drag: { id: ev.id, x0: e.clientX - (this.state.open[ev.id] || 0), dx: this.state.open[ev.id] || 0 } }); },
+      move: (e) => { const d = this.state.drag; if (!d || d.id !== ev.id) return; const dx = Math.max(-112, Math.min(112, e.clientX - d.x0)); this.setState({ drag: { id: d.id, x0: d.x0, dx: dx } }); },
+      up: () => { const d = this.state.drag; if (!d || d.id !== ev.id) return; const open = {}; open[ev.id] = d.dx < -48 ? -96 : (d.dx > 48 ? 96 : 0); this.setState({ drag: null, open: open }); },
+      askDelete: () => this.setState({ confirm: ev, open: {} })
+    });
+  }
+  confirmVals() {
+    const c = this.state.confirm;
+    return {
+      confirmOpen: !!c,
+      confirmName: c ? c.name : '',
+      cancelDelete: () => this.setState({ confirm: null }),
+      confirmDelete: () => { const del = Object.assign({}, this.state.deleted); if (c) del[c.id] = true; this.setState({ confirm: null, deleted: del }); }
+    };
+  }
+  events() {
+    return {
+      6: [{ id: 'a1', kind: 'anniv', name: 'Ông nội', sub: 'Nhắc trước 1 ngày, lúc 07:00' }],
+      10: [{ id: 'h1', kind: 'holiday', name: 'Mùng 1 tháng 10', sub: 'Ngày lễ hằng tháng' }],
+      18: [{ id: 'a2', kind: 'anniv', name: 'Bà nội', sub: 'Nhắc đúng ngày, lúc 07:00' }],
+      24: [{ id: 'h2', kind: 'holiday', name: 'Rằm tháng 10', sub: 'Ngày lễ hằng tháng' }, { id: 'a3', kind: 'anniv', name: 'Cô Ba', sub: 'Nhắc trước 3 ngày, lúc 19:00' }]
+    };
+  }
+  renderVals() {
+    const lead = 6, days = 30, today = 6;
+    const evs = this.events();
+    const sel = this.state.selected;
+    const weekdays = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
+    const lunarOf = (d) => ((d + 20) % 30) + 1;
+    const cells = [];
+    for (let i = 0; i < 42; i++) {
+      const d = i - lead + 1;
+      const inMonth = d >= 1 && d <= days;
+      const list = (inMonth && evs[d] ? evs[d] : []).filter((e) => !this.state.deleted[e.id]);
+      const hasAnniv = list.some((e) => e.kind === 'anniv');
+      const hasHoliday = list.some((e) => e.kind === 'holiday');
+      const isToday = d === today, isSel = d === sel;
+      const ln = lunarOf(d);
+      cells.push({
+        solar: inMonth ? String(d) : '',
+        lunar: inMonth ? (ln === 1 ? '1/10' : String(ln)) : '',
+        label: inMonth ? ('Ngày ' + d + ', ' + ln + ' âm lịch' + (hasAnniv ? ', có ngày giỗ' : '') + (hasHoliday ? ', ngày lễ' : '')) : 'Trống',
+        pick: () => { if (inMonth) this.setState({ selected: d, open: {} }); },
+        box: 'height: 52px; padding: 0; border: ' + (isSel && !isToday ? '2px solid #C1C1FF' : '0') + '; box-sizing: border-box; border-radius: 12px; font-family: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; background: ' + (isToday ? '#C1C1FF' : 'transparent'),
+        solarStyle: 'font-size: 16px; line-height: 22px; font-weight: ' + (isToday ? '700' : '500') + '; color: ' + (isToday ? '#24227C' : (i % 7 === 6 ? '#C1C1FF' : '#E4E1E9')),
+        lunarStyle: 'font-size: 11px; line-height: 14px; font-weight: ' + (ln === 1 || ln === 15 ? '700' : '400') + '; color: ' + (isToday ? '#24227C' : (inMonth && (ln === 1 || ln === 15) ? '#FFB4A9' : '#918F9D')),
+        dotA: 'width: 6px; height: 6px; border-radius: 3px; background: ' + (hasAnniv ? (isToday ? '#24227C' : '#C1C1FF') : 'transparent'),
+        dotH: 'width: 6px; height: 6px; border-radius: 3px; display: ' + (hasHoliday ? 'block' : 'none') + '; background: #FFB4A9'
+      });
+    }
+    const wd = weekdays[(sel + lead - 1) % 7];
+    const list = (evs[sel] || []).filter((e) => !this.state.deleted[e.id]).map((e) => this.decorate(e, '#1B1B21'));
+    return Object.assign({
+      cells,
+      dayTitle: wd + ', ' + String(sel).padStart(2, '0') + '/11 · ' + lunarOf(sel) + ' tháng ' + (sel >= 10 ? '10' : '9') + ' âm lịch',
+      dayEvents: list,
+      hasEvents: list.length > 0,
+      noEvents: list.length === 0
+    }, this.confirmVals());
+  }
+}
+</script>
+</body>
+</html>
