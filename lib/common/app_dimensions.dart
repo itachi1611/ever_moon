@@ -78,4 +78,10 @@ class AppDimensions {
 
   /// Icon inside the empty-state disc.
   static const double emptyStateIcon = 48;
+
+  /// Most a number picker menu may grow before it scrolls.
+  static const double pickerMenuHeight = 320;
+
+  /// Small icon inside a field or note row.
+  static const double fieldIcon = 22;
 }
