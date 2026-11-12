@@ -1,5 +1,6 @@
 import 'package:ever_moon/app/app_cubit.dart';
 import 'package:ever_moon/app/app_state.dart';
+import 'package:ever_moon/common/app_config.dart';
 import 'package:ever_moon/common/app_dimensions.dart';
 import 'package:ever_moon/common/app_enums.dart' show AppLanguage;
 import 'package:ever_moon/generated/l10n.dart';
@@ -156,10 +157,42 @@ class _AboutSection extends StatelessWidget {
       children: [
         _LinkTile(text: s.lb_terms, path: Routers.terms.routerPath),
         _LinkTile(text: s.lb_policy, path: Routers.privacy.routerPath),
-        ListTile(title: Text(s.lb_version), trailing: Text(version)),
+        ListTile(
+          title: Text(s.lb_version),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: AppDimensions.space8,
+            children: [Text(version), const Icon(Icons.chevron_right)],
+          ),
+          onTap: () => _showAbout(context),
+        ),
       ],
     );
   }
+
+  /// Flutter's own about dialog; its "View licenses" button lists the
+  /// licenses of the packages the app uses.
+  void _showAbout(BuildContext context) => showAboutDialog(
+    context: context,
+    applicationName: S.of(context).lb_app_name,
+    applicationVersion: version,
+    applicationIcon: const _AboutIcon(),
+    applicationLegalese: S.of(context).lb_legalese,
+  );
+}
+
+class _AboutIcon extends StatelessWidget {
+  const _AboutIcon();
+
+  @override
+  Widget build(BuildContext context) => ClipOval(
+    child: Image.asset(
+      AppConfig.kMarkImage,
+      width: AppDimensions.drawerMark,
+      height: AppDimensions.drawerMark,
+      excludeFromSemantics: true,
+    ),
+  );
 }
 
 class _LinkTile extends StatelessWidget {

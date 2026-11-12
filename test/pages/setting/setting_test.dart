@@ -142,6 +142,29 @@ void main() {
     expect(find.text('Chuông nhẹ'), findsOneWidget);
   });
 
+  testWidgets('tapping the version opens the about dialog', (tester) async {
+    await pumpSettings(tester);
+    await tester.ensureVisible(find.text('Phiên bản'));
+    await tester.tap(find.text('Phiên bản'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AboutDialog), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(AboutDialog),
+        matching: find.text('Evermoon'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(AboutDialog),
+        matching: find.text('1.2.3'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('© 2026 Fox'), findsOneWidget);
+  });
+
   test('the preference store round-trips and ignores bad values', () async {
     SharedPreferences.setMockInitialValues({
       AppPreferenceKey.kLanguage.key: 'fr',
