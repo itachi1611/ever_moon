@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.fox.base" "\0"
-            VALUE "FileDescription", "flutter_base" "\0"
+            VALUE "FileDescription", "Evermoon" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "flutter_base" "\0"
+            VALUE "InternalName", "ever_moon" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.fox.base. All rights reserved." "\0"
-            VALUE "OriginalFilename", "flutter_base.exe" "\0"
-            VALUE "ProductName", "flutter_base" "\0"
+            VALUE "OriginalFilename", "ever_moon.exe" "\0"
+            VALUE "ProductName", "Evermoon" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

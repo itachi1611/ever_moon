@@ -498,7 +498,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Evermoon.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Evermoon";
 			};
 			name = Debug;
 		};
@@ -513,7 +513,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.fox.evermoon.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Evermoon.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Evermoon";
 			};
 			name = Release;
 		};
@@ -528,7 +528,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.fox.evermoon.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Evermoon.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Evermoon";
 			};
 			name = Profile;
 		};
@@ -929,7 +929,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Evermoon (Dev).app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Evermoon (Dev)";
 			};
 			name = "Debug-dev";
 		};
@@ -944,7 +944,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.fox.evermoon.dev.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Evermoon (Dev).app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Evermoon (Dev)";
 			};
 			name = "Release-dev";
 		};
@@ -959,7 +959,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.fox.evermoon.dev.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Evermoon (Dev).app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Evermoon (Dev)";
 			};
 			name = "Profile-dev";
 		};
@@ -976,7 +976,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Evermoon.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Evermoon";
 			};
 			name = "Debug-prod";
 		};
@@ -991,7 +991,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.fox.evermoon.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Evermoon.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Evermoon";
 			};
 			name = "Release-prod";
 		};
@@ -1006,7 +1006,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.fox.evermoon.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Evermoon.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Evermoon";
 			};
 			name = "Profile-prod";
 		};

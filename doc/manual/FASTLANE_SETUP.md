@@ -1,4 +1,4 @@
-# Hướng dẫn triển khai Fastlane — Flutter Base
+# Hướng dẫn triển khai Fastlane — Evermoon
 
 Hướng dẫn tự triển khai fastlane từ đầu cho project này, tạo mới toàn bộ config
 (keystore, Google Play service account, Firebase App Distribution, App Store
@@ -295,7 +295,7 @@ Ghi đè `android/fastlane/Fastfile`:
 
 ```ruby
 # android/fastlane/Fastfile
-# Flavor-aware lanes for Flutter Base (dev / uat / prod).
+# Flavor-aware lanes for Evermoon (dev / prod).
 # Flutter builds run from the project root; fastlane runs from android/.
 
 default_platform(:android)

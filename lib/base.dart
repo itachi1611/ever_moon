@@ -1,4 +1,4 @@
-/// Flutter base project — production boilerplate built on BLoC/Cubit,
+/// Evermoon: lunar-date anniversary reminders, built on BLoC/Cubit,
 /// GoRouter, Material 3 theming, and multi-flavor Firebase support.
 ///
 /// This library aggregates all five modules:
