@@ -68,8 +68,23 @@ void main() {
     for (final day in (ready().period as MonthPeriod).days) {
       expect(day.lunar, calendar.toLunar(day.solar));
       final lunar = day.lunar;
-      expect(day.holiday, lunar == null ? null : LunarHoliday.on(lunar));
+      final onLunarDay = lunar == null ? null : LunarHoliday.on(lunar);
+      expect(day.holidays, [
+        if (calendar.thanhMinhOf(day.solar.year) == day.solar)
+          const ThanhMinhHoliday(),
+        ?onLunarDay,
+      ]);
     }
+  });
+
+  test('Tết Thanh Minh is marked on the day the service gives', () async {
+    await load();
+    final thanhMinh = calendar.thanhMinhOf(2002);
+    final day = (ready().period as MonthPeriod).days.firstWhere(
+      (d) => d.solar == thanhMinh,
+    );
+    expect(day.holidays, contains(const ThanhMinhHoliday()));
+    expect(day.hasHoliday, isTrue);
   });
 
   test('UI-9 previous and next move a month, back to today', () async {
@@ -99,14 +114,16 @@ void main() {
     final period = ready().period as YearPeriod;
     expect(period.months, hasLength(12));
     expect(period.anniversaryCount, 2);
-    final festivalMonths = [
+    // Distinct festival days, as the tiles say "ngày lễ".
+    final festivalDays = {
       for (final f in LunarFestival.values)
-        calendar.toSolar(LunarDate(2002, f.month, f.day))?.month,
-    ];
+        ?calendar.toSolar(LunarDate(2002, f.month, f.day)),
+      ?calendar.thanhMinhOf(2002),
+    };
     for (final summary in period.months) {
       expect(
         summary.festivals,
-        festivalMonths.where((m) => m == summary.month).length,
+        festivalDays.where((d) => d.month == summary.month).length,
       );
     }
   });

@@ -42,8 +42,16 @@ void main() {
     );
   });
 
+  test('Giỗ Tổ Hùng Vương is 10/3 (added by Fox on 2026-11-12)', () {
+    expect(
+      LunarHoliday.on(const LunarDate(2002, 3, 10)),
+      const FestivalHoliday(LunarFestival.hungKings),
+    );
+  });
+
   test('only named festivals count for the year view', () {
     expect(const FestivalHoliday(LunarFestival.hanThuc).isFestival, isTrue);
+    expect(const ThanhMinhHoliday().isFestival, isTrue);
     expect(const FirstDayHoliday(1, false).isFestival, isFalse);
   });
 }

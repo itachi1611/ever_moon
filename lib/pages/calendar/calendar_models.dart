@@ -21,7 +21,7 @@ class CalendarDay extends Equatable {
   const CalendarDay({
     required this.solar,
     required this.lunar,
-    required this.holiday,
+    required this.holidays,
     required this.anniversaries,
   });
 
@@ -31,8 +31,12 @@ class CalendarDay extends Equatable {
   /// Its lunar date; `null` outside the supported range.
   final LunarDate? lunar;
 
-  /// Mùng 1, rằm or a festival, if any.
-  final LunarHoliday? holiday;
+  /// Holidays of the day: Tết Thanh Minh can share a day with a lunar
+  /// festival or rằm, so there may be more than one.
+  final List<LunarHoliday> holidays;
+
+  /// Whether the day carries a holiday mark.
+  bool get hasHoliday => holidays.isNotEmpty;
 
   /// Anniversaries held that day, by name.
   final List<Anniversary> anniversaries;
@@ -41,7 +45,7 @@ class CalendarDay extends Equatable {
   bool get hasAnniversary => anniversaries.isNotEmpty;
 
   @override
-  List<Object?> get props => [solar, lunar, holiday, anniversaries];
+  List<Object?> get props => [solar, lunar, holidays, anniversaries];
 }
 
 /// Counts for one Gregorian month in the year view (D16).

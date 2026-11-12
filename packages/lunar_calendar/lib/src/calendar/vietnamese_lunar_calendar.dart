@@ -1,4 +1,5 @@
 import '../astronomy/julian_day.dart';
+import '../astronomy/principal_term.dart';
 import '../supported_range.dart';
 import 'lunar_date.dart';
 import 'lunar_month.dart';
@@ -71,6 +72,19 @@ class VietnameseLunarCalendar {
       }
     }
     return null;
+  }
+
+  /// Sun longitude of the Thanh Minh solar term, in degrees.
+  static const double thanhMinhLongitude = 15;
+
+  /// Gregorian date (UTC midnight) of Tết Thanh Minh in Gregorian [year]:
+  /// the UTC+7 day on which the Sun reaches 15 degrees of longitude.
+  ///
+  /// Returns `null` outside the supported range.
+  DateTime? thanhMinhOf(int year) {
+    if (year < minLunarYear || year > maxLunarYear) return null;
+    final jde = solarTermJde(year, thanhMinhLongitude);
+    return civilFromJdn(localDayNumber(jdeToJdUt(jde)));
   }
 
   /// The month containing civil day [jdn] of Gregorian [year].

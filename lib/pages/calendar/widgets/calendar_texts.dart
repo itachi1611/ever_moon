@@ -68,13 +68,12 @@ String dayCellSemantics(
 }) {
   final s = S.of(context);
   final lunar = day.lunar;
-  final holiday = day.holiday;
   return [
     if (isToday) s.lb_today_chip,
     formatLocalizedDate(context, day.solar, s.lb_solar_date_pattern),
     if (lunar != null) lunarDateText(s, lunar),
     if (day.hasAnniversary) s.lb_has_anniversary,
-    if (holiday != null) holidayName(s, holiday),
+    for (final holiday in day.holidays) holidayName(s, holiday),
   ].join(', ');
 }
 

@@ -16,6 +16,7 @@ String lunarMonthText(S s, int month, {required bool isLeapMonth}) =>
 /// Name of [holiday]: "Mùng 1 tháng 10", "Rằm tháng 10" or the festival.
 String holidayName(S s, LunarHoliday holiday) => switch (holiday) {
   FestivalHoliday(:final festival) => festivalName(s, festival),
+  ThanhMinhHoliday() => s.lb_festival_thanh_minh,
   FirstDayHoliday(:final month, :final isLeapMonth) => s.lb_first_day(
     lunarMonthText(s, month, isLeapMonth: isLeapMonth),
   ),
@@ -33,6 +34,7 @@ String festivalName(S s, LunarFestival festival) => switch (festival) {
   LunarFestival.nguyenDan => s.lb_festival_nguyen_dan,
   LunarFestival.nguyenTieu => s.lb_festival_nguyen_tieu,
   LunarFestival.hanThuc => s.lb_festival_han_thuc,
+  LunarFestival.hungKings => s.lb_festival_hung_kings,
   LunarFestival.doanNgo => s.lb_festival_doan_ngo,
   LunarFestival.trungNguyen => s.lb_festival_trung_nguyen,
   LunarFestival.trungThu => s.lb_festival_trung_thu,

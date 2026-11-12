@@ -11,13 +11,20 @@ const int _refinementSteps = 8;
 /// [index] runs from 0 (March equinox) to 11. Indexes 10 and 11 (300 and
 /// 330 degrees) are the terms of January and February of [year], before its
 /// March equinox. Index 9 (270 degrees) is the December solstice.
-double principalTermJde(int year, int index) {
-  final target = index * 30.0;
+double principalTermJde(int year, int index) =>
+    solarTermJde(year, index * 30.0);
+
+/// Julian Ephemeris Day (TT) when the Sun reaches [longitude] degrees in
+/// Gregorian [year] (any solar term, e.g. 15 for Thanh Minh).
+///
+/// Longitudes from 300 up to 360 are the terms of January and February of
+/// [year], before its March equinox.
+double solarTermJde(int year, double longitude) {
   final marchEquinoxGuess = jdnFromCivil(year, 3, 20) - 0.5;
-  final offsetDegrees = index >= 10 ? target - 360.0 : target;
+  final offsetDegrees = longitude >= 300 ? longitude - 360.0 : longitude;
   var jde = marchEquinoxGuess + offsetDegrees / sunDegreesPerDay;
   for (var step = 0; step < _refinementSteps; step++) {
-    final diff = (sunApparentLongitude(jde) - target + 180) % 360 - 180;
+    final diff = (sunApparentLongitude(jde) - longitude + 180) % 360 - 180;
     jde -= diff / sunDegreesPerDay;
   }
   return jde;

@@ -34,6 +34,11 @@ class FakeLunarCalendarService implements LunarCalendarService {
   int? leapMonthOf(int lunarYear) =>
       isSupportedYear(lunarYear) ? leapMonths[lunarYear] : null;
 
+  /// Synthetic: Thanh Minh is always April 5 of a supported year.
+  @override
+  DateTime? thanhMinhOf(int year) =>
+      isSupportedYear(year) ? DateTime.utc(year, 4, 5) : null;
+
   @override
   DateTime? toSolar(LunarDate date) {
     for (final month in _months(date.year)) {
@@ -51,8 +56,12 @@ class FakeLunarCalendarService implements LunarCalendarService {
     for (final month in _months(solarDate.year)) {
       final offset = day.difference(month.start).inDays;
       if (offset >= 0 && offset < month.length) {
-        return LunarDate(solarDate.year, month.month, offset + 1,
-            isLeapMonth: month.isLeap);
+        return LunarDate(
+          solarDate.year,
+          month.month,
+          offset + 1,
+          isLeapMonth: month.isLeap,
+        );
       }
     }
     return null;

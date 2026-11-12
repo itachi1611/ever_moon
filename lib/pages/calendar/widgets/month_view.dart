@@ -254,7 +254,7 @@ class _LunarNumber extends StatelessWidget {
     if (lunar == null) return const SizedBox.shrink();
     final theme = Theme.of(context);
     // Red for mùng 1, rằm and festivals (UI-14).
-    final marked = day.holiday != null;
+    final marked = day.hasHoliday;
     final color = isToday
         ? theme.colorScheme.onPrimary
         : marked
@@ -291,7 +291,7 @@ class _CellMarks extends StatelessWidget {
               color: isToday ? scheme.onPrimary : scheme.primary,
               size: AppDimensions.markDot,
             ),
-          if (day.holiday != null)
+          if (day.hasHoliday)
             MarkDot(
               color: CalendarColorExtension.of(context).holidayMark,
               size: AppDimensions.markDot,
@@ -344,7 +344,7 @@ class _SelectedDayEvents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (day.holiday == null && !day.hasAnniversary) {
+    if (!day.hasHoliday && !day.hasAnniversary) {
       return Text(
         S.of(context).lb_day_empty,
         style: Theme.of(context).textTheme.bodyMedium,

@@ -4,9 +4,9 @@ import 'package:ever_moon/services/lunar/lunar_calendar_service.dart';
 /// Traditional festivals on a fixed lunar date (plan 0005, D16).
 ///
 /// The list follows the fixed-date Tết days in "Mỗi năm người Việt có bao
-/// nhiêu ngày Tết?" (viettimes.vn, post19147). Tết Thanh Minh is left out
-/// because it follows a solar term, not a lunar date. Fox confirms the list
-/// with the family; changing it changes only this enum.
+/// nhiêu ngày Tết?" (viettimes.vn, post19147), plus Giỗ Tổ Hùng Vương, added
+/// by Fox on 2026-11-12. Tết Thanh Minh follows a solar term, not a lunar
+/// date, so it is [ThanhMinhHoliday] instead of a value here.
 enum LunarFestival {
   /// Tết Nguyên Đán, 1/1.
   nguyenDan(1, 1),
@@ -16,6 +16,9 @@ enum LunarFestival {
 
   /// Tết Hàn Thực, 3/3.
   hanThuc(3, 3),
+
+  /// Giỗ Tổ Hùng Vương, 10/3 (public holiday).
+  hungKings(3, 10),
 
   /// Tết Đoan Ngọ, 5/5.
   doanNgo(5, 5),
@@ -38,12 +41,13 @@ enum LunarFestival {
   final int day;
 }
 
-/// A system event on one lunar day: a festival, or else mùng 1 or rằm.
+/// A system event: a named festival, Tết Thanh Minh, mùng 1 or rằm.
 sealed class LunarHoliday extends Equatable {
   const LunarHoliday();
 
-  /// Whether the year view counts it: named festivals only (D16).
-  bool get isFestival => this is FestivalHoliday;
+  /// Whether the year view counts it: named festivals only, not plain
+  /// mùng 1 and rằm (D16).
+  bool get isFestival => this is FestivalHoliday || this is ThanhMinhHoliday;
 
   /// The holiday on [date], or `null` on an ordinary day.
   ///
@@ -73,6 +77,16 @@ final class FestivalHoliday extends LunarHoliday {
 
   @override
   List<Object?> get props => [festival];
+}
+
+/// Tết Thanh Minh: the day the Sun reaches 15 degrees of longitude, from
+/// `LunarCalendarService.thanhMinhOf` (added by Fox on 2026-11-12).
+final class ThanhMinhHoliday extends LunarHoliday {
+  /// Creates the holiday.
+  const ThanhMinhHoliday();
+
+  @override
+  List<Object?> get props => const [];
 }
 
 /// Mùng 1 of a lunar month.

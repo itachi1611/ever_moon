@@ -36,12 +36,11 @@ class DayEvents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final holiday = day.holiday;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: AppDimensions.space8,
       children: [
-        if (holiday != null) HolidayItem(holiday: holiday),
+        for (final holiday in day.holidays) HolidayItem(holiday: holiday),
         for (final anniversary in day.anniversaries)
           AnniversaryItem(
             key: ValueKey('${anniversary.id}@${day.solar}'),

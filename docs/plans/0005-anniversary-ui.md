@@ -102,7 +102,7 @@ Claude runs these on Fox's Mac (access granted 2026-11-06) and Fox checks the sc
 
 ## Risks
 
-- Festival list (U5): Tết Nguyên Đán 1/1, Nguyên Tiêu 15/1, Hàn Thực 3/3, Đoan Ngọ 5/5, Trung Nguyên 15/7, Trung Thu 15/8, Táo Quân 23/12, taken from the fixed-date Tết days in viettimes.vn "Mỗi năm người Việt có bao nhiêu ngày Tết?". Thanh Minh (solar term) and the minor ones in that article (Khai Hạ, Trùng Cửu, Trùng Thập, Hạ Nguyên) and Giỗ Tổ Hùng Vương are not included. Fox confirms with the family; the list lives only in `LunarFestival`.
+- Festival list (U5): Tết Nguyên Đán 1/1, Nguyên Tiêu 15/1, Hàn Thực 3/3, Đoan Ngọ 5/5, Trung Nguyên 15/7, Trung Thu 15/8, Táo Quân 23/12, taken from the fixed-date Tết days in viettimes.vn "Mỗi năm người Việt có bao nhiêu ngày Tết?". On 2026-11-12 Fox added Giỗ Tổ Hùng Vương (10/3, `LunarFestival.hungKings`) and Tết Thanh Minh. Thanh Minh is the UTC+7 day the Sun reaches 15 degrees: `VietnameseLunarCalendar.thanhMinhOf` in `packages/lunar_calendar`, checked against a new oracle fixture `oracle_solar_terms.json` (astronomy-engine, Gregorian 1800 to 2199; existing fixtures unchanged) and against ngaydep.com for 2026 (5/4). A day can carry several holidays (`CalendarDay.holidays`). The minor ones in that article (Khai Hạ, Trùng Cửu, Trùng Thập, Hạ Nguyên) stay out. Red lunar numbers on every holiday, not only mùng 1 and rằm: kept for now, Fox gives feedback after testing.
 
 - The table accepts 0 to 30 days before; only the form limits the choice to 0, 1, 3 and 7 (D9). U3 must not offer other values, and the Cubit must reject them.
 - U2a changes the schema of a table that may already hold Fox's test data: the migration must keep existing rows (defaults: remind on the day at 07:00, no address).

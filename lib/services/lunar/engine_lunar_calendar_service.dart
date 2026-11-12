@@ -24,4 +24,7 @@ class EngineLunarCalendarService implements LunarCalendarService {
 
   @override
   int? leapMonthOf(int lunarYear) => _calendar.leapMonthOf(lunarYear);
+
+  @override
+  DateTime? thanhMinhOf(int year) => _calendar.thanhMinhOf(year);
 }

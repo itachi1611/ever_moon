@@ -26,9 +26,14 @@ class CalendarBuilder {
     List<Anniversary> records,
   ) {
     final held = _heldBetween(first, last, records);
+    // One solar-term search per year, not per day.
+    final thanhMinh = {
+      for (var year = first.year; year <= last.year; year++)
+        ?_calendar.thanhMinhOf(year),
+    };
     return [
       for (var day = first; !day.isAfter(last); day = day.add(_oneDay))
-        _day(day, held[day] ?? const []),
+        _day(day, held[day] ?? const [], isThanhMinh: thanhMinh.contains(day)),
     ];
   }
 
@@ -48,12 +53,17 @@ class CalendarBuilder {
     ];
   }
 
-  CalendarDay _day(DateTime solar, List<Anniversary> held) {
+  CalendarDay _day(
+    DateTime solar,
+    List<Anniversary> held, {
+    required bool isThanhMinh,
+  }) {
     final lunar = _calendar.toLunar(solar);
+    final onLunarDay = lunar == null ? null : LunarHoliday.on(lunar);
     return CalendarDay(
       solar: solar,
       lunar: lunar,
-      holiday: lunar == null ? null : LunarHoliday.on(lunar),
+      holidays: [if (isThanhMinh) const ThanhMinhHoliday(), ?onLunarDay],
       anniversaries: [...held]..sort((a, b) => a.name.compareTo(b.name)),
     );
   }
@@ -76,7 +86,10 @@ class CalendarBuilder {
     return held;
   }
 
-  List<DateTime> _festivalsBetween(DateTime first, DateTime last) => [
+  /// Days with a named festival within [first]..[last], Thanh Minh included.
+  /// A set: the year tiles say "ngày lễ" (days), so Thanh Minh falling on
+  /// Hàn Thực or Giỗ Tổ counts once.
+  Set<DateTime> _festivalsBetween(DateTime first, DateTime last) => {
     for (final year in _lunarYears(first, last))
       for (final festival in LunarFestival.values)
         ?_inRange(
@@ -84,7 +97,9 @@ class CalendarBuilder {
           first,
           last,
         ),
-  ];
+    for (var year = first.year; year <= last.year; year++)
+      ?_inRange(_calendar.thanhMinhOf(year), first, last),
+  };
 
   /// Lunar years that overlap [first]..[last]; a Gregorian range spans at
   /// most two, plus one more when the start is before Tết.

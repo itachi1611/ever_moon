@@ -130,7 +130,7 @@ class _WeekDayContent extends StatelessWidget {
         excludeSemantics: true,
         child: _WeekDayHeading(day: day),
       ),
-      if (day.hasAnniversary || day.holiday != null)
+      if (day.hasAnniversary || day.hasHoliday)
         DayEvents(day: day, actions: actions),
     ],
   );
@@ -175,7 +175,7 @@ class _LunarLine extends StatelessWidget {
     return Text(
       lunarDateText(S.of(context), lunar),
       style: theme.textTheme.bodyMedium?.copyWith(
-        color: day.holiday != null
+        color: day.hasHoliday
             ? CalendarColorExtension.of(context).holidayMark
             : theme.colorScheme.onSurfaceVariant,
       ),
