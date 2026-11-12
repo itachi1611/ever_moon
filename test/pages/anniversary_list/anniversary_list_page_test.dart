@@ -2,6 +2,7 @@
 import 'package:ever_moon/common/app_themes.dart';
 import 'package:ever_moon/generated/l10n.dart';
 import 'package:ever_moon/pages/anniversary_list/anniversary_list_page.dart';
+import 'package:ever_moon/pages/widgets/add_anniversary_launcher.dart';
 import 'package:ever_moon/services/lunar/anniversary_resolver.dart';
 import 'package:ever_moon/services/lunar/lunar_calendar_service.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ void main() {
   Future<void> pumpPage(
     WidgetTester tester, {
     Locale locale = const Locale('vi'),
-    VoidCallback? onAdd,
+    AddFormBuilder? addForm,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -38,7 +39,7 @@ void main() {
           repository: repository,
           resolver: AnniversaryResolver(calendar),
           today: () => today,
-          onAdd: onAdd,
+          addForm: addForm,
         ),
       ),
     );
@@ -53,19 +54,28 @@ void main() {
     await tester.pump();
     expect(find.text('Chưa có ngày giỗ nào'), findsOneWidget);
     expect(find.text('Thêm ngày giỗ'), findsNothing);
-    expect(find.byType(FloatingActionButton), findsNothing);
+    expect(find.byType(AddAnniversaryFab), findsNothing);
   });
 
-  testWidgets('UI-2 the empty state offers add once a form is wired', (
+  testWidgets('UI-2 the empty state button and the add button open the form', (
     tester,
   ) async {
-    var added = 0;
-    await pumpPage(tester, onAdd: () => added++);
+    await pumpPage(
+      tester,
+      addForm: (close) =>
+          TextButton(onPressed: close, child: const Text('the form')),
+    );
     repository.emit(const []);
     await tester.pump();
     await tester.tap(find.text('Thêm ngày giỗ'));
-    await tester.tap(find.byType(FloatingActionButton));
-    expect(added, 2);
+    await tester.pumpAndSettle();
+    expect(find.text('the form'), findsOneWidget);
+    await tester.tap(find.text('the form'));
+    await tester.pumpAndSettle();
+    expect(find.text('the form'), findsNothing);
+    await tester.tap(find.byType(AddAnniversaryFab));
+    await tester.pumpAndSettle();
+    expect(find.text('the form'), findsOneWidget);
   });
 
   testWidgets('UI-1 today first with its chip, then the countdown', (

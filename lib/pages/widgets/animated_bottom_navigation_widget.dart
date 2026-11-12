@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
 import 'transition_shell_widget.dart';
@@ -45,6 +46,10 @@ class AnimatedBranchContainer extends StatefulWidget {
       _AnimatedBranchContainerState();
 }
 
+/// Share of the width a branch travels while it fades, for the types that
+/// fade as well as slide: enough to read as movement, not a full-width push.
+const double _fadeSlideDistance = 0.25;
+
 class _AnimatedBranchContainerState extends State<AnimatedBranchContainer>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
@@ -91,9 +96,15 @@ class _AnimatedBranchContainerState extends State<AnimatedBranchContainer>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.currentIndex != widget.currentIndex) {
       _previousIndex = oldWidget.currentIndex;
-      _tween.begin = const Offset(-1, 0);
+      // The new branch comes in from the side it sits on in the drawer
+      // (a higher index from the right), the old one leaves the other way.
+      final side = widget.currentIndex > oldWidget.currentIndex ? 1.0 : -1.0;
+      final distance = widget.transitionType == ShellTransitionType.slide
+          ? 1.0
+          : _fadeSlideDistance;
+      _tween.begin = Offset(distance * side, 0);
       _exitTween.begin = Offset.zero;
-      _exitTween.end = const Offset(1, 0);
+      _exitTween.end = Offset(-distance * side, 0);
       _controller.forward(from: 0.0);
     }
   }
@@ -116,6 +127,10 @@ class _AnimatedBranchContainerState extends State<AnimatedBranchContainer>
         final isActive = index == widget.currentIndex;
         final isExiting = index == _previousIndex;
 
+        if (widget.transitionType == ShellTransitionType.fadeThrough) {
+          return _fadeThrough(child, isActive: isActive, isExiting: isExiting);
+        }
+
         return Offstage(
           offstage: !isActive && !isExiting,
           child: RepaintBoundary(
@@ -137,4 +152,31 @@ class _AnimatedBranchContainerState extends State<AnimatedBranchContainer>
       }).toList(),
     );
   }
+
+  /// The package transition takes the raw controller: it has its own
+  /// timing (the old branch fades out first, the new one scales in after).
+  Widget _fadeThrough(
+    Widget child, {
+    required bool isActive,
+    required bool isExiting,
+  }) => Offstage(
+    offstage: !isActive && !isExiting,
+    child: RepaintBoundary(
+      child: isActive
+          ? FadeThroughTransition(
+              animation: _controller,
+              secondaryAnimation: kAlwaysDismissedAnimation,
+              fillColor: Colors.transparent,
+              child: child,
+            )
+          : isExiting
+          ? FadeThroughTransition(
+              animation: kAlwaysCompleteAnimation,
+              secondaryAnimation: _controller,
+              fillColor: Colors.transparent,
+              child: child,
+            )
+          : child,
+    ),
+  );
 }

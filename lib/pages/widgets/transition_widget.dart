@@ -57,6 +57,8 @@ enum PageTransitionType {
   sharedAxisScaled,
 }
 
+const Animation<double> _noSecondary = AlwaysStoppedAnimation(0);
+
 extension PageTransitionExt on PageTransitionType {
   /// Wraps [child] with the appropriate transition widget.
   ///
@@ -70,24 +72,20 @@ extension PageTransitionExt on PageTransitionType {
     Curve curve = Curves.easeOut,
     Curve reverseCurve = Curves.easeIn,
   }) {
-    // Wrap both animations in CurvedAnimation to apply the easing curve.
-    // secondaryAnimation fallback prevents ANR from a null dereference.
+    // The slide, scale and fade types apply the easing curve here. The
+    // shared axis and fade through types take the raw animations instead.
     final Animation<double> primary = CurvedAnimation(
       parent: animation,
       curve: curve,
       reverseCurve: reverseCurve,
     );
-    final Animation<double> secondary = CurvedAnimation(
-      parent: secondaryAnimation ?? animation,
-      curve: Curves.easeIn,
-      reverseCurve: Curves.easeOut,
-    );
 
     switch (this) {
+      // Like shared axis, fade through has its own timing: raw animations.
       case .fadeThrough:
         return FadeThroughTransition(
-          animation: primary,
-          secondaryAnimation: secondary,
+          animation: animation,
+          secondaryAnimation: secondaryAnimation ?? _noSecondary,
           child: child,
         );
       case .fade:
@@ -186,24 +184,27 @@ extension PageTransitionExt on PageTransitionType {
           alignment: Alignment.center,
           child: SizeTransition(sizeFactor: primary, child: child),
         );
+      // Shared axis applies its own Material easing, so it takes the raw
+      // animations: an extra easeOut in front squeezed the movement into
+      // the first frames and it was hardly visible.
       case .sharedAxisHorizontal:
         return SharedAxisTransition(
-          animation: primary,
-          secondaryAnimation: secondary,
+          animation: animation,
+          secondaryAnimation: secondaryAnimation ?? _noSecondary,
           transitionType: .horizontal,
           child: child,
         );
       case .sharedAxisVertical:
         return SharedAxisTransition(
-          animation: primary,
-          secondaryAnimation: secondary,
+          animation: animation,
+          secondaryAnimation: secondaryAnimation ?? _noSecondary,
           transitionType: .vertical,
           child: child,
         );
       case .sharedAxisScaled:
         return SharedAxisTransition(
-          animation: primary,
-          secondaryAnimation: secondary,
+          animation: animation,
+          secondaryAnimation: secondaryAnimation ?? _noSecondary,
           transitionType: .scaled,
           child: child,
         );

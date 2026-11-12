@@ -4,6 +4,7 @@ import 'package:ever_moon/generated/l10n.dart';
 import 'package:ever_moon/pages/calendar/calendar_page.dart';
 import 'package:ever_moon/pages/calendar/widgets/event_items.dart';
 import 'package:ever_moon/pages/calendar/widgets/year_view.dart';
+import 'package:ever_moon/pages/widgets/add_anniversary_launcher.dart';
 import 'package:ever_moon/services/lunar/lunar_calendar_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -18,14 +19,12 @@ void main() {
   final today = calendar.toSolar(const LunarDate(2002, 4, 9)) ?? DateTime(0);
   late MemoryAnniversaryRepository repository;
   late List<String> edited;
-  late int added;
 
   setUp(() {
     repository = MemoryAnniversaryRepository([
       storedAnniversary(day: 9, month: 4),
     ]);
     edited = [];
-    added = 0;
   });
 
   Future<void> pumpCalendar(WidgetTester tester) async {
@@ -44,7 +43,8 @@ void main() {
           GlobalCupertinoLocalizations.delegate,
         ],
         home: CalendarPage(
-          onAdd: () => added++,
+          addForm: (close) =>
+              TextButton(onPressed: close, child: const Text('the form')),
           onEdit: edited.add,
           repository: repository,
           calendar: calendar,
@@ -57,8 +57,12 @@ void main() {
 
   testWidgets('UI-11 the add button opens the empty form', (tester) async {
     await pumpCalendar(tester);
-    await tester.tap(find.byType(FloatingActionButton));
-    expect(added, 1);
+    await tester.tap(find.byType(AddAnniversaryFab));
+    await tester.pumpAndSettle();
+    expect(find.text('the form'), findsOneWidget);
+    await tester.tap(find.text('the form'));
+    await tester.pumpAndSettle();
+    expect(find.text('the form'), findsNothing);
   });
 
   testWidgets('UI-13 swiping left opens edit', (tester) async {
@@ -68,6 +72,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(edited, ['a']);
     expect(repository.deleted, isEmpty);
+  });
+
+  testWidgets('UI-13 a short swipe (about 30% of the width) counts', (
+    tester,
+  ) async {
+    await pumpCalendar(tester);
+    await tester.drag(find.text('Bà nội'), const Offset(-230, 0));
+    await tester.pumpAndSettle();
+    expect(edited, ['a']);
+  });
+
+  testWidgets('UI-13 a tiny drag does nothing', (tester) async {
+    await pumpCalendar(tester);
+    await tester.drag(find.text('Bà nội'), const Offset(-60, 0));
+    await tester.pumpAndSettle();
+    expect(edited, isEmpty);
   });
 
   testWidgets('UI-13 swiping right asks, then deletes', (tester) async {

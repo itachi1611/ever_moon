@@ -104,7 +104,10 @@ class _Branches extends StatelessWidget {
     top: false,
     child: AnimatedBranchContainer(
       currentIndex: currentIndex,
-      transitionType: ShellTransitionType.fade,
+      // Slide and fade toward the side the tab sits on in the drawer. Fade
+      // through alone was too faint to notice on a phone.
+      transitionType: ShellTransitionType.slideFade,
+      duration: const Duration(milliseconds: 400),
       children: children,
     ),
   );

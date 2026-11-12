@@ -1,20 +1,22 @@
 import 'package:ever_moon/common/app_dimensions.dart';
 import 'package:ever_moon/generated/l10n.dart';
+import 'package:ever_moon/pages/widgets/add_anniversary_launcher.dart';
 import 'package:flutter/material.dart';
 
 /// Shown before the first anniversary is added (UI-2).
 class EmptyUpcomingView extends StatelessWidget {
-  /// Creates the empty state; [onAdd] is `null` until the form exists.
-  const EmptyUpcomingView({super.key, this.onAdd});
+  /// Creates the empty state; [addForm] is `null` until the form exists.
+  const EmptyUpcomingView({super.key, this.addForm});
 
-  /// Opens the add form.
-  final VoidCallback? onAdd;
+  /// Builds the add form its button opens; no button while `null`.
+  final AddFormBuilder? addForm;
 
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
     final text = Theme.of(context).textTheme;
     final muted = Theme.of(context).colorScheme.onSurfaceVariant;
+    final addForm = this.addForm;
     return _CenteredColumn(
       children: [
         const _MoonDisc(),
@@ -28,12 +30,7 @@ class EmptyUpcomingView extends StatelessWidget {
           style: text.bodyLarge?.copyWith(color: muted),
           textAlign: TextAlign.center,
         ),
-        if (onAdd != null)
-          FilledButton.icon(
-            onPressed: onAdd,
-            icon: const Icon(Icons.add),
-            label: Text(s.lb_add_anniversary),
-          ),
+        if (addForm != null) AddAnniversaryButton(formBuilder: addForm),
       ],
     );
   }

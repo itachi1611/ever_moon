@@ -3,6 +3,7 @@ import 'package:ever_moon/generated/l10n.dart';
 import 'package:ever_moon/models/anniversary.dart';
 import 'package:ever_moon/pages/anniversary_list/widgets/list_status_views.dart';
 import 'package:ever_moon/pages/shell/shell_scope.dart';
+import 'package:ever_moon/pages/widgets/add_anniversary_launcher.dart';
 import 'package:ever_moon/pages/widgets/delete_anniversary_dialog.dart';
 import 'package:ever_moon/repositories/anniversary_repository.dart';
 import 'package:ever_moon/services/lunar/anniversary_resolver.dart';
@@ -26,15 +27,15 @@ class CalendarPage extends StatefulWidget {
   /// Creates the page; tests pass [repository], [calendar] and [today].
   const CalendarPage({
     super.key,
-    required this.onAdd,
+    required this.addForm,
     required this.onEdit,
     this.repository,
     this.calendar,
     this.today,
   });
 
-  /// Opens the empty add form (D12).
-  final VoidCallback onAdd;
+  /// Builds the empty add form its button opens (D12).
+  final AddFormBuilder addForm;
 
   /// Opens the edit form for the anniversary with this ID.
   final ValueChanged<String> onEdit;
@@ -105,7 +106,7 @@ class _CalendarPageState extends State<CalendarPage> {
         ),
         onRetry: _cubit.start,
       ),
-      floatingActionButton: _AddFab(onPressed: widget.onAdd),
+      floatingActionButton: AddAnniversaryFab(formBuilder: widget.addForm),
     ),
   );
 }
@@ -163,23 +164,4 @@ class _PeriodView extends StatelessWidget {
       bottomPadding: _fabRoom,
     ),
   };
-}
-
-class _AddFab extends StatelessWidget {
-  const _AddFab({required this.onPressed});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return FloatingActionButton.extended(
-      onPressed: onPressed,
-      backgroundColor: scheme.primary,
-      foregroundColor: scheme.onPrimary,
-      icon: const Icon(Icons.add),
-      label: Text(S.of(context).lb_add),
-      tooltip: S.of(context).lb_add_anniversary,
-    );
-  }
 }

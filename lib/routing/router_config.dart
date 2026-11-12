@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ever_moon/pages/widgets/bottom_sheet_widget.dart';
 import 'package:ever_moon/services/firebase_notification_service.dart';
 import 'package:go_router/go_router.dart';
 
@@ -27,10 +26,13 @@ List<RouteBase> routes = [
   _splashRoute,
   _onboardingRoute,
   _shellRoute,
-  _languageSheetRoute,
   ..._dialogRoutes,
   _notFoundRoute,
 ];
+
+// Splash, intro and the first screen change slowly enough to be seen: the
+// 350 ms default read as a plain fade.
+const _flowTransition = Duration(milliseconds: 500);
 
 // Splash — entry point
 GoRoute get _splashRoute => GoRoute(
@@ -41,7 +43,10 @@ GoRoute get _splashRoute => GoRoute(
       onNotificationsAllowed:
           FirebaseNotificationService.instance.requestPermissionAndFetchToken,
     ),
-    transitionType: PageTransitionType.fade,
+    // Fade through: the old page fades out, then the new one scales in.
+    transitionType: PageTransitionType.fadeThrough,
+    transitionDuration: _flowTransition,
+    reverseTransitionDuration: _flowTransition,
   ),
 );
 
@@ -56,7 +61,9 @@ GoRoute get _onboardingRoute => GoRoute(
       onNotificationsAllowed:
           FirebaseNotificationService.instance.requestPermissionAndFetchToken,
     ),
-    transitionType: PageTransitionType.fade,
+    transitionType: PageTransitionType.fadeThrough,
+    transitionDuration: _flowTransition,
+    reverseTransitionDuration: _flowTransition,
   ),
 );
 
@@ -65,7 +72,15 @@ GoRoute get _onboardingRoute => GoRoute(
 StatefulShellRoute get _shellRoute => StatefulShellRoute(
   parentNavigatorKey: rootNavigatorKey,
   key: shellKey,
-  builder: (context, state, navigationShell) => navigationShell,
+  // A transition page, so the shell scales out when a parent-child page
+  // (edit form, terms, privacy) opens over it: shared axis needs the page
+  // underneath to move too. The key is the route's own, so rebuilding never
+  // replaces the shell.
+  pageBuilder: (context, state, navigationShell) => TransitionPage(
+    key: state.pageKey,
+    child: navigationShell,
+    transitionType: PageTransitionType.sharedAxisScaled,
+  ),
   navigatorContainerBuilder: (context, navigationShell, children) =>
       ShellPage(shell: navigationShell, children: children),
   branches: [
@@ -77,12 +92,9 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
           name: Routers.home.routerName,
           path: Routers.home.routerPath,
           pageBuilder: (context, state) => TransitionPage(
-            child: AnniversaryListPage(
-              onAdd: () => context.go(Routers.anniversaryNew.routerPath),
-            ),
+            child: const AnniversaryListPage(addForm: _addForm),
             transitionType: PageTransitionType.fade,
           ),
-          routes: [_anniversaryNewRoute],
         ),
       ],
     ),
@@ -96,7 +108,7 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
           path: Routers.calendar.routerPath,
           pageBuilder: (context, state) => TransitionPage(
             child: CalendarPage(
-              onAdd: () => context.go(Routers.calendarNew.routerPath),
+              addForm: _addForm,
               onEdit: (id) => context.goNamed(
                 Routers.anniversaryEdit.routerName,
                 pathParameters: {'id': id},
@@ -104,7 +116,7 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
             ),
             transitionType: PageTransitionType.fade,
           ),
-          routes: [_calendarNewRoute, _anniversaryEditRoute],
+          routes: [_anniversaryEditRoute],
         ),
       ],
     ),
@@ -128,34 +140,14 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
   ],
 );
 
-// Add form over the list. A child of home so Back returns to the list; on
-// the root navigator so it covers the drawer shell.
-GoRoute get _anniversaryNewRoute => GoRoute(
-  parentNavigatorKey: rootNavigatorKey,
-  name: Routers.anniversaryNew.routerName,
-  path: 'new', // Routers.anniversaryNew = home + '/new'
-  pageBuilder: (context, state) => TransitionPage(
-    child: AnniversaryFormPage(
-      onClose: () => context.go(Routers.home.routerPath),
-    ),
-    transitionType: PageTransitionType.sharedAxisHorizontal,
-  ),
-);
+// The add form, built inside a container transform from the add button (list
+// and calendar, D12: the same empty form). The container pushes its own
+// route, so the form has no GoRouter path; closing pops that route.
+Widget _addForm(VoidCallback close) => AnniversaryFormPage(onClose: close);
 
-// Add form over the calendar; the same empty form as from the list (D12).
-GoRoute get _calendarNewRoute => GoRoute(
-  parentNavigatorKey: rootNavigatorKey,
-  name: Routers.calendarNew.routerName,
-  path: 'new', // Routers.calendarNew = calendar + '/new'
-  pageBuilder: (context, state) => TransitionPage(
-    child: AnniversaryFormPage(
-      onClose: () => context.go(Routers.calendar.routerPath),
-    ),
-    transitionType: PageTransitionType.sharedAxisHorizontal,
-  ),
-);
-
-// Edit form, reached by swiping an anniversary on the calendar (D15).
+// Edit form, reached by swiping an anniversary on the calendar (D15). A
+// shared axis (z) like the other parent-child pages: the shell underneath
+// scales out as the form scales in.
 GoRoute get _anniversaryEditRoute => GoRoute(
   parentNavigatorKey: rootNavigatorKey,
   name: Routers.anniversaryEdit.routerName,
@@ -165,7 +157,7 @@ GoRoute get _anniversaryEditRoute => GoRoute(
       anniversaryId: state.pathParameters['id'],
       onClose: () => context.go(Routers.calendar.routerPath),
     ),
-    transitionType: PageTransitionType.sharedAxisHorizontal,
+    transitionType: PageTransitionType.sharedAxisScaled,
   ),
 );
 
@@ -176,7 +168,7 @@ GoRoute get _termRoute => GoRoute(
   path: 'terms', // Routers.terms = setting + '/terms'
   pageBuilder: (context, state) => TransitionPage(
     child: const TermsPage(),
-    transitionType: PageTransitionType.sharedAxisHorizontal,
+    transitionType: PageTransitionType.sharedAxisScaled,
   ),
 );
 
@@ -186,18 +178,7 @@ GoRoute get _privacyRoute => GoRoute(
   path: 'privacy', // Routers.privacy = setting + '/privacy'
   pageBuilder: (context, state) => TransitionPage(
     child: const PrivacyPage(),
-    transitionType: PageTransitionType.sharedAxisHorizontal,
-  ),
-);
-
-// Bottom sheet
-GoRoute get _languageSheetRoute => GoRoute(
-  name: Routers.languageSheet.routerName,
-  path: Routers.languageSheet.routerPath,
-  pageBuilder: (context, state) => BottomSheetWidget.unScroll(
-    builder: (context) => const LanguageBottomSheet(),
-    barrierLabel: Routers.languageSheet.routerName,
-    isDismissible: false,
+    transitionType: PageTransitionType.sharedAxisScaled,
   ),
 );
 

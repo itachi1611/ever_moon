@@ -91,6 +91,9 @@ class AnniversaryItem extends StatelessWidget {
   /// Edit and delete handlers.
   final CalendarActions actions;
 
+  /// Share of the item width a swipe must pass to count.
+  static const _swipeThreshold = 0.2;
+
   void _edit() => actions.edit(anniversary);
 
   void _delete() => actions.delete(anniversary);
@@ -116,6 +119,12 @@ class AnniversaryItem extends StatelessWidget {
         key: ValueKey(anniversary.id),
         background: _SwipeAction.delete(),
         secondaryBackground: _SwipeAction.edit(),
+        // The default 40% of the width needs a long drag; a normal short
+        // swipe sprang back and looked like the gesture did nothing.
+        dismissThresholds: const {
+          DismissDirection.startToEnd: _swipeThreshold,
+          DismissDirection.endToStart: _swipeThreshold,
+        },
         confirmDismiss: _onSwipe,
         child: _AnniversaryFace(anniversary: anniversary),
       ),

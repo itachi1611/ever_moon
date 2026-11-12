@@ -1,6 +1,7 @@
 import 'package:ever_moon/common/app_dimensions.dart';
 import 'package:ever_moon/generated/l10n.dart';
 import 'package:ever_moon/pages/shell/shell_scope.dart';
+import 'package:ever_moon/pages/widgets/add_anniversary_launcher.dart';
 import 'package:ever_moon/repositories/anniversary_repository.dart';
 import 'package:ever_moon/services/lunar/anniversary_resolver.dart';
 import 'package:ever_moon/services/lunar/lunar_calendar_service.dart';
@@ -15,20 +16,20 @@ import 'widgets/upcoming_list_view.dart';
 /// Upcoming anniversaries, soonest first (plan 0005, U2). Replaces the
 /// template Home tab.
 ///
-/// Owns its [AnniversaryListCubit]. The route passes [onAdd] to open the
-/// add form; the menu button appears inside the shell.
+/// Owns its [AnniversaryListCubit]. The route passes [addForm] to build the
+/// add form its button opens; the menu button appears inside the shell.
 class AnniversaryListPage extends StatefulWidget {
   /// Creates the page; tests pass a [repository], [resolver] and [today].
   const AnniversaryListPage({
     super.key,
-    this.onAdd,
+    this.addForm,
     this.repository,
     this.resolver,
     this.today,
   });
 
-  /// Opens the add form; no add action is shown while it is `null`.
-  final VoidCallback? onAdd;
+  /// Builds the add form; no add action is shown while it is `null`.
+  final AddFormBuilder? addForm;
 
   /// Storage; the app-wide repository when `null`.
   final AnniversaryRepository? repository;
@@ -68,25 +69,28 @@ class _AnniversaryListPageState extends State<AnniversaryListPage> {
   }
 
   @override
-  Widget build(BuildContext context) => BlocProvider.value(
-    value: _cubit,
-    child: Scaffold(
-      appBar: AppBar(
-        leading: MenuButton.maybe(context),
-        title: Text(S.of(context).lb_upcoming_title),
+  Widget build(BuildContext context) {
+    final addForm = widget.addForm;
+    return BlocProvider.value(
+      value: _cubit,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: MenuButton.maybe(context),
+          title: Text(S.of(context).lb_upcoming_title),
+        ),
+        body: _ListBody(addForm: addForm, onRetry: _cubit.start),
+        floatingActionButton: addForm == null
+            ? null
+            : AddAnniversaryFab(formBuilder: addForm),
       ),
-      body: _ListBody(onAdd: widget.onAdd, onRetry: _cubit.start),
-      floatingActionButton: widget.onAdd == null
-          ? null
-          : _AddFab(onPressed: widget.onAdd),
-    ),
-  );
+    );
+  }
 }
 
 class _ListBody extends StatelessWidget {
-  const _ListBody({required this.onAdd, required this.onRetry});
+  const _ListBody({required this.addForm, required this.onRetry});
 
-  final VoidCallback? onAdd;
+  final AddFormBuilder? addForm;
   final VoidCallback onRetry;
 
   @override
@@ -96,37 +100,16 @@ class _ListBody extends StatelessWidget {
           AnniversaryListLoading() => const Center(
             child: CircularProgressIndicator(),
           ),
-          AnniversaryListEmpty() => EmptyUpcomingView(onAdd: onAdd),
+          AnniversaryListEmpty() => EmptyUpcomingView(addForm: addForm),
           AnniversaryListLoaded() => UpcomingListView(
             today: state.today,
             upcoming: state.upcoming,
-            // Room for the FAB so the last card can scroll clear of it.
-            bottomPadding: onAdd == null
+            // Room for the add button so the last card can scroll clear of it.
+            bottomPadding: addForm == null
                 ? 0
                 : AppDimensions.fabSize + AppDimensions.space16,
           ),
           AnniversaryListFailure() => FailedUpcomingView(onRetry: onRetry),
         },
       );
-}
-
-class _AddFab extends StatelessWidget {
-  const _AddFab({required this.onPressed});
-
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    // Primary, not the default primary-container: the label needs 4.5:1
-    // with this palette (design system: AddFab).
-    return FloatingActionButton.extended(
-      onPressed: onPressed,
-      backgroundColor: scheme.primary,
-      foregroundColor: scheme.onPrimary,
-      icon: const Icon(Icons.add),
-      label: Text(S.of(context).lb_add),
-      tooltip: S.of(context).lb_add_anniversary,
-    );
-  }
 }

@@ -61,6 +61,10 @@ class AppDimensions {
   /// FAB container size.
   static const double fabSize = 56;
 
+  /// Resting elevation of the add button, which is a container transform
+  /// source rather than a FloatingActionButton.
+  static const double fabElevation = 6;
+
   /// Text field container height.
   static const double textFieldHeight = 56;
 

@@ -14,17 +14,14 @@ void main() {
       expect(names.toSet().length, names.length);
     });
 
-    test('the add form path sits under home (D5)', () {
-      expect(
-        Routers.anniversaryNew.routerPath,
-        '${Routers.home.routerPath}/new',
-      );
+    test('the edit form sits under the calendar (D5, D15)', () {
+      final base = Routers.calendar.routerPath;
+      expect(Routers.anniversaryEdit.routerPath, '$base/edit/:id');
     });
 
-    test('calendar add and edit sit under the calendar (D5, D15)', () {
-      final base = Routers.calendar.routerPath;
-      expect(Routers.calendarNew.routerPath, '$base/new');
-      expect(Routers.anniversaryEdit.routerPath, '$base/edit/:id');
+    test('the add form has no route: a container transform opens it', () {
+      final names = Routers.values.map((r) => r.routerName).toSet();
+      expect(names.intersection({'anniversaryNew', 'calendarNew'}), isEmpty);
     });
 
     test('removed template routes are gone', () {
@@ -35,6 +32,7 @@ void main() {
           'service',
           'explore',
           'aiSupport',
+          'languageSheet',
           // FirebaseUI auth screens, removed for Swift Package Manager.
           'login',
           'register',

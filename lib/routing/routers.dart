@@ -14,15 +14,8 @@ enum Routers {
   /// Home tab inside the shell (`/home`).
   home('/home', 'home'),
 
-  /// Add form over the upcoming list (`/home/new`, plan 0005 D5). Its
-  /// GoRoute is the child `new` of [home].
-  anniversaryNew('/home/new', 'anniversaryNew'),
-
   /// Calendar tab inside the shell (`/calendar`, plan 0005 U5).
   calendar('/calendar', 'calendar'),
-
-  /// Add form over the calendar (`/calendar/new`, D12: empty like the list's).
-  calendarNew('/calendar/new', 'calendarNew'),
 
   /// Edit form over the calendar (`/calendar/edit/:id`, D5, D15). Go there
   /// with `goNamed` and the `id` path parameter.
@@ -36,9 +29,6 @@ enum Routers {
 
   /// Privacy Policy page, over Settings (`/setting/privacy`).
   privacy('/setting/privacy', 'privacy'),
-
-  /// Bottom sheet
-  languageSheet('/languageSheet', 'languageSheet'),
 
   /// Dialog
   confirmDialog('/confirmDialog', 'confirmDialog'),

@@ -21,6 +21,12 @@ enum ShellTransitionType {
 
   /// Subtle scale-up (0.95 → 1.0) combined with fade-in. iOS-style.
   scaleFade,
+
+  /// Material fade through, for destinations with no strong relationship
+  /// (the navigation drawer's tabs). [AnimatedBranchContainer] drives it
+  /// with `FadeThroughTransition` itself; [ShellTransitionExt.transition]
+  /// only offers a plain fade as a fallback.
+  fadeThrough,
 }
 
 /// Extension that converts a [ShellTransitionType] into a concrete widget.
@@ -36,6 +42,7 @@ extension ShellTransitionExt on ShellTransitionType {
   }) {
     switch (this) {
       case ShellTransitionType.fade:
+      case ShellTransitionType.fadeThrough:
         return FadeTransition(opacity: opacity, child: child);
 
       case ShellTransitionType.slide:
