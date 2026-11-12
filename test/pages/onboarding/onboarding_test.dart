@@ -97,6 +97,7 @@ void main() {
       hasCompletedIntro: () => completedIntro,
       access: access,
       onNotificationsAllowed: () async => tokenRefreshes++,
+      minimumDisplay: Duration.zero,
     );
 
     test('the first launch goes to the intro and never asks', () async {
@@ -122,6 +123,7 @@ void main() {
         hasCompletedIntro: () => true,
         access: access,
         onNotificationsAllowed: () async => throw StateError('offline'),
+        minimumDisplay: Duration.zero,
       );
       await cubit.start();
       await pumpEventQueue();

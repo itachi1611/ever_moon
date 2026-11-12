@@ -3,6 +3,7 @@
 // listened for it, and the app stayed on the splash.
 import 'package:ever_moon/common/app_themes.dart';
 import 'package:ever_moon/generated/l10n.dart';
+import 'package:ever_moon/pages/splash/splash_cubit.dart';
 import 'package:ever_moon/pages/splash/splash_page.dart';
 import 'package:ever_moon/routing/routers.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,17 @@ import 'package:go_router/go_router.dart';
 import '../../services/fake_notification_access.dart';
 
 void main() {
+  // The minimum display time is a plain timer: pumpAndSettle does not wait
+  // for it, so the clock is advanced by hand.
+  Future<void> letSplashEnd(WidgetTester tester) async {
+    await tester.pump(SplashCubit.defaultMinimumDisplay);
+    await tester.pumpAndSettle();
+  }
+
   Future<void> pumpSplash(
     WidgetTester tester, {
     required bool completedIntro,
+    bool settle = true,
   }) async {
     final router = GoRouter(
       routes: [
@@ -51,8 +60,16 @@ void main() {
         routerConfig: router,
       ),
     );
-    await tester.pumpAndSettle();
+    if (settle) await letSplashEnd(tester);
   }
+
+  testWidgets('UI-15 the mark stays up before the intro opens', (tester) async {
+    await pumpSplash(tester, completedIntro: false, settle: false);
+    await tester.pump(SplashCubit.defaultMinimumDisplay * 0.5);
+    expect(find.text('intro'), findsNothing);
+    await letSplashEnd(tester);
+    expect(find.text('intro'), findsOneWidget);
+  });
 
   testWidgets('UI-15 the first launch opens the intro', (tester) async {
     await pumpSplash(tester, completedIntro: false);

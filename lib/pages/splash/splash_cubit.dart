@@ -18,19 +18,29 @@ class SplashCubit extends Cubit<SplashState> {
     required bool Function() hasCompletedIntro,
     required NotificationAccessService access,
     Future<void> Function()? onNotificationsAllowed,
+    this.minimumDisplay = defaultMinimumDisplay,
   }) : _hasCompletedIntro = hasCompletedIntro,
        _access = access,
        _onNotificationsAllowed = onNotificationsAllowed,
        super(const SplashChecking());
 
+  /// Default for [minimumDisplay].
+  static const defaultMinimumDisplay = Duration(milliseconds: 1500);
+
   final bool Function() _hasCompletedIntro;
   final NotificationAccessService _access;
   final Future<void> Function()? _onNotificationsAllowed;
 
-  /// Reads the flag and emits [SplashReady].
+  /// How long the mark stays up at least, so it is seen instead of flashing
+  /// past on a fast read.
+  final Duration minimumDisplay;
+
+  /// Reads the flag and emits [SplashReady] once [minimumDisplay] has passed.
   Future<void> start() async {
+    final shown = Future<void>.delayed(minimumDisplay);
     final firstRun = !_hasCompletedIntro();
     if (!firstRun) await _refreshIfAllowed();
+    await shown;
     if (!isClosed) emit(SplashReady(firstRun: firstRun));
   }
 

@@ -82,24 +82,44 @@ class _SplashPageState extends State<SplashPage> {
   );
 }
 
-/// The E8 mark in its circle on the surface, as the native splash shows it.
+/// The E8 mark in its circle on the surface. It pops in like the native
+/// Android 12 splash (scale 0.6 to 1 with overshoot, 700 ms); with system
+/// animations off it appears at once.
 class _SplashMark extends StatelessWidget {
   const _SplashMark();
 
+  static const _popDuration = Duration(milliseconds: 700);
+  static const _startScale = 0.6;
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: Center(
-      child: Semantics(
-        label: S.of(context).lb_app_opening,
-        child: ClipOval(
-          child: Image.asset(
-            AppConfig.kMarkImage,
-            width: AppDimensions.splashMark,
-            height: AppDimensions.splashMark,
-            excludeFromSemantics: true,
+  Widget build(BuildContext context) {
+    final animate = !MediaQuery.disableAnimationsOf(context);
+    return Scaffold(
+      body: Center(
+        child: Semantics(
+          label: S.of(context).lb_app_opening,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: animate ? 0 : 1, end: 1),
+            duration: animate ? _popDuration : Duration.zero,
+            curve: Curves.easeOutBack,
+            builder: (context, progress, child) => Opacity(
+              opacity: progress.clamp(0.0, 1.0).toDouble(),
+              child: Transform.scale(
+                scale: _startScale + (1 - _startScale) * progress,
+                child: child,
+              ),
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                AppConfig.kMarkImage,
+                width: AppDimensions.splashMark,
+                height: AppDimensions.splashMark,
+                excludeFromSemantics: true,
+              ),
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
