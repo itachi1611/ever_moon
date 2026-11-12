@@ -26,7 +26,6 @@ List<RouteBase> routes = [
   _splashRoute,
   _onboardingRoute,
   _shellRoute,
-  ..._dialogRoutes,
   _notFoundRoute,
 ];
 
@@ -181,19 +180,6 @@ GoRoute get _privacyRoute => GoRoute(
     transitionType: PageTransitionType.sharedAxisScaled,
   ),
 );
-
-List<GoRoute> get _dialogRoutes => [
-  GoRoute(
-    name: Routers.confirmDialog.routerName,
-    path: Routers.confirmDialog.routerPath,
-    pageBuilder: (context, state) => RouteDialogWidget<bool>(
-      builder: (context) => const ConfirmDialogWidget(
-        title: 'Are you sure to open the device info?',
-        message: 'This will show you the device info.',
-      ),
-    ),
-  ),
-];
 
 // 404 fallback
 GoRoute get _notFoundRoute => GoRoute(

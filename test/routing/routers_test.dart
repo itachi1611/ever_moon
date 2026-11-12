@@ -33,6 +33,7 @@ void main() {
           'explore',
           'aiSupport',
           'languageSheet',
+          'confirmDialog',
           // FirebaseUI auth screens, removed for Swift Package Manager.
           'login',
           'register',

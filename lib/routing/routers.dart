@@ -30,9 +30,6 @@ enum Routers {
   /// Privacy Policy page, over Settings (`/setting/privacy`).
   privacy('/setting/privacy', 'privacy'),
 
-  /// Dialog
-  confirmDialog('/confirmDialog', 'confirmDialog'),
-
   /// 404 fallback page (`/pageNotFound`).
   pageNotFound('/pageNotFound', 'pageNotFound');
 
