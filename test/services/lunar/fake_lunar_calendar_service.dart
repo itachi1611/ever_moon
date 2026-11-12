@@ -34,11 +34,6 @@ class FakeLunarCalendarService implements LunarCalendarService {
   int? leapMonthOf(int lunarYear) =>
       isSupportedYear(lunarYear) ? leapMonths[lunarYear] : null;
 
-  /// Synthetic: Thanh Minh is always April 5 of a supported year.
-  @override
-  DateTime? thanhMinhOf(int year) =>
-      isSupportedYear(year) ? DateTime.utc(year, 4, 5) : null;
-
   @override
   DateTime? toSolar(LunarDate date) {
     for (final month in _months(date.year)) {

@@ -26,8 +26,4 @@ abstract interface class LunarCalendarService {
 
   /// Number of the leap month of [lunarYear], or `null` if there is none.
   int? leapMonthOf(int lunarYear);
-
-  /// Gregorian date (UTC midnight) of Tết Thanh Minh in Gregorian [year]
-  /// (the UTC+7 day the Sun reaches 15 degrees), or `null` out of range.
-  DateTime? thanhMinhOf(int year);
 }

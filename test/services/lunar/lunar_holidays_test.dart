@@ -51,7 +51,6 @@ void main() {
 
   test('only named festivals count for the year view', () {
     expect(const FestivalHoliday(LunarFestival.hanThuc).isFestival, isTrue);
-    expect(const ThanhMinhHoliday().isFestival, isTrue);
     expect(const FirstDayHoliday(1, false).isFestival, isFalse);
   });
 }

@@ -31,8 +31,7 @@ class CalendarDay extends Equatable {
   /// Its lunar date; `null` outside the supported range.
   final LunarDate? lunar;
 
-  /// Holidays of the day: Tết Thanh Minh can share a day with a lunar
-  /// festival or rằm, so there may be more than one.
+  /// Holidays of the day: empty on an ordinary day.
   final List<LunarHoliday> holidays;
 
   /// Whether the day carries a holiday mark.

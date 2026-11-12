@@ -84,29 +84,6 @@ def find_principal_terms() -> dict[int, list[float]]:
   return terms
 
 
-THANH_MINH_LONGITUDE = 15  # Tết Thanh Minh: the day the Sun reaches 15 degrees
-
-
-def find_thanh_minh() -> dict[int, float]:
-  """UT Julian date of the Thanh Minh solar term in each Gregorian year."""
-  return {
-      year: jd_ut(astro.SearchSunLongitude(
-          THANH_MINH_LONGITUDE, astro.Time.Make(year, 3, 1, 0, 0, 0), 60))
-      for year in range(FIRST_YEAR, LAST_YEAR + 1)
-  }
-
-
-def solar_term_rows(terms: dict[int, float]) -> dict[str, dict]:
-  return {
-      str(year): {
-          "jd_ut": round(jd, 6),
-          "local_date": iso_date(local_day_number(jd)),
-          "margin_seconds": round(margin_seconds(jd), 1),
-      }
-      for year, jd in sorted(terms.items())
-  }
-
-
 def derive_months(new_moons: list[float], terms: dict[int, list[float]],
                   shift_seconds: float) -> dict:
   """Apply the published rules; returns months and leap info per lunar year."""
@@ -225,12 +202,6 @@ def build(output_directory: Path) -> None:
                "sensitivity_seconds": list(SENSITIVITY_SECONDS)},
       "events_near_midnight": near_midnight_events(new_moons, terms),
       "structural_differences": structural_differences(base, others),
-  })
-  # Added 2026-11-12 (plan 0005, Tết Thanh Minh); the files above are
-  # unchanged, so their regeneration stays byte for byte.
-  write_json(output_directory / "oracle_solar_terms.json", {
-      "meta": {**meta, "longitude_degrees": THANH_MINH_LONGITUDE},
-      "thanh_minh": solar_term_rows(find_thanh_minh()),
   })
 
 
