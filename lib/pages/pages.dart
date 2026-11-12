@@ -9,8 +9,6 @@
 ///
 /// **Standalone screens**
 /// - [SplashPage] / [SplashCubit] / [SplashState]
-/// - [LoginPage] — Firebase UI Auth sign-in screen
-/// - [RegisterPage] — Firebase UI Auth registration screen
 /// - [PrivacyPage] — Privacy Policy rendered from Markdown asset
 /// - [TermsPage] — Terms of Service rendered from Markdown asset
 ///
@@ -27,18 +25,11 @@
 // ignore: unnecessary_library_name
 library pages;
 
-export 'auth/email_verification/email_verification_page.dart';
-export 'auth/forgot_password/forgot_password_page.dart';
-export 'auth/login/login_page.dart';
-export 'auth/phone_input/phone_input_page.dart';
-export 'auth/register/register_page.dart';
-export 'auth/sms_code/sms_code_page.dart';
 export 'anniversary_form/anniversary_form_page.dart';
 export 'anniversary_list/anniversary_list_page.dart';
 export 'calendar/calendar_page.dart';
 export 'onboarding/onboarding_page.dart';
 export 'privacy/privacy_page.dart';
-export 'profile/profile_page.dart';
 export 'setting/setting_page.dart';
 export 'shell/shell_page.dart';
 export 'splash/splash_page.dart';

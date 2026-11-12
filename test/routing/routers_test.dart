@@ -30,7 +30,20 @@ void main() {
     test('removed template routes are gone', () {
       final names = Routers.values.map((r) => r.routerName).toSet();
       expect(
-        names.intersection({'intro', 'service', 'explore', 'aiSupport'}),
+        names.intersection({
+          'intro',
+          'service',
+          'explore',
+          'aiSupport',
+          // FirebaseUI auth screens, removed for Swift Package Manager.
+          'login',
+          'register',
+          'profile',
+          'phoneInput',
+          'smsCode',
+          'forgotPassword',
+          'emailVerification',
+        }),
         isEmpty,
       );
     });

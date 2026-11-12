@@ -133,13 +133,14 @@ lib/
 │   ├── router_extension.dart  # Navigation helper extensions on BuildContext
 │   └── routing.dart           # Barrel
 ├── pages/                     # One folder per screen: <page>_page.dart + _cubit.dart + _state.dart
-│   ├── shell/                 # ShellPage — StatefulShellRoute.indexedStack with bottom nav
-│   ├── splash/                # Entry animation, then /home
+│   ├── shell/                 # ShellPage — StatefulShellRoute with the navigation drawer
+│   ├── splash/                # Decides /onboarding (first run) or /home
+│   ├── onboarding/            # Intro pages and notification explanation (plan 0005 U7)
 │   ├── anniversary_list/      # Upcoming anniversaries (plan 0005 U2), shell branch 0
-│   ├── setting/ profile/
-│   ├── auth/                  # login, register, forgot_password, phone_input,
-│   │                          #   sms_code, email_verification (firebase_ui_auth)
-│   ├── privacy/ terms/        # Markdown-rendered legal pages
+│   ├── anniversary_form/      # Add/edit form (U3)
+│   ├── calendar/              # Year/month/week calendar (U5), shell branch 1
+│   ├── setting/               # Settings (U6), shell branch 2
+│   ├── privacy/ terms/        # Markdown-rendered legal pages, children of /setting
 │   ├── widgets/               # Shared page-level widgets (TransitionPage, wrappers, error widget)
 │   └── pages.dart             # Barrel
 ├── models/                    # Entities (anniversary, anniversary_date, picked_file)
@@ -189,13 +190,13 @@ packages/                      # Local packages (path deps)
 | UI helpers         | `another_flushbar`, `gap`, `fluttertoast`                                                                                                                                                     |
 | Device/app info    | `device_info_plus`, `package_info_plus`                                                                                                                                                       |
 | Image / files      | `image_picker`, `file_picker`                                                                                                                                                                 |
-| Path & permissions | `path_provider`, `external_path`, `path`, `permission_handler`                                                                                                                                |
+| Path & permissions | `path_provider`, `path`, `permission_handler`                                                                                                                                                 |
 | Browser            | `url_launcher`                                                                                                                                                                                |
 | Environment config | `flutter_dotenv` — loads `assets/env/.env.<flavor>` via `AppEnv.load`                                                                                                                         |
 | Native channel     | `pigeon`                                                                                                                                                                                      |
 | Logging            | `logger`                                                                                                                                                                                      |
 | Code generation    | `build_runner`, `retrofit_generator`, `json_serializable`, `json_annotation`                                                                                                                  |
-| Firebase           | `firebase_core`, `firebase_messaging`, `firebase_crashlytics`, `firebase_auth`, `firebase_ui_auth` (+ `firebase_ui_oauth_google`, `firebase_ui_localizations`), `flutter_local_notifications` |
+| Firebase           | `firebase_core`, `firebase_messaging`, `firebase_crashlytics`, `firebase_auth` (no UI yet; `RouterNotifier` only), `flutter_local_notifications`                                                                                 |
 | Local packages     | `setting_ui_builder` (path dep in `packages/`); `lunar_calendar` (path dep; reach it only through `lib/services/lunar/`, see plan 0003)                                                       |
 
 ---
@@ -258,7 +259,6 @@ main_<flavor>.dart → main.dart :: main()   (inside runZonedGuarded)
   → SystemChrome.setPreferredOrientations(portrait)
   → flavor = PackageInfo.flavor  →  AppEnv.load(flavor)
   → Firebase.initializeApp()                          # no options; native auto-init
-  → FirebaseUIAuth.configureProviders([Email, Google])
   → FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage)
   → FirebaseNotificationService.instance.initialize()
   → AppStorage.init()  →  AppPreference.init()
@@ -272,11 +272,15 @@ AppPage (StatefulWidget)
          → BlocBuilder<AppCubit> → MaterialApp.router(theme, locale, routerConfig)
 
 Router
-  / (root)   → SplashPage → context.go('/home')
-  /home ...  → ShellPage (StatefulShellRoute.indexedStack)
-               ├── branch 0: AnniversaryListPage
-               └── branch 1: SettingPage
-  + standalone routes: profile, auth/*, terms, privacy, notFound
+  / (root)   → SplashPage → context.go('/onboarding' on first run, else '/home')
+  /home ...  → ShellPage (StatefulShellRoute, drawer)
+               ├── branch 0: AnniversaryListPage   (+ /home/new)
+               ├── branch 1: CalendarPage          (+ /calendar/new, /calendar/edit/:id)
+               └── branch 2: SettingPage           (+ /setting/terms, /setting/privacy)
+  + standalone routes: onboarding, notFound
+  No sign-in screens: the FirebaseUI auth template was removed on 2026-11-12
+  (its desktop_webview_auth has no Swift Package Manager support). Phase 2
+  builds sign-in on firebase_auth + google_sign_in.
 ```
 
 ---

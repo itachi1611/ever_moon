@@ -24,19 +24,9 @@ GoRouter get appRouter => AppRouter.instance.goRouter;
 
 /// Global read-only accessor for the [RouterNotifier] singleton.
 ///
-/// Call [RouterNotifier.attachAuthStateChange] after a successful login and
-/// [RouterNotifier.detachAuthStateChange] after logout to force [GoRouter]
-/// to re-evaluate its `redirect` callback.
-///
-/// ```dart
-/// import 'package:ever_moon/routing/app_router.dart';
-///
-/// // After login succeeds
-/// routerNotifier.attachAuthStateChange();
-///
-/// // After logout
-/// routerNotifier.detachAuthStateChange();
-/// ```
+/// It follows `FirebaseAuth.authStateChanges`, so the router re-runs its
+/// `redirect` on every sign-in or sign-out. The app has no sign-in screen
+/// yet (phase 2), so today nothing changes the auth state.
 RouterNotifier get routerNotifier => AppRouter.instance.notifier;
 
 /// Singleton that owns the app's [GoRouter] and [RouterNotifier].
@@ -56,9 +46,6 @@ RouterNotifier get routerNotifier => AppRouter.instance.notifier;
 /// ```dart
 /// // From a Cubit after an API call
 /// appRouter.go(Routers.home.routerPath);
-///
-/// // Trigger a redirect after login / logout
-/// routerNotifier.attachAuthStateChange();
 /// ```
 class AppRouter {
   AppRouter._();
@@ -72,8 +59,7 @@ class AppRouter {
 
   /// The [RouterNotifier] that drives auth-based route redirects.
   ///
-  /// Registered as [GoRouter.refreshListenable] so any call to
-  /// [RouterNotifier.attachAuthStateChange] or [RouterNotifier.detachAuthStateChange]
+  /// Registered as [GoRouter.refreshListenable] so an auth state change
   /// immediately re-runs the router's `redirect` callback.
   ///
   /// Prefer the top-level [routerNotifier] getter over [AppRouter.instance.notifier].

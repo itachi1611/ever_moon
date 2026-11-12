@@ -171,8 +171,8 @@ class PermissionService {
   }
 
   /// Requests write access to the public Downloads directory, for code that
-  /// writes there via a raw [Directory]/[File] path (e.g. [getAppDirectory]
-  /// on Android) rather than through `MediaStore`.
+  /// writes there via a raw [Directory]/[File] path rather than through
+  /// `MediaStore`. Nothing in the app does this today.
   ///
   /// **Scoped storage caveat — read before relying on this:**
   ///

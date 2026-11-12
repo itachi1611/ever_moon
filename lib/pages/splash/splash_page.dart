@@ -4,7 +4,6 @@ import 'package:ever_moon/common/app_config.dart';
 import 'package:ever_moon/common/app_dimensions.dart';
 import 'package:ever_moon/generated/l10n.dart';
 import 'package:ever_moon/routing/routers.dart';
-import 'package:ever_moon/services/firebase_notification_service.dart';
 import 'package:ever_moon/services/notification_access_service.dart';
 import 'package:ever_moon/storage/app_preference.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +17,23 @@ import 'splash_state.dart';
 /// the first-run flag is read, then goes to the intro or the list
 /// (plan 0005, U7; UI-15).
 class SplashPage extends StatefulWidget {
-  /// Creates the page.
-  const SplashPage({super.key});
+  /// Creates the page; tests pass [hasCompletedIntro] and [access].
+  const SplashPage({
+    super.key,
+    this.onNotificationsAllowed,
+    this.hasCompletedIntro,
+    this.access,
+  });
+
+  /// Runs on later launches when notifications are allowed (the route
+  /// passes the push token refresh); never shows a dialog.
+  final Future<void> Function()? onNotificationsAllowed;
+
+  /// Reads the first-run flag; [AppPreference] when `null`.
+  final bool Function()? hasCompletedIntro;
+
+  /// Notification permission; the plugin-backed one when `null`.
+  final NotificationAccessService? access;
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -32,12 +46,17 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     _cubit = SplashCubit(
-      hasCompletedIntro: AppPreference.instance.isCompleteIntro,
-      access: notificationAccessService,
-      onNotificationsAllowed:
-          FirebaseNotificationService.instance.requestPermissionAndFetchToken,
+      hasCompletedIntro:
+          widget.hasCompletedIntro ?? AppPreference.instance.isCompleteIntro,
+      access: widget.access ?? notificationAccessService,
+      onNotificationsAllowed: widget.onNotificationsAllowed,
     );
-    unawaited(_cubit.start());
+    // After the first frame: on a first launch start() emits at once, and a
+    // state emitted before the BlocListener subscribes would be missed,
+    // leaving the app on the splash.
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => unawaited(_cubit.start()),
+    );
   }
 
   @override

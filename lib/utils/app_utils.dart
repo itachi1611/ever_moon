@@ -1,13 +1,10 @@
-import 'dart:io' show File, Directory, Platform;
+import 'dart:io' show File;
 import 'dart:math' show Random;
 
-import 'package:external_path/external_path.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart' hide PickedFile;
-import 'package:path/path.dart' show join;
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,72 +12,6 @@ import '../common/app_enums.dart';
 import '../models/picked_file.dart';
 import '../services/permission_service.dart';
 import 'app_logger.dart' show err;
-
-/// Resolves the directory the app should save generated files into, plus a
-/// ready-to-use unique file path inside it.
-///
-/// - Android: the public Downloads directory, via `external_path`, when
-///   [PermissionService.requestDownloadsWrite] reports the write is
-///   actually usable — visible outside the app (e.g. in a file manager or
-///   the system Downloads app). Otherwise falls back to the app's sandboxed
-///   documents directory (see [_resolveDirectory]).
-/// - iOS / other platforms: the app's sandboxed documents directory.
-///
-/// [prefix] and [fileExtension] are forwarded to [genUniqueFileName] to build
-/// the returned [path]'s file name.
-///
-/// Returns `null` (and logs via [err]) only if the directory can't be
-/// created at all — permission issues on Android degrade to the documents
-/// directory instead of failing (see [_resolveDirectory]).
-Future<({Directory dir, String path})?> getAppDirectory({
-  String prefix = 'default',
-  String fileExtension = 'pdf',
-}) async {
-  try {
-    final dir = await _resolveDirectory();
-
-    if (!await dir.exists()) {
-      await dir.create(recursive: true);
-    }
-
-    final fileName = genUniqueFileName(
-      prefix: prefix,
-      fileExtension: fileExtension,
-    );
-    final path = join(dir.path, fileName);
-    return (dir: dir, path: path);
-  } catch (e) {
-    err('getAppDirectory: $e');
-    return null;
-  }
-}
-
-/// Picks the actual directory backing [getAppDirectory].
-///
-/// On Android, requests [PermissionService.requestDownloadsWrite] first.
-/// Scoped storage on API 30+ means that permission commonly can't be
-/// satisfied for a raw path write (see its doc comment for why) — in that
-/// case this silently falls back to [getApplicationDocumentsDirectory]
-/// (app-private, always available, no permission required) rather than
-/// letting [getAppDirectory] fail outright.
-Future<Directory> _resolveDirectory() async {
-  if (Platform.isAndroid) {
-    final status = await permissionService.requestDownloadsWrite();
-    if (status.isGranted) {
-      final downloadsDirectory =
-          await ExternalPath.getExternalStoragePublicDirectory(
-            ExternalPath.DIRECTORY_DOWNLOAD,
-          );
-      return Directory(downloadsDirectory);
-    }
-    err(
-      'getAppDirectory: Downloads write not available ($status) — likely '
-      'scoped storage on API 30+. Falling back to the app documents '
-      'directory.',
-    );
-  }
-  return getApplicationDocumentsDirectory();
-}
 
 /// Generates a filesystem-safe, collision-resistant file name, e.g.
 /// `default_1737955200123456_a1b2c3.pdf`.
