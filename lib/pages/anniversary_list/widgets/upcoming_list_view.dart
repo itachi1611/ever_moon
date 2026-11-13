@@ -12,6 +12,7 @@ class UpcomingListView extends StatelessWidget {
     super.key,
     required this.today,
     required this.upcoming,
+    this.onEdit,
     this.bottomPadding = 0,
   });
 
@@ -20,6 +21,9 @@ class UpcomingListView extends StatelessWidget {
 
   /// Entries after today.
   final List<UpcomingAnniversary> upcoming;
+
+  /// Called with the anniversary id when a card is tapped.
+  final ValueChanged<String>? onEdit;
 
   /// Extra space at the end so the FAB never covers the last card.
   final double bottomPadding;
@@ -46,11 +50,33 @@ class UpcomingListView extends StatelessWidget {
       today: today.length,
     ),
     if (today.isNotEmpty) () => SectionLabel(text: s.lb_section_today),
-    for (final item in today) () => _Spaced(child: AnniversaryCard(item: item)),
+    for (final item in today)
+      () => _Spaced(
+        child: _EditableCard(item: item, onEdit: onEdit),
+      ),
     if (upcoming.isNotEmpty) () => SectionLabel(text: s.lb_section_upcoming),
     for (final item in upcoming)
-      () => _Spaced(child: AnniversaryCard(item: item)),
+      () => _Spaced(
+        child: _EditableCard(item: item, onEdit: onEdit),
+      ),
   ];
+}
+
+/// A card that opens the edit form for its anniversary when [onEdit] is set.
+class _EditableCard extends StatelessWidget {
+  const _EditableCard({required this.item, required this.onEdit});
+
+  final UpcomingAnniversary item;
+  final ValueChanged<String>? onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final edit = onEdit;
+    return AnniversaryCard(
+      item: item,
+      onTap: edit == null ? null : () => edit(item.anniversary.id),
+    );
+  }
 }
 
 /// The "N người · M ngày giỗ hôm nay" summary under the app bar title.

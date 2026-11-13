@@ -7,23 +7,30 @@ import 'package:intl/intl.dart';
 /// One anniversary in the upcoming list: date badge, name, lunar and solar
 /// dates, and the countdown or the "today" chip (design: AnniversaryCard).
 ///
-/// Read-only (plan 0005, D15); screen readers hear one sentence.
+/// Tapping it opens the edit form (plan 0005, D15 revised after the first
+/// device test); screen readers hear one sentence and a button.
 class AnniversaryCard extends StatelessWidget {
-  /// Creates the card for [item].
-  const AnniversaryCard({super.key, required this.item});
+  /// Creates the card for [item]; [onTap] opens the edit form.
+  const AnniversaryCard({super.key, required this.item, this.onTap});
 
   /// The entry to show.
   final UpcomingAnniversary item;
+
+  /// Called when the card is tapped; the card is inert while `null`.
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final texts = _CardTexts.of(context, item);
     return Semantics(
       container: true,
+      button: onTap != null,
       label: texts.sentence,
       excludeSemantics: true,
+      onTap: onTap,
       child: _CardFrame(
         isToday: item.isToday,
+        onTap: onTap,
         children: [
           _DateBadge(item: item),
           Expanded(
@@ -72,23 +79,36 @@ class _CardTexts {
 }
 
 class _CardFrame extends StatelessWidget {
-  const _CardFrame({required this.isToday, required this.children});
+  const _CardFrame({
+    required this.isToday,
+    required this.onTap,
+    required this.children,
+  });
 
   final bool isToday;
+  final VoidCallback? onTap;
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: isToday ? scheme.tertiaryContainer : scheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppDimensions.cornerMedium),
-        border: isToday ? null : Border.all(color: scheme.outlineVariant),
+    final radius = BorderRadius.circular(AppDimensions.cornerMedium);
+    // A Material, not a DecoratedBox, so the tap ripple shows on the card.
+    return Material(
+      color: isToday ? scheme.tertiaryContainer : scheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
+        borderRadius: radius,
+        side: isToday
+            ? BorderSide.none
+            : BorderSide(color: scheme.outlineVariant),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.space16),
-        child: Row(spacing: AppDimensions.space12, children: children),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Padding(
+          padding: const EdgeInsets.all(AppDimensions.space16),
+          child: Row(spacing: AppDimensions.space12, children: children),
+        ),
       ),
     );
   }

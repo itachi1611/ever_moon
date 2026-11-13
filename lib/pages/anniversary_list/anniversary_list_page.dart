@@ -23,6 +23,7 @@ class AnniversaryListPage extends StatefulWidget {
   const AnniversaryListPage({
     super.key,
     this.addForm,
+    this.onEdit,
     this.repository,
     this.resolver,
     this.today,
@@ -30,6 +31,10 @@ class AnniversaryListPage extends StatefulWidget {
 
   /// Builds the add form; no add action is shown while it is `null`.
   final AddFormBuilder? addForm;
+
+  /// Opens the edit form for an anniversary id; cards are not tappable
+  /// while it is `null`.
+  final ValueChanged<String>? onEdit;
 
   /// Storage; the app-wide repository when `null`.
   final AnniversaryRepository? repository;
@@ -78,7 +83,11 @@ class _AnniversaryListPageState extends State<AnniversaryListPage> {
           leading: MenuButton.maybe(context),
           title: Text(S.of(context).lb_upcoming_title),
         ),
-        body: _ListBody(addForm: addForm, onRetry: _cubit.start),
+        body: _ListBody(
+          addForm: addForm,
+          onEdit: widget.onEdit,
+          onRetry: _cubit.start,
+        ),
         floatingActionButton: addForm == null
             ? null
             : AddAnniversaryFab(formBuilder: addForm),
@@ -88,9 +97,14 @@ class _AnniversaryListPageState extends State<AnniversaryListPage> {
 }
 
 class _ListBody extends StatelessWidget {
-  const _ListBody({required this.addForm, required this.onRetry});
+  const _ListBody({
+    required this.addForm,
+    required this.onEdit,
+    required this.onRetry,
+  });
 
   final AddFormBuilder? addForm;
+  final ValueChanged<String>? onEdit;
   final VoidCallback onRetry;
 
   @override
@@ -104,6 +118,7 @@ class _ListBody extends StatelessWidget {
           AnniversaryListLoaded() => UpcomingListView(
             today: state.today,
             upcoming: state.upcoming,
+            onEdit: onEdit,
             // Room for the add button so the last card can scroll clear of it.
             bottomPadding: addForm == null
                 ? 0

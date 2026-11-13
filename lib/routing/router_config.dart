@@ -91,9 +91,16 @@ StatefulShellRoute get _shellRoute => StatefulShellRoute(
           name: Routers.home.routerName,
           path: Routers.home.routerPath,
           pageBuilder: (context, state) => TransitionPage(
-            child: const AnniversaryListPage(addForm: _addForm),
+            child: AnniversaryListPage(
+              addForm: _addForm,
+              onEdit: (id) => context.goNamed(
+                Routers.homeAnniversaryEdit.routerName,
+                pathParameters: {'id': id},
+              ),
+            ),
             transitionType: PageTransitionType.fade,
           ),
+          routes: [_homeEditRoute],
         ),
       ],
     ),
@@ -155,6 +162,21 @@ GoRoute get _anniversaryEditRoute => GoRoute(
     child: AnniversaryFormPage(
       anniversaryId: state.pathParameters['id'],
       onClose: () => context.go(Routers.calendar.routerPath),
+    ),
+    transitionType: PageTransitionType.sharedAxisScaled,
+  ),
+);
+
+// Edit form reached by tapping an anniversary on the list; Back and Save
+// return to the list.
+GoRoute get _homeEditRoute => GoRoute(
+  parentNavigatorKey: rootNavigatorKey,
+  name: Routers.homeAnniversaryEdit.routerName,
+  path: 'edit/:id', // Routers.homeAnniversaryEdit = home + '/edit/:id'
+  pageBuilder: (context, state) => TransitionPage(
+    child: AnniversaryFormPage(
+      anniversaryId: state.pathParameters['id'],
+      onClose: () => context.go(Routers.home.routerPath),
     ),
     transitionType: PageTransitionType.sharedAxisScaled,
   ),

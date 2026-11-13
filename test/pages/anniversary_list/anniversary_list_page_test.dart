@@ -6,6 +6,7 @@ import 'package:ever_moon/pages/widgets/add_anniversary_launcher.dart';
 import 'package:ever_moon/services/lunar/anniversary_resolver.dart';
 import 'package:ever_moon/services/lunar/lunar_calendar_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,6 +24,7 @@ void main() {
     WidgetTester tester, {
     Locale locale = const Locale('vi'),
     AddFormBuilder? addForm,
+    ValueChanged<String>? onEdit,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -40,6 +42,7 @@ void main() {
           resolver: AnniversaryResolver(calendar),
           today: () => today,
           addForm: addForm,
+          onEdit: onEdit,
         ),
       ),
     );
@@ -97,6 +100,36 @@ void main() {
     final today = tester.getTopLeft(find.text('Ông nội'));
     final later = tester.getTopLeft(find.text('Bà nội'));
     expect(today.dy, lessThan(later.dy));
+  });
+
+  testWidgets('tapping a card opens its edit form by id', (tester) async {
+    final opened = <String>[];
+    await pumpPage(tester, onEdit: opened.add);
+    repository.emit([
+      anniversary('a', 'Bà nội', 9, 4),
+      anniversary('b', 'Ông nội', 5, 4),
+    ]);
+    await tester.pump();
+    await tester.tap(find.text('Bà nội'));
+    await tester.pump();
+    await tester.tap(find.text('Ông nội'));
+    await tester.pump();
+    expect(opened, ['a', 'b']);
+  });
+
+  testWidgets('a card is a button for screen readers only when tappable', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpPage(tester, onEdit: (_) {});
+    repository.emit([anniversary('a', 'Bà nội', 9, 4)]);
+    await tester.pump();
+    final data = tester
+        .getSemantics(find.bySemanticsLabel(RegExp(r'^Bà nội')))
+        .getSemanticsData();
+    expect(data.flagsCollection.isButton, isTrue);
+    expect(data.hasAction(SemanticsAction.tap), isTrue);
+    handle.dispose();
   });
 
   testWidgets('UI-8 a card reads as one sentence', (tester) async {

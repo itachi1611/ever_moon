@@ -14,6 +14,10 @@ enum Routers {
   /// Home tab inside the shell (`/home`).
   home('/home', 'home'),
 
+  /// Edit form over the list (`/home/edit/:id`, opened by tapping an
+  /// anniversary). Go there with `goNamed` and the `id` path parameter.
+  homeAnniversaryEdit('/home/edit/:id', 'homeAnniversaryEdit'),
+
   /// Calendar tab inside the shell (`/calendar`, plan 0005 U5).
   calendar('/calendar', 'calendar'),
 
