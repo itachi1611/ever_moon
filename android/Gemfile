@@ -1,0 +1,8 @@
+source "https://rubygems.org"
+
+# Pessimistic ranges until a Gemfile.lock is committed (run `bundle install`
+# in android/ on a working Ruby, then commit the lock file).
+gem "fastlane", "~> 2.241"
+
+plugins_path = File.join(File.dirname(__FILE__), "fastlane", "Pluginfile")
+eval_gemfile(plugins_path) if File.exist?(plugins_path)

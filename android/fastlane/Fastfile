@@ -1,0 +1,60 @@
+default_platform(:android)
+
+# fastlane runs from android/fastlane; Flutter commands run from the root.
+PROJECT_ROOT = File.expand_path("../..", __dir__)
+
+# Locally Flutter comes from fvm. The CI runner has no fvm, so the workflow
+# sets FLUTTER_CMD=flutter and DART_CMD=dart.
+FLUTTER_CMD = ENV.fetch("FLUTTER_CMD", "fvm flutter")
+DART_CMD = ENV.fetch("DART_CMD", "fvm dart")
+
+# Firebase app of the dev flavor (project evermoon-dev, com.fox.evermoon.dev).
+DEV_APP_ID = "1:738285598906:android:cbaaca2209de188a42aa83"
+
+DEV_APK = File.join(PROJECT_ROOT, "build/app/outputs/flutter-apk/app-dev-release.apk")
+
+platform :android do
+  def run_in_root(command)
+    Dir.chdir(PROJECT_ROOT) { sh(command) }
+  end
+
+  # Flags that set the version shown to testers; empty when not given.
+  def version_flags(options)
+    flags = []
+    flags << "--build-name=#{options[:build_name]}" if options[:build_name]
+    flags << "--build-number=#{options[:build_number]}" if options[:build_number]
+    flags.join(" ")
+  end
+
+  desc "Build the dev release APK. Params: build_name, build_number"
+  lane :build_dev do |options|
+    run_in_root("#{FLUTTER_CMD} pub get")
+    # Generated code is gitignored, so a fresh checkout needs this step.
+    run_in_root("#{DART_CMD} run build_runner build --delete-conflicting-outputs")
+    run_in_root(
+      "#{FLUTTER_CMD} build apk --release --flavor dev -t lib/main_dev.dart " \
+      "#{version_flags(options)}"
+    )
+    UI.user_error!("APK not found at #{DEV_APK}") unless File.exist?(DEV_APK)
+  end
+
+  desc "Build the dev APK and upload it to Firebase App Distribution. " \
+       "Params: build_name, build_number, notes"
+  lane :distribute_dev do |options|
+    credentials = ENV["FIREBASE_SERVICE_CREDENTIALS"]
+    if credentials.to_s.empty? || !File.exist?(credentials)
+      UI.user_error!("FIREBASE_SERVICE_CREDENTIALS must point to the service account JSON")
+    end
+
+    build_dev(options)
+
+    firebase_app_distribution(
+      app: ENV.fetch("FIREBASE_APP_ID_DEV", DEV_APP_ID),
+      android_artifact_type: "APK",
+      android_artifact_path: DEV_APK,
+      groups: ENV.fetch("FIREBASE_TESTER_GROUPS", "testers"),
+      release_notes: options[:notes] || "Dev build.",
+      service_credentials_file: credentials
+    )
+  end
+end

@@ -1,0 +1,101 @@
+# Builds the dev flavor and uploads the APK to Firebase App Distribution.
+# Trigger: push a tag like dev-1.0.0+60 (version name 1.0.0, build number 60).
+# Setup and secrets: docs/ci-cd.md
+name: Distribute dev
+
+on:
+  push:
+    tags: ["dev-*"]
+
+permissions:
+  contents: read
+
+# Never cancel a running upload; a second tag waits for the first.
+concurrency:
+  group: distribute-dev
+  cancel-in-progress: false
+
+env:
+  FLUTTER_VERSION: "3.47.1"
+
+jobs:
+  distribute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Read the version from the tag
+        id: version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [[ ! "$TAG" =~ ^dev-([0-9]+\.[0-9]+\.[0-9]+)\+([0-9]+)$ ]]; then
+            echo "::error::Tag '$TAG' must look like dev-1.0.0+60"
+            exit 1
+          fi
+          echo "name=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          echo "number=${BASH_REMATCH[2]}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+
+      # No Gemfile.lock is committed yet, so the cache option does not apply.
+      - name: Install fastlane
+        working-directory: android
+        run: bundle install --jobs 4 --retry 3
+
+      # Secrets arrive through env, never inside the script text.
+      - name: Restore secret files
+        env:
+          GOOGLE_SERVICES_DEV_B64: ${{ secrets.GOOGLE_SERVICES_DEV_B64 }}
+          DEBUG_KEYSTORE_B64: ${{ secrets.DEBUG_KEYSTORE_B64 }}
+          FIREBASE_SERVICE_ACCOUNT_DEV: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}
+        run: |
+          set -euo pipefail
+          # Same debug key as local builds, so builds install over each other.
+          mkdir -p "$HOME/.android"
+          echo "$DEBUG_KEYSTORE_B64" | base64 -d > "$HOME/.android/debug.keystore"
+          mkdir -p android/app/src/dev
+          echo "$GOOGLE_SERVICES_DEV_B64" | base64 -d > android/app/src/dev/google-services.json
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_DEV" > "$RUNNER_TEMP/firebase-sa.json"
+          # No secret lives in these files; see docs/ci-cd.md.
+          cp -n assets/env/.env.dev.example assets/env/.env.dev
+          cp -n assets/env/.env.prod.example assets/env/.env.prod
+
+      - name: Build and upload
+        working-directory: android
+        env:
+          FLUTTER_CMD: flutter
+          DART_CMD: dart
+          FIREBASE_SERVICE_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+          BUILD_NAME: ${{ steps.version.outputs.name }}
+          BUILD_NUMBER: ${{ steps.version.outputs.number }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          bundle exec fastlane android distribute_dev \
+            build_name:"$BUILD_NAME" \
+            build_number:"$BUILD_NUMBER" \
+            notes:"$TAG"
+
+      - name: Remove secret files
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/firebase-sa.json" "$HOME/.android/debug.keystore" \
+            android/app/src/dev/google-services.json
