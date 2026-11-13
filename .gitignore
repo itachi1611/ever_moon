@@ -98,3 +98,6 @@ ios/Pods/
 .fvm/
 # Widget Preview related
 .widget_preview/
+
+# Gradle reports
+/android/build/

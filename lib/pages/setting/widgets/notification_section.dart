@@ -24,6 +24,7 @@ class NotificationSection extends StatelessWidget {
     return SectionCard(
       children: [
         NotificationAccessTile(access: state.access),
+        ExactAlarmTile(allowed: state.exactAlarm),
         _SoundTile(sound: state.settings.sound),
         SwitchListTile(
           title: Text(s.lb_vibrate),
@@ -67,6 +68,32 @@ class NotificationAccessTile extends StatelessWidget {
       subtitle: Text(_status(s)),
       trailing: const Icon(Icons.chevron_right),
       onTap: context.read<SettingCubit>().openNotificationAccess,
+    );
+  }
+}
+
+/// Shows whether reminders arrive on the minute; a tap opens the system page
+/// that grants it (plan 0006).
+class ExactAlarmTile extends StatelessWidget {
+  /// Creates the row; [allowed] is the permission state.
+  const ExactAlarmTile({super.key, required this.allowed});
+
+  /// Whether exact alarms are allowed.
+  final bool allowed;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return ListTile(
+      leading: Icon(
+        allowed ? Icons.alarm_on_outlined : Icons.alarm_off_outlined,
+        color: allowed ? scheme.primary : scheme.error,
+      ),
+      title: Text(s.lb_exact_alarm),
+      subtitle: Text(allowed ? s.lb_exact_alarm_on : s.lb_exact_alarm_off),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: context.read<SettingCubit>().openExactAlarmAccess,
     );
   }
 }

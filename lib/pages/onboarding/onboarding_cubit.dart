@@ -1,3 +1,4 @@
+import 'package:ever_moon/services/exact_alarm_access_service.dart';
 import 'package:ever_moon/services/notification_access_service.dart';
 import 'package:ever_moon/utils/app_logger.dart' as logger;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,14 +14,17 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   /// runs after the user allowed notifications (the push token refresh).
   OnboardingCubit({
     required NotificationAccessService access,
+    required ExactAlarmAccessService exactAlarm,
     required Future<void> Function() markComplete,
     Future<void> Function()? onNotificationsAllowed,
   }) : _access = access,
+       _exactAlarm = exactAlarm,
        _markComplete = markComplete,
        _onNotificationsAllowed = onNotificationsAllowed,
        super(const OnboardingSlides(IntroSlide.lunar));
 
   final NotificationAccessService _access;
+  final ExactAlarmAccessService _exactAlarm;
   final Future<void> Function() _markComplete;
   final Future<void> Function()? _onNotificationsAllowed;
 
@@ -42,7 +46,8 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     if (state is OnboardingSlides) emit(const OnboardingNotify());
   }
 
-  /// "Cho phép": the system dialog, then the list whatever the answer.
+  /// "Cho phép": the system dialog, then the exact alarm page when it is
+  /// still needed, then the list whatever the answers.
   Future<void> allow() async {
     final current = state;
     if (current is! OnboardingNotify || current.busy) return;
@@ -50,11 +55,21 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     try {
       if (await _access.request() == NotificationAccess.granted) {
         runQuietly(_onNotificationsAllowed, 'Push token refresh failed');
+        await _askExactAlarm();
       }
     } catch (error, stackTrace) {
       logger.err('Notification permission request failed', error, stackTrace);
     }
     await _finish();
+  }
+
+  Future<void> _askExactAlarm() async {
+    try {
+      if (!await _exactAlarm.isAllowed()) await _exactAlarm.request();
+    } catch (error, stackTrace) {
+      // Reminders still work, only inexact.
+      logger.err('Exact alarm request failed', error, stackTrace);
+    }
   }
 
   /// "Để sau": no dialog; Settings can ask later (D18).

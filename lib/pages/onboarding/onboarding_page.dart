@@ -1,3 +1,4 @@
+import 'package:ever_moon/services/exact_alarm_access_service.dart';
 import 'package:ever_moon/services/notification_access_service.dart';
 import 'package:ever_moon/storage/app_preference.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class OnboardingPage extends StatefulWidget {
     required this.onDone,
     this.onNotificationsAllowed,
     this.access,
+    this.exactAlarm,
     this.markComplete,
   });
 
@@ -29,6 +31,9 @@ class OnboardingPage extends StatefulWidget {
 
   /// Notification permission; the plugin-backed one when `null`.
   final NotificationAccessService? access;
+
+  /// Exact alarm permission; the plugin-backed one when `null`.
+  final ExactAlarmAccessService? exactAlarm;
 
   /// Stores the first-run flag; [AppPreference] when `null`.
   final Future<void> Function()? markComplete;
@@ -45,6 +50,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     super.initState();
     _cubit = OnboardingCubit(
       access: widget.access ?? notificationAccessService,
+      exactAlarm: widget.exactAlarm ?? exactAlarmAccessService,
       markComplete:
           widget.markComplete ??
           () => AppPreference.instance.setCompleteIntro(true),

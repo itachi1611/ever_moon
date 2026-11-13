@@ -1,5 +1,6 @@
 import 'package:ever_moon/generated/l10n.dart';
 import 'package:ever_moon/pages/shell/shell_scope.dart';
+import 'package:ever_moon/services/exact_alarm_access_service.dart';
 import 'package:ever_moon/services/notification_access_service.dart';
 import 'package:ever_moon/storage/settings_store.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +17,22 @@ import 'widgets/settings_sections.dart';
 /// Owns its [SettingCubit]; theme and language go through `AppCubit`.
 class SettingPage extends StatefulWidget {
   /// Creates the page; tests pass [store], [access] and [version].
-  const SettingPage({super.key, this.store, this.access, this.version});
+  const SettingPage({
+    super.key,
+    this.store,
+    this.access,
+    this.exactAlarm,
+    this.version,
+  });
 
   /// Preferences; the app-wide store when `null`.
   final SettingsStore? store;
 
   /// Notification permission; the plugin-backed one when `null`.
   final NotificationAccessService? access;
+
+  /// Exact alarm permission; the plugin-backed one when `null`.
+  final ExactAlarmAccessService? exactAlarm;
 
   /// App version; read from the package when `null`.
   final Future<String> Function()? version;
@@ -44,6 +54,7 @@ class _SettingPageState extends State<SettingPage> {
     _cubit = SettingCubit(
       store: widget.store ?? settingsStore,
       access: widget.access ?? notificationAccessService,
+      exactAlarm: widget.exactAlarm ?? exactAlarmAccessService,
       version: widget.version ?? _packageVersion,
     )..load();
     // The user may come back from the system settings with a new answer.

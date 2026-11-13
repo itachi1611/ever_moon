@@ -11,16 +11,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../services/fake_exact_alarm_access.dart';
 import '../../services/fake_notification_access.dart';
 
 void main() {
   late FakeNotificationAccess access;
+  late FakeExactAlarmAccess exact;
   late bool completed;
   late int done;
   late int tokenRefreshes;
 
   setUp(() {
     access = FakeNotificationAccess();
+    exact = FakeExactAlarmAccess();
     completed = false;
     done = 0;
     tokenRefreshes = 0;
@@ -42,6 +45,7 @@ void main() {
           onDone: () => done++,
           onNotificationsAllowed: () async => tokenRefreshes++,
           access: access,
+          exactAlarm: exact,
           markComplete: () async => completed = true,
         ),
       ),
@@ -66,8 +70,44 @@ void main() {
     await tester.pumpAndSettle();
     expect(access.requests, 1);
     expect(tokenRefreshes, 1);
+    // Notifications allowed, exact alarms not: the system page opens once.
+    expect(exact.requests, 1);
     expect(completed, isTrue);
     expect(done, 1);
+  });
+
+  testWidgets('the notify screen explains the on-time page (Android)', (
+    tester,
+  ) async {
+    await pumpOnboarding(tester);
+    await tester.tap(find.text('Bỏ qua'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Báo thức và lời nhắc'), findsOneWidget);
+  });
+
+  testWidgets('a denied notification dialog skips the on-time page', (
+    tester,
+  ) async {
+    access.afterRequest = NotificationAccess.denied;
+    await pumpOnboarding(tester);
+    await tester.tap(find.text('Bỏ qua'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cho phép'));
+    await tester.pumpAndSettle();
+    expect(exact.requests, 0);
+    expect(done, 1);
+  });
+
+  testWidgets('already allowed on-time alarms are not asked again', (
+    tester,
+  ) async {
+    exact.allowed = true;
+    await pumpOnboarding(tester);
+    await tester.tap(find.text('Bỏ qua'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cho phép'));
+    await tester.pumpAndSettle();
+    expect(exact.requests, 0);
   });
 
   testWidgets('UI-15 Bỏ qua then Để sau finishes without the dialog', (

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ever_moon/common/app_enums.dart' show AppPreferenceKey;
 import 'package:ever_moon/models/app_settings.dart';
 import 'package:flutter/material.dart' show ThemeMode;
@@ -42,6 +44,11 @@ class PreferenceSettingsStore implements SettingsStore {
   );
 
   final AppPreference _preference;
+  final _changes = StreamController<AppSettings>.broadcast();
+
+  /// Emits the new settings after each write that changed something, so the
+  /// reminder sync can re-plan (plan 0006, RS-9).
+  Stream<AppSettings> get changes => _changes.stream;
 
   static const _defaults = AppSettings();
 
@@ -76,6 +83,7 @@ class PreferenceSettingsStore implements SettingsStore {
         p.setString(_Key.kReminderSound, settings.sound.name),
       ..._flags(settings, old),
     ]);
+    if (settings != old) _changes.add(settings);
   }
 
   Iterable<Future<void>> _flags(AppSettings next, AppSettings old) => [

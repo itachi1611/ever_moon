@@ -16,8 +16,10 @@ import 'app/app_page.dart';
 import 'common/app_env.dart';
 import 'services/firebase_notification_service.dart';
 import 'services/network_service.dart';
+import 'services/reminders/reminder_services.dart';
 import 'storage/app_preference.dart';
 import 'storage/app_storage.dart';
+import 'utils/device_form_factor.dart';
 import 'utils/extensions/file_extension.dart';
 
 /// Background FCM handler — must be a top-level function.
@@ -50,11 +52,14 @@ Future<void> main() async {
       // widget builds — as early as possible in main().
       ErrorWidget.builder = (details) => RenderErrorWidget(details: details);
 
-      // Lock orientation to portrait.
-      await SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
+      // Lock orientation to portrait, except on Android TV: a TV is always
+      // landscape and a portrait lock there leaves the app unusable.
+      if (!await isAndroidTv()) {
+        await SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
+      }
 
       // Detect flavor from bundle ID / package name suffix:
       //   com.example.app.dev → 'dev'
@@ -123,6 +128,9 @@ Future<void> main() async {
           yield LicenseEntryWithLineBreaks(<String>[family], license);
         }
       });
+
+      // Keep local reminders in step with the database and Settings.
+      startReminderSync();
 
       runApp(const AppPage());
     },

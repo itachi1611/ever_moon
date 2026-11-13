@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../anniversary_draft.dart';
 import '../anniversary_form_cubit.dart';
+import 'reminder_time_picker.dart';
 
 /// Reminder switch, lead time and time of day (UI-10, D9).
 ///
@@ -182,9 +183,9 @@ class _ReminderTimeButton extends StatelessWidget {
 
   Future<void> _pick(BuildContext context) async {
     final cubit = context.read<AnniversaryFormCubit>();
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: timeOfDayOf(minuteOfDay),
+    final picked = await showReminderTimePicker(
+      context,
+      timeOfDayOf(minuteOfDay),
     );
     if (picked == null) return;
     cubit.changeReminderTime(

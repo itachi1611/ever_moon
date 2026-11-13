@@ -1,4 +1,5 @@
 import 'package:ever_moon/models/app_settings.dart';
+import 'package:ever_moon/services/exact_alarm_access_service.dart';
 import 'package:ever_moon/services/notification_access_service.dart';
 import 'package:ever_moon/storage/settings_store.dart';
 import 'package:ever_moon/utils/app_logger.dart' as logger;
@@ -13,31 +14,41 @@ class SettingCubit extends Cubit<SettingState> {
   SettingCubit({
     required SettingsStore store,
     required NotificationAccessService access,
+    required ExactAlarmAccessService exactAlarm,
     required Future<String> Function() version,
   }) : _store = store,
        _access = access,
+       _exactAlarm = exactAlarm,
        _version = version,
        super(const SettingLoading());
 
   final SettingsStore _store;
   final NotificationAccessService _access;
+  final ExactAlarmAccessService _exactAlarm;
   final Future<String> Function() _version;
 
   /// Reads the stored settings, the permission state and the version.
   Future<void> load() async {
     final access = await _readAccess();
+    final exact = await _readExactAlarm();
     final version = await _readVersion();
     if (isClosed) return;
     emit(
-      SettingLoaded(settings: _store.read(), access: access, version: version),
+      SettingLoaded(
+        settings: _store.read(),
+        access: access,
+        version: version,
+        exactAlarm: exact,
+      ),
     );
   }
 
-  /// Re-reads the permission; the page calls it on resume, because the
-  /// user may have changed it in the system settings.
+  /// Re-reads the permissions; the page calls it on resume, because the
+  /// user may have changed them in the system settings.
   Future<void> refreshAccess() async {
     if (state is! SettingLoaded) return;
     final read = await _readAccess();
+    final exact = await _readExactAlarm();
     final current = state;
     if (isClosed || current is! SettingLoaded) return;
     // Android's status cannot tell "blocked" from "denied"; only a request
@@ -45,7 +56,25 @@ class SettingCubit extends Cubit<SettingState> {
     final blocked =
         current.access == NotificationAccess.blocked &&
         read == NotificationAccess.denied;
-    emit(current.copyWith(access: blocked ? current.access : read));
+    emit(
+      current.copyWith(
+        access: blocked ? current.access : read,
+        exactAlarm: exact,
+      ),
+    );
+  }
+
+  /// The exact-time row: opens the system page that grants the permission.
+  Future<void> openExactAlarmAccess() async {
+    try {
+      final allowed = await _exactAlarm.request();
+      final current = state;
+      if (!isClosed && current is SettingLoaded) {
+        emit(current.copyWith(exactAlarm: allowed));
+      }
+    } catch (error, stackTrace) {
+      logger.err('Exact alarm permission flow failed', error, stackTrace);
+    }
   }
 
   /// The notification row: asks when Android still shows the dialog,
@@ -114,6 +143,16 @@ class SettingCubit extends Cubit<SettingState> {
     } catch (error, stackTrace) {
       logger.err('Notification status could not be read', error, stackTrace);
       return NotificationAccess.denied;
+    }
+  }
+
+  Future<bool> _readExactAlarm() async {
+    try {
+      return await _exactAlarm.isAllowed();
+    } catch (error, stackTrace) {
+      logger.err('Exact alarm status could not be read', error, stackTrace);
+      // Unknown: do not nag the user with a warning row.
+      return true;
     }
   }
 

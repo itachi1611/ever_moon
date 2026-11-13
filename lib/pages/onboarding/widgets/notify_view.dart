@@ -1,5 +1,7 @@
 import 'package:ever_moon/common/app_dimensions.dart';
 import 'package:ever_moon/generated/l10n.dart';
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,9 +30,30 @@ class NotifyView extends StatelessWidget {
             ),
           ),
           IntroTexts(title: s.lb_notify_title, body: s.lb_notify_body),
+          if (defaultTargetPlatform == TargetPlatform.android)
+            const _ExactAlarmNote(),
           const SizedBox(height: AppDimensions.space24),
           _NotifyButtons(busy: busy),
         ],
+      ),
+    );
+  }
+}
+
+class _ExactAlarmNote extends StatelessWidget {
+  const _ExactAlarmNote();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: AppDimensions.space12),
+      child: Text(
+        S.of(context).lb_notify_exact_body,
+        textAlign: TextAlign.center,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
       ),
     );
   }

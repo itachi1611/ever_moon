@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import UserNotifications
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
@@ -10,6 +11,9 @@ import UIKit
     ) -> Bool {
         // Google Sign-In setup was removed with the FirebaseUI auth template
         // (plan 0002, C10). Phase 2 adds sign-in back with google_sign_in.
+        // Lets local reminders show as a banner while the app is open
+        // (flutter_local_notifications needs the delegate set at launch).
+        UNUserNotificationCenter.current().delegate = self
         return super.application(
             application,
             didFinishLaunchingWithOptions: launchOptions

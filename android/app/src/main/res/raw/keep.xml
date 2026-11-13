@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The soft bell is only referenced by name from Dart, so resource shrinking
+     would remove it from release builds without this. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/soft_bell" />

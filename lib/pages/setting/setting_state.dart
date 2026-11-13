@@ -24,6 +24,7 @@ final class SettingLoaded extends SettingState {
     required this.settings,
     required this.access,
     required this.version,
+    this.exactAlarm = true,
   });
 
   /// Stored preferences.
@@ -35,14 +36,21 @@ final class SettingLoaded extends SettingState {
   /// App version, for the About section.
   final String version;
 
+  /// Whether reminders may be delivered at the exact minute (plan 0006).
+  final bool exactAlarm;
+
   /// Copy with fields replaced.
-  SettingLoaded copyWith({AppSettings? settings, NotificationAccess? access}) =>
-      SettingLoaded(
-        settings: settings ?? this.settings,
-        access: access ?? this.access,
-        version: version,
-      );
+  SettingLoaded copyWith({
+    AppSettings? settings,
+    NotificationAccess? access,
+    bool? exactAlarm,
+  }) => SettingLoaded(
+    settings: settings ?? this.settings,
+    access: access ?? this.access,
+    version: version,
+    exactAlarm: exactAlarm ?? this.exactAlarm,
+  );
 
   @override
-  List<Object?> get props => [settings, access, version];
+  List<Object?> get props => [settings, access, version, exactAlarm];
 }

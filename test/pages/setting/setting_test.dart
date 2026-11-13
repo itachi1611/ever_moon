@@ -16,6 +16,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../services/fake_exact_alarm_access.dart';
 import '../../services/fake_notification_access.dart';
 
 /// Settings kept in memory.
@@ -32,10 +33,12 @@ class MemorySettingsStore implements SettingsStore {
 void main() {
   late MemorySettingsStore store;
   late FakeNotificationAccess access;
+  late FakeExactAlarmAccess exact;
 
   setUp(() {
     store = MemorySettingsStore();
     access = FakeNotificationAccess();
+    exact = FakeExactAlarmAccess(allowed: true);
   });
 
   Future<void> pumpSettings(WidgetTester tester) async {
@@ -61,6 +64,7 @@ void main() {
             home: SettingPage(
               store: store,
               access: access,
+              exactAlarm: exact,
               version: () async => '1.2.3',
             ),
           ),
@@ -126,6 +130,37 @@ void main() {
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pumpAndSettle();
     expect(find.text('Đang tắt · mở cài đặt máy để bật'), findsOneWidget);
+  });
+
+  testWidgets('the on-time row shows its state when allowed', (tester) async {
+    await pumpSettings(tester);
+    expect(find.text('Đang bật · nhắc đúng từng phút'), findsOneWidget);
+  });
+
+  testWidgets('the on-time row opens the system page and shows the result', (
+    tester,
+  ) async {
+    exact.allowed = false;
+    await pumpSettings(tester);
+    expect(
+      find.text('Đang tắt · nhắc có thể trễ vài phút, chạm để bật'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Nhắc đúng giờ'));
+    await tester.pumpAndSettle();
+    expect(exact.requests, 1);
+    expect(find.text('Đang bật · nhắc đúng từng phút'), findsOneWidget);
+  });
+
+  testWidgets('a resume re-reads the on-time permission', (tester) async {
+    exact.allowed = false;
+    await pumpSettings(tester);
+    // The user granted it on the system page and came back.
+    exact.allowed = true;
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+    expect(find.text('Đang bật · nhắc đúng từng phút'), findsOneWidget);
   });
 
   testWidgets('system-event switches, sound and version', (tester) async {

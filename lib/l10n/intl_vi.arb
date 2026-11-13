@@ -203,6 +203,10 @@
   "lb_notify_on": "Đang bật",
   "lb_notify_off": "Đang tắt · chạm để bật",
   "lb_notify_blocked": "Đang tắt · mở cài đặt máy để bật",
+  "lb_exact_alarm": "Nhắc đúng giờ",
+  "lb_exact_alarm_on": "Đang bật · nhắc đúng từng phút",
+  "lb_exact_alarm_off": "Đang tắt · nhắc có thể trễ vài phút, chạm để bật",
+  "lb_notify_exact_body": "Ở bước sau, hãy bật “Báo thức và lời nhắc” để nhắc đúng giờ, không trễ.",
   "lb_sound": "Âm thanh",
   "lb_sound_title": "Âm thanh nhắc",
   "lb_sound_default": "Mặc định của máy",
@@ -213,5 +217,9 @@
   "lb_remind_first_day": "Mùng 1 hằng tháng",
   "lb_remind_full_moon": "Rằm hằng tháng",
   "lb_remind_festivals": "Tết và lễ cổ truyền",
-  "lb_done": "Xong"
+  "lb_done": "Xong",
+  "lb_reminder_channel_name": "Nhắc nhở",
+  "lb_reminder_channel_description": "Nhắc ngày giỗ và ngày âm lịch",
+  "lb_reminder_anniversary_title": "{count, plural, =0{Hôm nay} =1{Ngày mai} other{{count} ngày nữa}}: {name}",
+  "lb_reminder_anniversary_body": "{lunar} · {solar}"
 }
