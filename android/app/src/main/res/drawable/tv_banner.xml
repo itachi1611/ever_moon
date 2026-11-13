@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android TV home-screen banner (16:9): the launcher background colour with
+     the Evermoon mark centred. The dev flavor gets its teal-grey background
+     from its own ic_launcher_background. No app name yet: Google Play wants a
+     raster 320x180 banner with the name when the app is published for TV. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/ic_launcher_background" />
+    <item
+        android:width="150dp"
+        android:height="150dp"
+        android:gravity="center"
+        android:drawable="@drawable/ic_launcher_foreground" />
+</layer-list>

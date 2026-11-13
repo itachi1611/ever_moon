@@ -20,6 +20,13 @@
          Without this tag, Google Play assumes required="true" and filters out camera-less devices. -->
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
 
+    <!-- Android TV (plan 0006 side work, 2026-11-13). Both features are
+         required="false", so the same APK still installs on phones. Without
+         touchscreen="false" Google Play and some TV installers treat a TV as
+         unsupported; leanback marks the app as TV-aware. -->
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+    <uses-feature android:name="android.software.leanback" android:required="false"/>
+
     <!-- ───── STORAGE — legacy (API 28 and below) ─────
          READ_EXTERNAL_STORAGE: read files from shared storage (images, video, audio, documents).
            Effective on API 32 and below. On API 33+, scoped media permissions replace it —
@@ -92,6 +99,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:banner="@drawable/tv_banner"
         android:enableOnBackInvokedCallback="true">
         <activity
             android:name=".MainActivity"
@@ -115,6 +123,11 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- Shows the app on the Android TV home screen, with the banner. -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
             </intent-filter>
         </activity>
 
