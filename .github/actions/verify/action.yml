@@ -1,0 +1,40 @@
+name: Verify
+description: >
+  Formatting, code generation, analyze and tests. Used by CI and by the
+  release gate. Needs the toolchain from ./.github/actions/setup.
+
+runs:
+  using: composite
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: flutter pub get
+
+    # Only committed files: generated code is gitignored and does not exist yet.
+    - name: Check formatting
+      shell: bash
+      run: git ls-files -z '*.dart' | xargs -0 dart format --output=none --set-exit-if-changed
+
+    # *.g.dart is gitignored; the Drift database and the API client need it.
+    - name: Generate code
+      shell: bash
+      run: dart run build_runner build
+
+    - name: Generate localizations
+      shell: bash
+      run: flutter gen-l10n
+
+    - name: Analyze
+      shell: bash
+      run: flutter analyze
+
+    - name: Test app
+      shell: bash
+      run: flutter test
+
+    - name: Test lunar_calendar package
+      shell: bash
+      working-directory: packages/lunar_calendar
+      run: |
+        dart pub get
+        dart test

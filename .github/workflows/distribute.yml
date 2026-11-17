@@ -1,0 +1,302 @@
+# Releases the prod flavor: builds it with fastlane, uploads it to Firebase
+# App Distribution, publishes a GitHub Release with the changelog and tells the
+# team. dev builds are made on a developer machine (fastlane distribute_dev).
+#
+# Trigger: push a tag equal to the version in pubspec.yaml, for example
+# 1.0.1+2. scripts/distribution.sh bumps the version and creates the tag.
+# Secrets live in the GitHub Environment "prod"; iOS runs only when the
+# repository variable IOS_ENABLED is "true". Setup: docs/ci-cd.md
+name: Distribute prod
+
+on:
+  push:
+    tags: ["[0-9]*"]
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform (run it from a release tag)
+        type: choice
+        options: [all, android, ios]
+        default: all
+
+permissions:
+  contents: read
+
+# Never cancel a running upload; a second run waits for the first.
+concurrency:
+  group: distribute-prod
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      android: ${{ steps.meta.outputs.android }}
+      ios: ${{ steps.meta.outputs.ios }}
+      notes: ${{ steps.notes.outputs.notes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check the tag and choose the platforms
+        id: meta
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          TAG: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          INPUT_PLATFORM: ${{ inputs.platform }}
+          IOS_ENABLED: ${{ vars.IOS_ENABLED }}
+        run: |
+          set -euo pipefail
+          if [[ "$REF_TYPE" != "tag" ]]; then
+            echo "::error::Run this workflow from a release tag, not from a branch."
+            exit 1
+          fi
+          if [[ ! "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+\+[0-9]+$ ]]; then
+            echo "::error::Tag '$TAG' must look like 1.0.1+2 (the version in pubspec.yaml)."
+            exit 1
+          fi
+          pubspec="$(sed -n -E 's/^version:[[:space:]]*([^[:space:]]+).*/\1/p' pubspec.yaml | head -1)"
+          if [[ "$pubspec" != "$TAG" ]]; then
+            echo "::error::Tag '$TAG' does not match version '$pubspec' in pubspec.yaml. Use scripts/distribution.sh."
+            exit 1
+          fi
+          # A tag on another branch would publish unreviewed code.
+          branches="$(git branch -r --contains "$SHA")"
+          if ! grep -Eq "(^|[[:space:]])origin/${DEFAULT_BRANCH}\$" <<< "$branches"; then
+            echo "::error::The tagged commit is not on $DEFAULT_BRANCH."
+            exit 1
+          fi
+          platform="${INPUT_PLATFORM:-all}"
+          android=false; ios=false
+          if [[ "$platform" == "all" || "$platform" == "android" ]]; then android=true; fi
+          if [[ "$platform" == "all" || "$platform" == "ios" ]]; then
+            if [[ "$IOS_ENABLED" == "true" ]]; then ios=true; else echo "::notice::iOS skipped: IOS_ENABLED is not true"; fi
+          fi
+          { echo "version=$TAG"; echo "android=$android"; echo "ios=$ios"; } >> "$GITHUB_OUTPUT"
+
+      - name: Write the changelog
+        id: notes
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          delimiter="notes_$(date +%s%N)"
+          { echo "notes<<$delimiter"; bash scripts/release_notes.sh "$TAG"; echo "$delimiter"; } >> "$GITHUB_OUTPUT"
+
+  # The release must pass what a pull request passes, even if it skipped one.
+  gate:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+
+      - name: Verify the app
+        uses: ./.github/actions/verify
+
+  android:
+    needs: [prepare, gate]
+    if: needs.prepare.outputs.android == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: prod
+    outputs:
+      flutter: ${{ steps.setup.outputs.flutter-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up toolchain
+        id: setup
+        uses: ./.github/actions/setup
+        with:
+          java: "true"
+          ruby: "true"
+
+      # Secrets arrive through env, never inside the script text.
+      - name: Restore secret files
+        env:
+          GOOGLE_SERVICES_JSON_B64: ${{ secrets.GOOGLE_SERVICES_JSON_B64 }}
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          mkdir -p android/app/src/prod
+          echo "$GOOGLE_SERVICES_JSON_B64" | base64 -d > android/app/src/prod/google-services.json
+          echo "$ANDROID_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+          {
+            echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/release.jks"
+            echo "FIREBASE_SERVICE_CREDENTIALS=$RUNNER_TEMP/firebase-sa.json"
+          } >> "$GITHUB_ENV"
+
+      # Build first, check the signer, then upload: a wrong key must never reach
+      # Firebase. The upload step rebuilds, which is quick (Gradle and pub caches).
+      - name: Build
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: bundle exec fastlane android build_prod
+
+      # ANDROID_SIGNING_SHA256 is a non-secret variable of the prod environment
+      # (scripts/signing_fingerprints.sh prints it). Without it the check only reports.
+      - name: Verify the APK signer
+        env:
+          EXPECTED: ${{ vars.ANDROID_SIGNING_SHA256 }}
+        run: |
+          set -euo pipefail
+          apk="$(find build/app/outputs -name 'app-prod-release.apk' | head -1)"
+          if [[ -z "$apk" ]]; then echo "::error::No prod release APK was built."; exit 1; fi
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)"
+          actual="$("$apksigner" verify --print-certs "$apk" | sed -n -E 's/.*certificate SHA-256 digest: ([0-9a-fA-F]+).*/\1/p' | head -1 | tr 'A-F' 'a-f')"
+          echo "APK signer SHA-256: $actual"
+          if [[ -z "$actual" ]]; then echo "::error::The APK is not signed."; exit 1; fi
+          if [[ -z "$EXPECTED" ]]; then
+            echo "::notice::ANDROID_SIGNING_SHA256 is not set, so the signer was not compared."
+            exit 0
+          fi
+          expected="$(printf '%s' "$EXPECTED" | tr -d ':[:space:]' | tr 'A-F' 'a-f')"
+          if [[ "$actual" != "$expected" ]]; then
+            echo "::error::The APK is signed with a different key than ANDROID_SIGNING_SHA256."
+            exit 1
+          fi
+
+      # The version comes from pubspec.yaml, which the tag was checked against.
+      - name: Upload
+        env:
+          NOTES: ${{ needs.prepare.outputs.notes }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: bundle exec fastlane android distribute_prod notes:"${NOTES:0:2000}"
+
+      - name: Remove secret files
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/firebase-sa.json" "$RUNNER_TEMP/release.jks" \
+            android/app/src/prod/google-services.json
+
+  ios:
+    needs: [prepare, gate]
+    if: needs.prepare.outputs.ios == 'true'
+    runs-on: macos-latest
+    timeout-minutes: 60
+    environment: prod
+    outputs:
+      flutter: ${{ steps.setup.outputs.flutter-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up toolchain
+        id: setup
+        uses: ./.github/actions/setup
+        with:
+          ruby: "true"
+
+      - name: Restore secret files
+        env:
+          GOOGLE_SERVICE_INFO_PLIST_B64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_B64 }}
+          ASC_KEY_B64: ${{ secrets.ASC_KEY_B64 }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          # An Xcode Run Script copies it to ios/Runner for the flavor.
+          mkdir -p ios/config/prod
+          echo "$GOOGLE_SERVICE_INFO_PLIST_B64" | base64 -d > ios/config/prod/GoogleService-Info.plist
+          echo "$ASC_KEY_B64" | base64 -d > "$RUNNER_TEMP/AuthKey.p8"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+          {
+            echo "ASC_KEY_PATH=$RUNNER_TEMP/AuthKey.p8"
+            echo "FIREBASE_SERVICE_CREDENTIALS=$RUNNER_TEMP/firebase-sa.json"
+          } >> "$GITHUB_ENV"
+
+      - name: Build and upload
+        env:
+          NOTES: ${{ needs.prepare.outputs.notes }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: bundle exec fastlane ios distribute_prod notes:"${NOTES:0:2000}"
+
+      - name: Remove secret files
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/firebase-sa.json" "$RUNNER_TEMP/AuthKey.p8" \
+            ios/config/prod/GoogleService-Info.plist
+
+  # The GitHub Release is the permanent changelog; it carries no APK.
+  release:
+    needs: [prepare, android, ios]
+    if: >-
+      ${{ !cancelled()
+      && !contains(needs.*.result, 'failure')
+      && (needs.android.result == 'success' || needs.ios.result == 'success') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Publish the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.prepare.outputs.version }}
+          NOTES: ${{ needs.prepare.outputs.notes }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$NOTES" > "$RUNNER_TEMP/notes.md"
+          if gh release view "$TAG" --repo "$REPO" > /dev/null 2>&1; then
+            gh release edit "$TAG" --repo "$REPO" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md"
+          else
+            gh release create "$TAG" --repo "$REPO" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" --verify-tag
+          fi
+
+  # Runs last, whatever happened. The webhooks are repository secrets (not
+  # environment secrets) so this job does not ask for the prod approval again.
+  notify:
+    needs: [prepare, gate, android, ios, release]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Tell the team
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+          GATE_RESULT: ${{ needs.gate.result }}
+          ANDROID_RESULT: ${{ needs.android.result }}
+          IOS_RESULT: ${{ needs.ios.result }}
+          RELEASE_RESULT: ${{ needs.release.result }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+          FLUTTER: ${{ needs.android.outputs.flutter || needs.ios.outputs.flutter }}
+          NOTES: ${{ needs.prepare.outputs.notes }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          status=success
+          for result in $RESULTS; do
+            case "$result" in failure|cancelled) status=failure ;; esac
+          done
+          version="${VERSION:-$GITHUB_REF_NAME}"
+          title="Evermoon ${version} (prod)"
+          facts="Version: ${version}"$'\n'"Flutter: ${FLUTTER:-not installed}"
+          facts+=$'\n'"Checks: ${GATE_RESULT:-skipped}"$'\n'"Android: ${ANDROID_RESULT:-skipped}"
+          facts+=$'\n'"iOS: ${IOS_RESULT:-skipped}"$'\n'"GitHub Release: ${RELEASE_RESULT:-skipped}"
+          release_url=""
+          if [ "$RELEASE_RESULT" = success ]; then release_url="${REPO_URL}/releases/tag/${version//+/%2B}"; fi
+          NOTIFY_STATUS="$status" NOTIFY_TITLE="$title" NOTIFY_BODY="$NOTES" NOTIFY_URL="$RUN_URL" \
+            NOTIFY_FACTS="$facts" NOTIFY_RELEASE_URL="$release_url" bash scripts/notify.sh

@@ -1,0 +1,58 @@
+name: Set up toolchain
+description: >
+  Flutter as pinned in pubspec.yaml, optionally Java and Ruby at the versions in
+  .java-version and .ruby-version, and the env files. The caller must have
+  checked out the repository first.
+
+inputs:
+  java:
+    description: Install Java (Android builds).
+    default: "false"
+  ruby:
+    description: Install Ruby and the gems of Gemfile.lock (fastlane).
+    default: "false"
+
+outputs:
+  flutter-version:
+    description: The Flutter version that was installed (for logs and notices).
+    value: ${{ steps.installed.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Java
+      if: inputs.java == 'true'
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version-file: .java-version
+
+    # The exact Flutter version is environment.flutter in pubspec.yaml, so CI
+    # builds with the Flutter that was tested locally and never floats.
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version-file: pubspec.yaml
+        cache: true
+
+    - name: Record the installed Flutter version
+      id: installed
+      shell: bash
+      run: |
+        flutter --version
+        echo "version=$(flutter --version --machine | jq -r .frameworkVersion)" >> "$GITHUB_OUTPUT"
+
+    - name: Set up Ruby and gems
+      if: inputs.ruby == 'true'
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+
+    # assets/env/.env.* are gitignored but listed as assets in pubspec.yaml.
+    # They hold no secret (they are bundled into the app), so the committed
+    # examples are enough.
+    - name: Create env files from the examples
+      shell: bash
+      run: |
+        cp -n assets/env/.env.dev.example assets/env/.env.dev
+        cp -n assets/env/.env.prod.example assets/env/.env.prod
