@@ -1,3 +1,18 @@
+import java.util.Properties
+
+// Release signing of the prod flavor. The values come from android/key.properties
+// on a developer machine and from ANDROID_KEYSTORE_* variables on CI.
+val keystoreProperties = Properties().apply {
+    val propertiesFile = rootProject.file("key.properties")
+    if (propertiesFile.exists()) propertiesFile.inputStream().use { load(it) }
+}
+
+fun releaseSetting(property: String, variable: String): String? =
+    keystoreProperties.getProperty(property) ?: System.getenv(variable)
+
+val releaseStorePath = releaseSetting("storeFile", "ANDROID_KEYSTORE_PATH")
+val releaseKeyReady = releaseStorePath?.let { file(it).exists() } == true
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -30,24 +45,45 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = releaseStorePath?.let { file(it) }
+            storePassword = releaseSetting("storePassword", "ANDROID_KEYSTORE_PASSWORD")
+            keyAlias = releaseSetting("keyAlias", "ANDROID_KEY_ALIAS")
+            keyPassword = releaseSetting("keyPassword", "ANDROID_KEY_PASSWORD")
+        }
+    }
+
     flavorDimensions += "env"
     productFlavors {
         create("dev") {
             dimension = "env"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
+            // Testers' builds install over local debug builds, so dev keeps
+            // the debug key (docs/ci-cd.md).
+            signingConfig = signingConfigs.getByName("debug")
         }
         create("prod") {
             dimension = "env"
-            // No suffix — applicationId stays as defined in defaultConfig
+            // No suffix — applicationId stays as defined in defaultConfig.
+            // Without a keystore only debug builds fall back to the debug key;
+            // the guard below stops a release build.
+            signingConfig = signingConfigs.getByName(if (releaseKeyReady) "release" else "debug")
         }
     }
+}
 
-    buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+// A prod release must never go out signed with the debug key.
+tasks.configureEach {
+    if (name == "validateSigningProdRelease" && !releaseKeyReady) {
+        doFirst {
+            throw GradleException(
+                "Prod release needs a keystore: set storeFile, storePassword, keyAlias and " +
+                    "keyPassword in android/key.properties, or the ANDROID_KEYSTORE_PATH, " +
+                    "ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD " +
+                    "variables (docs/ci-cd.md).",
+            )
         }
     }
 }
