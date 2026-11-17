@@ -54,23 +54,29 @@ class MonthBuilder {
     final begin = month11Lunation(year);
     final end = month11Lunation(year + 1);
     final starts = [for (var k = begin; k <= end; k++) newMoonDay(k)];
-    final terms = [..._principalTermDays(year), ..._principalTermDays(year + 1)];
-    final leapIndex = starts.length - 1 == 13 ? _leapIndex(starts, terms) : null;
+    final terms = [
+      ..._principalTermDays(year),
+      ..._principalTermDays(year + 1),
+    ];
+    final leapIndex = starts.length - 1 == 13
+        ? _leapIndex(starts, terms)
+        : null;
     return _label(year, starts, leapIndex);
   }
 
   List<int> _principalTermDays(int year) => _termDays[year] ??= [
-        for (var index = 0; index < 12; index++)
-          localDayNumber(jdeToJdUt(principalTermJde(year, index))),
-      ];
+    for (var index = 0; index < 12; index++)
+      localDayNumber(jdeToJdUt(principalTermJde(year, index))),
+  ];
 }
 
 /// Position (1 to 12) of the first month after month 11 with no principal
 /// term, or `null` if every month has one.
 int? _leapIndex(List<int> starts, List<int> termDays) {
   for (var j = 1; j < starts.length - 1; j++) {
-    final hasTerm =
-        termDays.any((day) => day >= starts[j] && day < starts[j + 1]);
+    final hasTerm = termDays.any(
+      (day) => day >= starts[j] && day < starts[j + 1],
+    );
     if (!hasTerm) return j;
   }
   return null;
@@ -87,13 +93,15 @@ List<LunarMonth> _label(int year, List<int> starts, int? leapIndex) {
       number = number % 12 + 1;
       if (number == 1) lunarYear++;
     }
-    months.add(LunarMonth(
-      lunarYear: lunarYear,
-      month: number,
-      isLeap: isLeap,
-      startJdn: starts[j],
-      length: starts[j + 1] - starts[j],
-    ));
+    months.add(
+      LunarMonth(
+        lunarYear: lunarYear,
+        month: number,
+        isLeap: isLeap,
+        startJdn: starts[j],
+        length: starts[j + 1] - starts[j],
+      ),
+    );
   }
   return months;
 }

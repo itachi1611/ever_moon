@@ -71,7 +71,8 @@ const double synodicMonth = 29.530588861;
 /// Meeus, "Astronomical Algorithms", chapter 49.
 double newMoonJde(int k) {
   final t = k / 1236.85;
-  final meanJde = _lunationZeroJde +
+  final meanJde =
+      _lunationZeroJde +
       synodicMonth * k +
       0.00015437 * t * t -
       0.000000150 * t * t * t +
@@ -85,14 +86,26 @@ int nearestLunation(double jde) =>
 
 double _periodicCorrection(int k, double t) {
   final e = 1 - 0.002516 * t - 0.0000074 * t * t;
-  final m = _radians(2.5534 + 29.10535670 * k - 0.0000014 * t * t -
-      0.00000011 * t * t * t);
-  final mp = _radians(201.5643 + 385.81693528 * k + 0.0107582 * t * t +
-      0.00001238 * t * t * t - 0.000000058 * t * t * t * t);
-  final f = _radians(160.7108 + 390.67050284 * k - 0.0016118 * t * t -
-      0.00000227 * t * t * t + 0.000000011 * t * t * t * t);
+  final m = _radians(
+    2.5534 + 29.10535670 * k - 0.0000014 * t * t - 0.00000011 * t * t * t,
+  );
+  final mp = _radians(
+    201.5643 +
+        385.81693528 * k +
+        0.0107582 * t * t +
+        0.00001238 * t * t * t -
+        0.000000058 * t * t * t * t,
+  );
+  final f = _radians(
+    160.7108 +
+        390.67050284 * k -
+        0.0016118 * t * t -
+        0.00000227 * t * t * t +
+        0.000000011 * t * t * t * t,
+  );
   final om = _radians(
-      124.7746 - 1.56375588 * k + 0.0020672 * t * t + 0.00000215 * t * t * t);
+    124.7746 - 1.56375588 * k + 0.0020672 * t * t + 0.00000215 * t * t * t,
+  );
   final eFactors = [1.0, e, e * e];
   var sum = 0.0;
   for (final term in _periodicTerms) {

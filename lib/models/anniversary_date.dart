@@ -13,9 +13,11 @@ class AnniversaryDate extends Equatable {
     required this.lunarMonth,
     this.deathYear,
     this.diedInLeapMonth = false,
-  })  : assert(lunarDay >= 1 && lunarDay <= 30, 'lunarDay must be 1 to 30'),
-        assert(lunarMonth >= 1 && lunarMonth <= 12,
-            'lunarMonth must be 1 to 12');
+  }) : assert(lunarDay >= 1 && lunarDay <= 30, 'lunarDay must be 1 to 30'),
+       assert(
+         lunarMonth >= 1 && lunarMonth <= 12,
+         'lunarMonth must be 1 to 12',
+       );
 
   /// Lunar day of the death, 1 to 30.
   final int lunarDay;
@@ -31,11 +33,11 @@ class AnniversaryDate extends Equatable {
 
   /// Copy with [diedInLeapMonth] replaced.
   AnniversaryDate withDiedInLeapMonth(bool value) => AnniversaryDate(
-        lunarDay: lunarDay,
-        lunarMonth: lunarMonth,
-        deathYear: deathYear,
-        diedInLeapMonth: value,
-      );
+    lunarDay: lunarDay,
+    lunarMonth: lunarMonth,
+    deathYear: deathYear,
+    diedInLeapMonth: value,
+  );
 
   @override
   List<Object?> get props => [lunarDay, lunarMonth, deathYear, diedInLeapMonth];

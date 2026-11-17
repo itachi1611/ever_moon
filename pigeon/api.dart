@@ -36,14 +36,16 @@
 
 import 'package:pigeon/pigeon.dart';
 
-@ConfigurePigeon(PigeonOptions(
-  dartOut: 'lib/generated/pigeon_api.g.dart',
-  dartPackageName: 'ever_moon',
-  kotlinOut: 'android/app/src/main/kotlin/com/fox/evermoon/generated/PigeonApi.g.kt',
-  kotlinOptions: KotlinOptions(package: 'com.fox.evermoon.generated'),
-  swiftOut: 'ios/Runner/generated/PigeonApi.g.swift',
-))
-
+@ConfigurePigeon(
+  PigeonOptions(
+    dartOut: 'lib/generated/pigeon_api.g.dart',
+    dartPackageName: 'ever_moon',
+    kotlinOut:
+        'android/app/src/main/kotlin/com/fox/evermoon/generated/PigeonApi.g.kt',
+    kotlinOptions: KotlinOptions(package: 'com.fox.evermoon.generated'),
+    swiftOut: 'ios/Runner/generated/PigeonApi.g.swift',
+  ),
+)
 // ── BatteryApi ────────────────────────────────────────────────────────────────
 //
 // Reads battery information from the host platform.

@@ -35,9 +35,7 @@ class SettingsSectionWidget extends StatelessWidget {
           color: scheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(12),
           clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: _buildTiles(scheme),
-          ),
+          child: Column(children: _buildTiles(scheme)),
         ),
       ],
     );
@@ -48,11 +46,13 @@ class SettingsSectionWidget extends StatelessWidget {
     for (int i = 0; i < section.tiles.length; i++) {
       items.add(SettingsTileWidget(tile: section.tiles[i]));
       if (i < section.tiles.length - 1) {
-        items.add(Divider(
-          height: 1,
-          indent: section.tiles[i].leading != null ? 56 : 16,
-          color: scheme.outlineVariant.withValues(alpha: 0.5),
-        ));
+        items.add(
+          Divider(
+            height: 1,
+            indent: section.tiles[i].leading != null ? 56 : 16,
+            color: scheme.outlineVariant.withValues(alpha: 0.5),
+          ),
+        );
       }
     }
     return items;

@@ -19,13 +19,16 @@ void main() {
     });
 
     test('month spans from the 1984 and 1985 tables', () {
-      final spans =
-          (anchors['month_spans'] as List<Object?>).cast<Map<String, Object?>>();
+      final spans = (anchors['month_spans'] as List<Object?>)
+          .cast<Map<String, Object?>>();
       for (final span in spans) {
-        final month = calendar.monthsOf(span['lunar_year'] as int).firstWhere(
-            (m) =>
-                m.month == span['month'] &&
-                (m.isLeap ? 1 : 0) == span['is_leap']);
+        final month = calendar
+            .monthsOf(span['lunar_year'] as int)
+            .firstWhere(
+              (m) =>
+                  m.month == span['month'] &&
+                  (m.isLeap ? 1 : 0) == span['is_leap'],
+            );
         expect(isoDate(month.start), span['start'], reason: '$span');
         final last = month.start.add(Duration(days: month.length - 1));
         expect(isoDate(last), span['end'], reason: '$span');
@@ -38,8 +41,7 @@ void main() {
       for (final year in noLeap) {
         expect(calendar.leapMonthOf(year), isNull, reason: '$year');
       }
-      final leap = (anchors['leap_month_spans_without_number']
-              as List<Object?>)
+      final leap = (anchors['leap_month_spans_without_number'] as List<Object?>)
           .cast<Map<String, Object?>>()
           .first;
       final month = calendar
@@ -77,7 +79,8 @@ void main() {
       expect(calendar.leapMonthOf(maxLunarYear + 1), isNull);
       expect(calendar.toSolar(const LunarDate(maxLunarYear + 1, 1, 1)), isNull);
       final dayBeforeFirst = firstYear.first.start.subtract(
-          const Duration(days: 1));
+        const Duration(days: 1),
+      );
       expect(calendar.toLunar(dayBeforeFirst), isNull);
       expect(calendar.toLunar(DateTime.utc(maxLunarYear + 2)), isNull);
     });
@@ -87,8 +90,12 @@ void main() {
       expect(calendar.toSolar(const LunarDate(minLunarYear, 1, 0)), isNull);
       expect(calendar.toSolar(const LunarDate(minLunarYear, 1, 31)), isNull);
       final regular = firstYear.firstWhere((m) => !m.isLeap);
-      final noLeap = LunarDate(minLunarYear, regular.month, 1,
-          isLeapMonth: true);
+      final noLeap = LunarDate(
+        minLunarYear,
+        regular.month,
+        1,
+        isLeapMonth: true,
+      );
       if (calendar.leapMonthOf(minLunarYear) != regular.month) {
         expect(calendar.toSolar(noLeap), isNull);
       }
@@ -96,8 +103,12 @@ void main() {
 
     test('day 30 of a 29-day month is not shifted', () {
       final short = firstYear.firstWhere((m) => m.length == 29);
-      final date = LunarDate(short.lunarYear, short.month, 30,
-          isLeapMonth: short.isLeap);
+      final date = LunarDate(
+        short.lunarYear,
+        short.month,
+        30,
+        isLeapMonth: short.isLeap,
+      );
       expect(calendar.toSolar(date), isNull);
     });
   });

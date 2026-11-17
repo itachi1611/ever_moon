@@ -62,8 +62,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '279662008621',
     projectId: 'evermoon-2cc28',
     storageBucket: 'evermoon-2cc28.firebasestorage.app',
-    androidClientId: '279662008621-rg5aail24hnmmun7nem0uskcqugnpg7i.apps.googleusercontent.com',
-    iosClientId: '279662008621-cuah5sdqfc85j9k8ksdukju65j07mqjo.apps.googleusercontent.com',
+    androidClientId:
+        '279662008621-rg5aail24hnmmun7nem0uskcqugnpg7i.apps.googleusercontent.com',
+    iosClientId:
+        '279662008621-cuah5sdqfc85j9k8ksdukju65j07mqjo.apps.googleusercontent.com',
     iosBundleId: 'com.fox.evermoon',
   );
 }

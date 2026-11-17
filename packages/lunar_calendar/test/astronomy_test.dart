@@ -24,16 +24,18 @@ void main() {
   final events = loadFixture('oracle_events.json');
   final anchors = loadFixture('anchors.json');
 
-  test('LC-AST-1 new moons stay within 60 s of the oracle, mean about -35 s',
-      () {
-    final oracle = (events['new_moons_jd_ut'] as List<Object?>).cast<num>();
-    final errors = [
-      for (final jd in oracle)
-        (_newMoonUt(nearestLunation(jd.toDouble())) - jd) * _secondsPerDay,
-    ];
-    expect(_maxAbs(errors), lessThan(60));
-    expect(_mean(errors), closeTo(-35, 5));
-  });
+  test(
+    'LC-AST-1 new moons stay within 60 s of the oracle, mean about -35 s',
+    () {
+      final oracle = (events['new_moons_jd_ut'] as List<Object?>).cast<num>();
+      final errors = [
+        for (final jd in oracle)
+          (_newMoonUt(nearestLunation(jd.toDouble())) - jd) * _secondsPerDay,
+      ];
+      expect(_maxAbs(errors), lessThan(60));
+      expect(_mean(errors), closeTo(-35, 5));
+    },
+  );
 
   test('LC-AST-2 principal terms stay within 90 s of the oracle', () {
     final oracle = events['principal_terms_jd_ut'] as Map<String, Object?>;
@@ -50,15 +52,19 @@ void main() {
   });
 
   group('LC-AST-3 author published events', () {
-    final authorEvents =
-        (anchors['author_events'] as List<Object?>).cast<Map<String, Object?>>();
+    final authorEvents = (anchors['author_events'] as List<Object?>)
+        .cast<Map<String, Object?>>();
     final newMoons = authorEvents.where((e) => e['kind'] == 'new_moon');
 
     test('new moons match the author within 5 s and on the Hanoi date', () {
       for (final event in newMoons) {
         final jd = julianDateOfUtc(event['gmt'] as String);
         final ours = _newMoonUt(nearestLunation(jd));
-        expect((ours - jd).abs() * _secondsPerDay, lessThan(5), reason: '$event');
+        expect(
+          (ours - jd).abs() * _secondsPerDay,
+          lessThan(5),
+          reason: '$event',
+        );
         final day = isoDate(civilFromJdn(localDayNumber(ours)));
         expect(day, event['hanoi_date'], reason: '$event');
       }

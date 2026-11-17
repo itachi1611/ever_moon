@@ -12,10 +12,14 @@ void main() {
       final strings = lookupS(Locale(languageCode));
 
       test('empty or null input is a required-field error', () {
-        expect(onValidate(strings, ValidatorType.email, null),
-            strings.er_required_field);
-        expect(onValidate(strings, ValidatorType.email, ''),
-            strings.er_required_field);
+        expect(
+          onValidate(strings, ValidatorType.email, null),
+          strings.er_required_field,
+        );
+        expect(
+          onValidate(strings, ValidatorType.email, ''),
+          strings.er_required_field,
+        );
       });
 
       test('well-formed input passes', () {
@@ -24,10 +28,14 @@ void main() {
       });
 
       test('malformed input gets the type error', () {
-        expect(onValidate(strings, ValidatorType.email, 'not-an-email'),
-            strings.er_email_field);
-        expect(onValidate(strings, ValidatorType.phone, '123'),
-            strings.er_phone_field);
+        expect(
+          onValidate(strings, ValidatorType.email, 'not-an-email'),
+          strings.er_email_field,
+        );
+        expect(
+          onValidate(strings, ValidatorType.phone, '123'),
+          strings.er_phone_field,
+        );
       });
     });
   }

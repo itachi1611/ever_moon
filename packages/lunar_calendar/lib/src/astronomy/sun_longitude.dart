@@ -13,8 +13,8 @@ const double sunDegreesPerDay = 0.9856474;
 /// low-accuracy aberration and nutation of chapters 25 and 22.
 double sunApparentLongitude(double jde) {
   final tau = (jde - j2000) / 365250.0;
-  final longitude = _radiansToDegrees(_heliocentricLongitude(tau)) + 180.0 -
-      0.09033 / 3600.0;
+  final longitude =
+      _radiansToDegrees(_heliocentricLongitude(tau)) + 180.0 - 0.09033 / 3600.0;
   final radius = (_series(earthR0, tau) + _series(earthR1, tau) * tau) / 1e8;
   final aberration = -20.4898 / radius / 3600.0;
   return (longitude + aberration + _nutationInLongitude(tau * 10.0)) % 360.0;

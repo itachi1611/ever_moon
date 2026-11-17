@@ -21,14 +21,16 @@ Map<String, Object?> _load(String name) =>
 
 List<_Row> _rows() {
   final pinned = {
-    for (final item in (_load('convention_differences.json')['differences']
-            as List<Object?>)
-        .cast<Map<String, Object?>>())
+    for (final item
+        in (_load('convention_differences.json')['differences']
+                as List<Object?>)
+            .cast<Map<String, Object?>>())
       ((item['month'] as List<Object?>)[0] as int),
   };
   return [
-    for (final raw in (_load('oracle_months.json')['months'] as List<Object?>)
-        .cast<List<Object?>>())
+    for (final raw
+        in (_load('oracle_months.json')['months'] as List<Object?>)
+            .cast<List<Object?>>())
       if (!pinned.contains(raw[0]))
         (
           raw[0] as int,
@@ -44,21 +46,25 @@ void main() {
   final resolver = AnniversaryResolver(lunarCalendarService);
   final rows = _rows();
 
-  _Row rowOf(int year, int month, {bool isLeap = false}) => rows.firstWhere(
-      (r) => r.$1 == year && r.$2 == month && r.$3 == isLeap);
+  _Row rowOf(int year, int month, {bool isLeap = false}) =>
+      rows.firstWhere((r) => r.$1 == year && r.$2 == month && r.$3 == isLeap);
 
   test('AR-2 and AR-3 a leap-month death across leap and plain years', () {
     final leapRow = rows.firstWhere((r) => r.$3 && r.$1 >= 2000);
     final (leapYear, month, _, leapStart, _) = leapRow;
-    final date = resolver.normalize(AnniversaryDate(
-        lunarDay: 1, lunarMonth: month, deathYear: leapYear,
-        diedInLeapMonth: true));
+    final date = resolver.normalize(
+      AnniversaryDate(
+        lunarDay: 1,
+        lunarMonth: month,
+        deathYear: leapYear,
+        diedInLeapMonth: true,
+      ),
+    );
     expect(date.diedInLeapMonth, isTrue);
     expect(resolver.solarDateIn(date, leapYear), leapStart);
     final plainYear = leapYear + 1;
     expect(lunarCalendarService.leapMonthOf(plainYear), isNot(month));
-    expect(resolver.solarDateIn(date, plainYear),
-        rowOf(plainYear, month).$4);
+    expect(resolver.solarDateIn(date, plainYear), rowOf(plainYear, month).$4);
   });
 
   test('AR-4 day 30 in real 29- and 30-day months', () {
@@ -66,15 +72,21 @@ void main() {
     final long = rows.firstWhere((r) => !r.$3 && r.$5 == 30 && r.$1 >= 2000);
     final onShort = AnniversaryDate(lunarDay: 30, lunarMonth: short.$2);
     final onLong = AnniversaryDate(lunarDay: 30, lunarMonth: long.$2);
-    expect(resolver.solarDateIn(onShort, short.$1),
-        short.$4.add(const Duration(days: 28)));
-    expect(resolver.solarDateIn(onLong, long.$1),
-        long.$4.add(const Duration(days: 29)));
+    expect(
+      resolver.solarDateIn(onShort, short.$1),
+      short.$4.add(const Duration(days: 28)),
+    );
+    expect(
+      resolver.solarDateIn(onLong, long.$1),
+      long.$4.add(const Duration(days: 29)),
+    );
   });
 
   test('AR-7 the service answers through the app interface', () {
     final first = rows.first;
-    expect(lunarCalendarService.toLunar(first.$4),
-        LunarDate(first.$1, first.$2, 1, isLeapMonth: first.$3));
+    expect(
+      lunarCalendarService.toLunar(first.$4),
+      LunarDate(first.$1, first.$2, 1, isLeapMonth: first.$3),
+    );
   });
 }

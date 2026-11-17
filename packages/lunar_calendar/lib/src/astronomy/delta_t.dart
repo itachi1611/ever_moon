@@ -12,14 +12,28 @@ const List<_DeltaTPiece> _pieces = [
   (
     untilYear: 1860,
     originYear: 1800,
-    coefficients: [13.72, -0.332447, 0.0068612, 0.0041116, -0.00037436,
-      0.0000121272, -0.0000001699, 0.000000000875],
+    coefficients: [
+      13.72,
+      -0.332447,
+      0.0068612,
+      0.0041116,
+      -0.00037436,
+      0.0000121272,
+      -0.0000001699,
+      0.000000000875,
+    ],
   ),
   (
     untilYear: 1900,
     originYear: 1860,
-    coefficients: [7.62, 0.5737, -0.251754, 0.01680668, -0.0004473624,
-      1 / 233174],
+    coefficients: [
+      7.62,
+      0.5737,
+      -0.251754,
+      0.01680668,
+      -0.0004473624,
+      1 / 233174,
+    ],
   ),
   (
     untilYear: 1920,
@@ -44,14 +58,16 @@ const List<_DeltaTPiece> _pieces = [
   (
     untilYear: 2005,
     originYear: 2000,
-    coefficients: [63.86, 0.3345, -0.060374, 0.0017275, 0.000651814,
-      0.00002373599],
+    coefficients: [
+      63.86,
+      0.3345,
+      -0.060374,
+      0.0017275,
+      0.000651814,
+      0.00002373599,
+    ],
   ),
-  (
-    untilYear: 2050,
-    originYear: 2000,
-    coefficients: [62.92, 0.32217, 0.005589],
-  ),
+  (untilYear: 2050, originYear: 2000, coefficients: [62.92, 0.32217, 0.005589]),
 ];
 
 /// Delta T = TT - UT in seconds for a decimal [year].

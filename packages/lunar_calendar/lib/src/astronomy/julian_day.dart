@@ -32,4 +32,5 @@ int jdnFromCivil(int year, int month, int day) {
 }
 
 /// Calendar date (as a UTC midnight [DateTime]) of a Julian Day Number.
-DateTime civilFromJdn(int jdn) => DateTime.utc(1970, 1, 1 + jdn - _unixEpochJdn);
+DateTime civilFromJdn(int jdn) =>
+    DateTime.utc(1970, 1, 1 + jdn - _unixEpochJdn);

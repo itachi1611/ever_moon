@@ -31,7 +31,8 @@ Map<MonthKey, MonthValue> expectedMonths() {
   final rows = loadFixture('oracle_months.json')['months'] as List<Object?>;
   final expected = {for (final row in rows) _key(row): _value(row, 3)};
   final pinned =
-      loadFixture('convention_differences.json')['differences'] as List<Object?>;
+      loadFixture('convention_differences.json')['differences']
+          as List<Object?>;
   for (final item in pinned.cast<Map<String, Object?>>()) {
     final key = _key(item['month']);
     final ours = item['ours'];
@@ -47,7 +48,8 @@ Map<MonthKey, MonthValue> expectedMonths() {
 /// Lunar years whose leap month differs from the oracle by convention.
 Set<int> pinnedLeapYears() {
   final pinned =
-      loadFixture('convention_differences.json')['differences'] as List<Object?>;
+      loadFixture('convention_differences.json')['differences']
+          as List<Object?>;
   return {
     for (final item in pinned.cast<Map<String, Object?>>())
       if (_key(item['month']).$3 == 1) _key(item['month']).$1,

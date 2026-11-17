@@ -75,16 +75,15 @@ class SettingsTile {
     String? value,
     VoidCallback? onTap,
     bool enabled = true,
-  }) =>
-      SettingsTile._(
-        type: SettingsTileType.navigation,
-        leading: leading,
-        title: title,
-        subtitle: subtitle,
-        displayValue: value,
-        onTap: onTap,
-        enabled: enabled,
-      );
+  }) => SettingsTile._(
+    type: SettingsTileType.navigation,
+    leading: leading,
+    title: title,
+    subtitle: subtitle,
+    displayValue: value,
+    onTap: onTap,
+    enabled: enabled,
+  );
 
   /// Creates a tile with a [Switch] reflecting [value], calling [onToggle]
   /// when its state changes (including a tap anywhere on the row).
@@ -95,16 +94,15 @@ class SettingsTile {
     required bool value,
     ValueChanged<bool>? onToggle,
     bool enabled = true,
-  }) =>
-      SettingsTile._(
-        type: SettingsTileType.toggle,
-        leading: leading,
-        title: title,
-        subtitle: subtitle,
-        toggled: value,
-        onToggle: onToggle,
-        enabled: enabled,
-      );
+  }) => SettingsTile._(
+    type: SettingsTileType.toggle,
+    leading: leading,
+    title: title,
+    subtitle: subtitle,
+    toggled: value,
+    onToggle: onToggle,
+    enabled: enabled,
+  );
 
   /// Creates a tile showing read-only trailing [value] text, calling
   /// [onTap] to let the user pick or change it via a dialog or sheet.
@@ -115,16 +113,15 @@ class SettingsTile {
     String? value,
     VoidCallback? onTap,
     bool enabled = true,
-  }) =>
-      SettingsTile._(
-        type: SettingsTileType.value,
-        leading: leading,
-        title: title,
-        subtitle: subtitle,
-        displayValue: value,
-        onTap: onTap,
-        enabled: enabled,
-      );
+  }) => SettingsTile._(
+    type: SettingsTileType.value,
+    leading: leading,
+    title: title,
+    subtitle: subtitle,
+    displayValue: value,
+    onTap: onTap,
+    enabled: enabled,
+  );
 
   /// Creates a tile with a free-form [trailing] widget slot.
   factory SettingsTile.custom({
@@ -134,16 +131,15 @@ class SettingsTile {
     Widget? trailing,
     VoidCallback? onTap,
     bool enabled = true,
-  }) =>
-      SettingsTile._(
-        type: SettingsTileType.custom,
-        leading: leading,
-        title: title,
-        subtitle: subtitle,
-        trailing: trailing,
-        onTap: onTap,
-        enabled: enabled,
-      );
+  }) => SettingsTile._(
+    type: SettingsTileType.custom,
+    leading: leading,
+    title: title,
+    subtitle: subtitle,
+    trailing: trailing,
+    onTap: onTap,
+    enabled: enabled,
+  );
 }
 
 // ─── SettingsSection ─────────────────────────────────────────────────────────
@@ -151,10 +147,7 @@ class SettingsTile {
 /// Groups [tiles] under an optional [title] label.
 class SettingsSection {
   /// Creates a section with an optional [title] and its [tiles].
-  const SettingsSection({
-    this.title,
-    required this.tiles,
-  });
+  const SettingsSection({this.title, required this.tiles});
 
   /// Optional label rendered above the section's card.
   final String? title;
