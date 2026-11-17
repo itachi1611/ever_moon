@@ -101,3 +101,17 @@ ios/Pods/
 
 # Gradle reports
 /android/build/
+
+# fastlane and Bundler (Gemfile.lock is committed)
+/.bundle/
+/vendor/
+/fastlane/report.xml
+/fastlane/README.md
+/fastlane/test_output/
+
+# Signing and deployment secrets — never commit
+android/key.properties
+**/*.jks
+**/*.keystore
+**/*.p8
+**/firebase-sa.json

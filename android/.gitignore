@@ -12,10 +12,3 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
-
-# fastlane
-/fastlane/report.xml
-/fastlane/README.md
-/.bundle/
-/vendor/
-**/firebase-sa.json

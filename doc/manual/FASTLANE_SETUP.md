@@ -1,5 +1,7 @@
 # Hướng dẫn triển khai Fastlane — Evermoon
 
+> **Đã được thay thế (2026-11-17).** Cấu hình thực tế hiện nay (fastlane ở thư mục gốc, flavor `dev` và `prod`, Firebase App Distribution, GitHub Environments) nằm trong `docs/ci-cd.md` và `docs/plans/0007-ci-cd-firebase-distribution.md`. Tài liệu này chỉ còn là nền tham khảo (ví dụ phần Google Play và TestFlight chưa làm); cấu trúc thư mục, flavor `uat` và tên secret ở dưới không còn đúng.
+
 Hướng dẫn tự triển khai fastlane từ đầu cho project này, tạo mới toàn bộ config
 (keystore, Google Play service account, Firebase App Distribution, App Store
 Connect API key) và CI trên GitHub Actions.

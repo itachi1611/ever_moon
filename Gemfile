@@ -1,7 +1,6 @@
 source "https://rubygems.org"
 
-# Pessimistic ranges until a Gemfile.lock is committed (run `bundle install`
-# in android/ on a working Ruby, then commit the lock file).
+# Versions are locked by Gemfile.lock; the Ruby version is in .ruby-version.
 gem "fastlane", "~> 2.241"
 
 plugins_path = File.join(File.dirname(__FILE__), "fastlane", "Pluginfile")

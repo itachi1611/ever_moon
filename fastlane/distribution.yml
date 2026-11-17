@@ -1,0 +1,7 @@
+# Firebase App Distribution testers, one entry per flavor (comma separated
+# group aliases from the Firebase console). The environment variable
+# FIREBASE_TESTER_GROUPS overrides it for one run.
+dev:
+  groups: testers
+prod:
+  groups: testers

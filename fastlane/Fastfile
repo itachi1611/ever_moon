@@ -1,0 +1,80 @@
+# Lanes only. Everything they use is in fastlane/lib (see evermoon.rb).
+#
+#   build_<flavor>       compile the release artifact; needs no credentials
+#   distribute_<flavor>  build_<flavor>, then upload to Firebase App Distribution
+#
+# Parameters: build_name:1.0.0 build_number:61 notes:"text"
+# Usage and secrets: docs/ci-cd.md
+require File.join(FastlaneCore::FastlaneFolder.path, "lib", "evermoon")
+
+default_platform(:android)
+
+platform :android do
+  desc "Build the dev APK (debug signing key)"
+  lane :build_dev do |options|
+    ever_build(options.merge(flavor: "dev"))
+  end
+
+  desc "Build the prod APK (release keystore required)"
+  lane :build_prod do |options|
+    ever_build(options.merge(flavor: "prod"))
+  end
+
+  desc "Build the dev APK and upload it to Firebase App Distribution"
+  lane :distribute_dev do |options|
+    ever_publish(options.merge(flavor: "dev"))
+  end
+
+  desc "Build the prod APK and upload it to Firebase App Distribution"
+  lane :distribute_prod do |options|
+    ever_publish(options.merge(flavor: "prod"))
+  end
+
+  private_lane :ever_build do |options|
+    flavor = Evermoon::Project.flavor!(options[:flavor])
+    Evermoon::Android.build_apk(flavor, options[:build_name], options[:build_number])
+  end
+
+  private_lane :ever_publish do |options|
+    flavor = Evermoon::Project.flavor!(options[:flavor])
+    # Fail on missing credentials before spending minutes on the build.
+    params = Evermoon::Distribution.firebase_params(flavor, :android, options[:notes])
+    ever_build(options)
+    firebase_app_distribution(**params)
+  end
+end
+
+platform :ios do
+  desc "Build the dev IPA (ad-hoc, automatic signing)"
+  lane :build_dev do |options|
+    ever_build(options.merge(flavor: "dev"))
+  end
+
+  desc "Build the prod IPA (ad-hoc, automatic signing)"
+  lane :build_prod do |options|
+    ever_build(options.merge(flavor: "prod"))
+  end
+
+  desc "Build the dev IPA and upload it to Firebase App Distribution"
+  lane :distribute_dev do |options|
+    ever_publish(options.merge(flavor: "dev"))
+  end
+
+  desc "Build the prod IPA and upload it to Firebase App Distribution"
+  lane :distribute_prod do |options|
+    ever_publish(options.merge(flavor: "prod"))
+  end
+
+  private_lane :ever_build do |options|
+    flavor = Evermoon::Project.flavor!(options[:flavor])
+    Evermoon::Ios.prepare(flavor, options[:build_name], options[:build_number])
+    build_app(**Evermoon::Ios.archive_options(flavor))
+  end
+
+  private_lane :ever_publish do |options|
+    flavor = Evermoon::Project.flavor!(options[:flavor])
+    params = Evermoon::Distribution.firebase_params(flavor, :ios, options[:notes])
+    ever_build(options)
+    firebase_app_distribution(**params)
+  end
+end
