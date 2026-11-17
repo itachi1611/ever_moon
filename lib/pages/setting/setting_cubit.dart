@@ -64,9 +64,17 @@ class SettingCubit extends Cubit<SettingState> {
     );
   }
 
-  /// The exact-time row: opens the system page that grants the permission.
+  /// The exact-time row: opens the system page. When the permission is off
+  /// the page grants it; when it is on the page lets the user review or turn
+  /// it off, as the notification row does.
   Future<void> openExactAlarmAccess() async {
+    final before = state;
+    if (before is! SettingLoaded) return;
     try {
+      if (before.exactAlarm) {
+        await _exactAlarm.openSettings();
+        return;
+      }
       final allowed = await _exactAlarm.request();
       final current = state;
       if (!isClosed && current is SettingLoaded) {

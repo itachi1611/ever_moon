@@ -152,6 +152,17 @@ void main() {
     expect(find.text('Đang bật · nhắc đúng từng phút'), findsOneWidget);
   });
 
+  testWidgets('an allowed on-time row still opens the system page', (
+    tester,
+  ) async {
+    await pumpSettings(tester);
+    await tester.tap(find.text('Nhắc đúng giờ'));
+    await tester.pumpAndSettle();
+    expect(exact.settingsOpened, 1);
+    expect(exact.requests, 0);
+    expect(find.text('Đang bật · nhắc đúng từng phút'), findsOneWidget);
+  });
+
   testWidgets('a resume re-reads the on-time permission', (tester) async {
     exact.allowed = false;
     await pumpSettings(tester);

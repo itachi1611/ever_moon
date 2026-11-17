@@ -16,6 +16,7 @@ import 'app/app_page.dart';
 import 'common/app_env.dart';
 import 'services/firebase_notification_service.dart';
 import 'services/network_service.dart';
+import 'services/reminders/background_resync.dart';
 import 'services/reminders/reminder_services.dart';
 import 'storage/app_preference.dart';
 import 'storage/app_storage.dart';
@@ -34,6 +35,13 @@ Future<void> _onBackgroundMessage(RemoteMessage message) async {
   }
   // TODO: handle background push notification
 }
+
+/// Entry point of the headless engine that `TimeZoneChangedReceiver` starts
+/// when the phone's time zone changes; Android looks it up by name. It lives
+/// here, not in its own file, because this library is certain to be part of
+/// the program.
+@pragma('vm:entry-point')
+Future<void> resyncRemindersAfterZoneChange() => runZoneChangeResync();
 
 /// Shared entry point invoked by [main_dev.main], and
 /// [main_prod.main].

@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 
 import 'package:ever_moon/utils/app_logger.dart' as logger;
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Global getter for the exact alarm permission port.
@@ -19,13 +20,21 @@ abstract interface class ExactAlarmAccessService {
   Future<bool> isAllowed();
 
   /// Opens the system page where the user grants the permission and returns
-  /// whether it is granted when the user comes back.
+  /// whether it is granted when the user comes back. Does nothing when it is
+  /// already granted; use [openSettings] to show the page anyway.
   Future<bool> request();
+
+  /// Opens the system page of this permission whatever its state, so the
+  /// user can review or turn it off.
+  Future<void> openSettings();
 }
 
 /// [ExactAlarmAccessService] on `permission_handler`.
 class PermissionHandlerExactAlarmAccess implements ExactAlarmAccessService {
   PermissionHandlerExactAlarmAccess._();
+
+  /// Implemented in `MainActivity.kt`.
+  static const MethodChannel _system = MethodChannel('com.fox.evermoon/system');
 
   /// The single instance; prefer the [exactAlarmAccessService] getter.
   static final PermissionHandlerExactAlarmAccess instance =
@@ -46,5 +55,15 @@ class PermissionHandlerExactAlarmAccess implements ExactAlarmAccessService {
       logger.info('Exact alarm permission not granted: $status');
     }
     return status.isGranted;
+  }
+
+  @override
+  Future<void> openSettings() async {
+    if (!Platform.isAndroid) return;
+    try {
+      await _system.invokeMethod<void>('openExactAlarmSettings');
+    } on PlatformException catch (error, stackTrace) {
+      logger.err('Exact alarm settings could not be opened', error, stackTrace);
+    }
   }
 }

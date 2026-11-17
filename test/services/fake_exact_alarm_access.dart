@@ -12,8 +12,11 @@ class FakeExactAlarmAccess implements ExactAlarmAccessService {
   /// Whether the user grants the permission on the system page.
   bool grantOnRequest;
 
-  /// Times the system page was opened.
+  /// Times the system page was opened to grant the permission.
   int requests = 0;
+
+  /// Times the system page was opened to review the permission.
+  int settingsOpened = 0;
 
   @override
   Future<bool> isAllowed() async => allowed;
@@ -23,4 +26,7 @@ class FakeExactAlarmAccess implements ExactAlarmAccessService {
     requests++;
     return allowed = grantOnRequest;
   }
+
+  @override
+  Future<void> openSettings() async => settingsOpened++;
 }

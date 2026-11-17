@@ -165,6 +165,17 @@
             </intent-filter>
         </receiver>
 
+        <!-- Re-arms the reminders when the phone's time zone changes (plan 0006, N7).
+             ACTION_TIMEZONE_CHANGED is one of the broadcasts that manifest receivers
+             still get on Android 8+. -->
+        <receiver
+            android:name=".TimeZoneChangedReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+            </intent-filter>
+        </receiver>
+
         <!-- Disable Impeller rendering engine on Android.
              Impeller is Flutter's newer rendering backend — disabled here due to known visual
              artifacts on certain GPU drivers. Re-enable once stable for your target device range. -->
