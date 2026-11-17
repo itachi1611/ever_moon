@@ -10,6 +10,14 @@ runs:
       shell: bash
       run: flutter pub get
 
+    # The root pub get does not resolve the dev_dependencies (package:test) of a
+    # path package, and flutter analyze below reads packages/lunar_calendar/test.
+    # Locally the package was resolved once, which hid this.
+    - name: Install lunar_calendar dependencies
+      shell: bash
+      working-directory: packages/lunar_calendar
+      run: dart pub get
+
     # Only committed files: generated code is gitignored and does not exist yet.
     - name: Check formatting
       shell: bash
@@ -35,6 +43,4 @@ runs:
     - name: Test lunar_calendar package
       shell: bash
       working-directory: packages/lunar_calendar
-      run: |
-        dart pub get
-        dart test
+      run: dart test

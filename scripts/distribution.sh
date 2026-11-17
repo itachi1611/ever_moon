@@ -41,12 +41,12 @@ blocker() {
 ask_yes_no() {
   local answer
   while true; do
-    printf '%s (yes/no): ' "$1"
+    printf '%s (y/n): ' "$1"
     if ! read -r answer; then die "No input."; fi
-    case "$(printf '%s' "$answer" | tr '[:upper:]' '[:lower:]')" in
+    case "$(printf '%s' "$answer" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')" in
       y|yes) return 0 ;;
       n|no) return 1 ;;
-      *) echo "Please answer yes or no." ;;
+      *) echo "Please answer y or n." ;;
     esac
   done
 }
