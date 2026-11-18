@@ -1,6 +1,7 @@
 # Lanes only. Everything they use is in fastlane/lib (see evermoon.rb).
 #
 #   build_<flavor>       compile the release artifact; needs no credentials
+#   build_<flavor>_aab   Android only: the same as an app bundle (.aab)
 #   distribute_<flavor>  build_<flavor>, then upload to Firebase App Distribution
 #
 # Parameters: build_name:1.0.0 build_number:61 notes:"text"
@@ -20,6 +21,16 @@ platform :android do
     ever_build(options.merge(flavor: "prod"))
   end
 
+  desc "Build the dev app bundle (.aab, debug signing key)"
+  lane :build_dev_aab do |options|
+    ever_build_aab(options.merge(flavor: "dev"))
+  end
+
+  desc "Build the prod app bundle (.aab, release keystore required)"
+  lane :build_prod_aab do |options|
+    ever_build_aab(options.merge(flavor: "prod"))
+  end
+
   desc "Build the dev APK and upload it to Firebase App Distribution"
   lane :distribute_dev do |options|
     ever_publish(options.merge(flavor: "dev"))
@@ -33,6 +44,11 @@ platform :android do
   private_lane :ever_build do |options|
     flavor = Evermoon::Project.flavor!(options[:flavor])
     Evermoon::Android.build_apk(flavor, options[:build_name], options[:build_number])
+  end
+
+  private_lane :ever_build_aab do |options|
+    flavor = Evermoon::Project.flavor!(options[:flavor])
+    Evermoon::Android.build_aab(flavor, options[:build_name], options[:build_number])
   end
 
   private_lane :ever_publish do |options|

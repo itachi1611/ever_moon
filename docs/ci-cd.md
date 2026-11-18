@@ -32,10 +32,11 @@ The version testers see is the one in `pubspec.yaml`; the tag only has to match 
 
 fastlane lives at the repository root (`Gemfile`, `Gemfile.lock`, `fastlane/`). The Fastfile contains only lanes; the code they use is in `fastlane/lib/`.
 
-| Lane (per platform: `android`, `ios`) | Does |
-|---------------------------------------|------|
+| Lane (per platform: `android`, `ios`) | Does                                                                                                                                |
+|---------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | `build_dev`, `build_prod`             | pub get, build_runner, then the release build (APK, or IPA through Xcode). No credentials needed. The artifact is left in `build/`. |
-| `distribute_dev`, `distribute_prod`   | the matching `build_*`, then uploads to the flavor's Firebase app and tester group |
+| `build_dev_aab`, `build_prod_aab`     | Android only: the same as an app bundle (`build/app/outputs/bundle/<flavor>Release/app-<flavor>-release.aab`)                       |
+| `distribute_dev`, `distribute_prod`   | the matching `build_*`, then uploads to the flavor's Firebase app and tester group                                                  |
 
 Parameters (optional): `build_name:1.0.0 build_number:61 notes:"text"`. Without them the version comes from `pubspec.yaml`. GitHub calls only `distribute_prod`; the `dev` lanes are for your machine.
 
@@ -43,16 +44,16 @@ Parameters (optional): `build_name:1.0.0 build_number:61 notes:"text"`. Without 
 
 Nothing below is written in a workflow or the Fastfile; each has one source.
 
-| Value                         | Source |
-|-------------------------------|--------|
-| Flutter version               | `environment.flutter` in `pubspec.yaml` (exact, `3.47.1`). CI installs that version and `pub get` refuses any other Flutter locally, so CI and your machine cannot differ. `.fvmrc` stays `stable` and is only for choosing the SDK on your machine. To upgrade, change the pubspec line (and `fvm use <version>`), test, commit. |
-| Ruby, Java version            | `.ruby-version`, `.java-version` |
-| App version                   | `version:` in `pubspec.yaml`; the tag must equal it |
-| Flavors, Firebase project and app ids | `firebase.json` (written by `flutterfire configure`) |
-| Tester groups                 | `fastlane/distribution.yml`; `FIREBASE_TESTER_GROUPS` overrides it for one run |
-| iOS bundle id                 | `ios/Flutter/<flavor>-Release.xcconfig` |
-| Entry file                    | `lib/main_<flavor>.dart` |
-| Flutter command               | `fvm flutter` when `fvm` is installed, otherwise `flutter` |
+| Value                                 | Source                                                                                                                                                                                                                                                                                                                            |
+|---------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Flutter version                       | `environment.flutter` in `pubspec.yaml` (exact, `3.47.1`). CI installs that version and `pub get` refuses any other Flutter locally, so CI and your machine cannot differ. `.fvmrc` stays `stable` and is only for choosing the SDK on your machine. To upgrade, change the pubspec line (and `fvm use <version>`), test, commit. |
+| Ruby, Java version                    | `.ruby-version`, `.java-version`                                                                                                                                                                                                                                                                                                  |
+| App version                           | `version:` in `pubspec.yaml`; the tag must equal it                                                                                                                                                                                                                                                                               |
+| Flavors, Firebase project and app ids | `firebase.json` (written by `flutterfire configure`)                                                                                                                                                                                                                                                                              |
+| Tester groups                         | `fastlane/distribution.yml`; `FIREBASE_TESTER_GROUPS` overrides it for one run                                                                                                                                                                                                                                                    |
+| iOS bundle id                         | `ios/Flutter/<flavor>-Release.xcconfig`                                                                                                                                                                                                                                                                                           |
+| Entry file                            | `lib/main_<flavor>.dart`                                                                                                                                                                                                                                                                                                          |
+| Flutter command                       | `fvm flutter` when `fvm` is installed, otherwise `flutter`                                                                                                                                                                                                                                                                        |
 
 ## One-time setup
 
@@ -109,11 +110,15 @@ Needs Ruby from `.ruby-version` (rbenv: `rbenv install` in the repository) and B
 bundle config set --local path vendor/bundle   # once; the folder is gitignored
 bundle install
 bundle exec fastlane lanes
+bash scripts/build.sh                                        # asks flavor (prod/dev) and type (apk/aab), runs the lane
 bundle exec fastlane android build_dev                       # APK only
+bundle exec fastlane android build_dev_aab                   # app bundle only
 FIREBASE_SERVICE_CREDENTIALS=/path/to/service-account.json \
   bundle exec fastlane android distribute_dev                # build and upload to the dev Firebase project
 bundle exec ruby fastlane/test/evermoon_test.rb              # the helper tests
 ```
+
+Java: Flutter ignores `JAVA_HOME` and uses the JDK of Android Studio (a newer JBR) unless told otherwise, which prints a Gradle "restricted method" warning and differs from CI. Point it at the JDK in `.java-version` once per machine: `fvm flutter config --jdk-dir "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home"` (it writes `jdk-dir` in `~/.config/flutter/settings`; delete that line to undo).
 
 `dev` is uploaded to project `evermoon-dev`, so it needs a service account of that project and a tester group there. `prod` on your machine needs `android/key.properties`. On iOS, `build_*` signs with the Apple account logged in to Xcode unless `ASC_KEY_PATH`, `ASC_KEY_ID` and `ASC_ISSUER_ID` are all set.
 

@@ -126,6 +126,16 @@ class IosTest < Minitest::Test
   end
 end
 
+class AndroidPathTest < Minitest::Test
+  def test_apk_path
+    assert Evermoon::Android.apk_path("dev").end_with?("flutter-apk/app-dev-release.apk")
+  end
+
+  def test_aab_path_uses_capitalised_variant_folder
+    assert Evermoon::Android.aab_path("prod").end_with?("bundle/prodRelease/app-prod-release.aab")
+  end
+end
+
 class DistributionTest < Minitest::Test
   def test_missing_credentials_stop_before_any_build
     saved = ENV.delete("FIREBASE_SERVICE_CREDENTIALS")
