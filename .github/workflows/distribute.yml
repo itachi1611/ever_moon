@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       version: ${{ steps.meta.outputs.version }}
       android: ${{ steps.meta.outputs.android }}
@@ -37,7 +37,7 @@ jobs:
       notes: ${{ steps.notes.outputs.notes }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -90,11 +90,11 @@ jobs:
   # The release must pass what a pull request passes, even if it skipped one.
   gate:
     needs: prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up toolchain
         uses: ./.github/actions/setup
@@ -105,14 +105,14 @@ jobs:
   android:
     needs: [prepare, gate]
     if: needs.prepare.outputs.android == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     environment: prod
     outputs:
       flutter: ${{ steps.setup.outputs.flutter-version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up toolchain
         id: setup
@@ -137,6 +137,19 @@ jobs:
             echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/release.jks"
             echo "FIREBASE_SERVICE_CREDENTIALS=$RUNNER_TEMP/firebase-sa.json"
           } >> "$GITHUB_ENV"
+
+      # android/gradle.properties asks Gradle for an 8 GB heap plus 4 GB metaspace,
+      # which can exceed the memory of a hosted runner and get the job killed
+      # ("The operation was canceled"). ~/.gradle/gradle.properties overrides the
+      # project file on CI only; local builds keep the larger values.
+      - name: Limit Gradle memory
+        run: |
+          free -m
+          nproc
+          mkdir -p ~/.gradle
+          printf '%s\n' \
+            'org.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=1g -XX:ReservedCodeCacheSize=256m' \
+            'org.gradle.workers.max=2' >> ~/.gradle/gradle.properties
 
       # Build first, check the signer, then upload: a wrong key must never reach
       # Firebase. The upload step rebuilds, which is quick (Gradle and pub caches).
@@ -195,7 +208,7 @@ jobs:
       flutter: ${{ steps.setup.outputs.flutter-version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up toolchain
         id: setup
@@ -241,7 +254,7 @@ jobs:
       ${{ !cancelled()
       && !contains(needs.*.result, 'failure')
       && (needs.android.result == 'success' || needs.ios.result == 'success') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
@@ -265,10 +278,10 @@ jobs:
   notify:
     needs: [prepare, gate, android, ios, release]
     if: ${{ always() }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Tell the team
         env:
