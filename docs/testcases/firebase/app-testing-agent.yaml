@@ -1,0 +1,147 @@
+# Test cases for the Firebase App Distribution "App Testing agent" (AI-guided, preview).
+# This is NOT the QA schema used by ../0*.yaml. Format: https://firebase.google.com/docs/app-distribution/android/app-testing-agent
+# Import: Firebase console > App Distribution > Test Cases > Import (one file per import), or
+#   firebase apptesting:execute --app=<android app id> --test-dir=docs/testcases/firebase <apk>
+# Limits of the agent: 5 minute timeout per test, UI actions only (tap, type, swipe, long press, back, wait),
+# it cannot see system dialogs reliably and cannot wait for a real reminder. Keep steps short and visible on screen.
+# The agent starts from a fresh install, so every test that needs the app past the intro uses the prerequisite
+# "finish-intro". Screen texts are the Vietnamese ARB strings (lib/l10n/intl_vi.arb).
+tests:
+  - displayName: Finish the intro
+    id: finish-intro
+    steps:
+      - goal: Go through the intro pages until the notification page appears
+        hint: "Tap the button labelled Tiếp tục on each page. Do not tap Bỏ qua."
+        finalScreenAssertion: "A page titled Bật thông báo is visible with the buttons Cho phép and Để sau."
+      - goal: Leave notifications off and open the app
+        hint: "Tap Để sau. If a system permission dialog appears anyway, choose Don't allow."
+        finalScreenAssertion: "The screen titled Ngày giỗ sắp tới is visible and shows Chưa có ngày giỗ nào."
+
+  - displayName: Empty state offers to add the first anniversary
+    id: empty-state
+    prerequisiteTestCaseId: finish-intro
+    steps:
+      - goal: Read the empty list
+        finalScreenAssertion: "The text Chưa có ngày giỗ nào and a button Thêm ngày giỗ are visible."
+
+  - displayName: Save is blocked when the name is empty
+    id: form-validation
+    prerequisiteTestCaseId: finish-intro
+    steps:
+      - goal: Open the add form and try to save without typing anything
+        hint: "Tap Thêm ngày giỗ, then tap Lưu ngày giỗ."
+        finalScreenAssertion: "The form is still open and an error message is shown under the field Tên người mất."
+
+  - displayName: Add an anniversary without a death year
+    id: add-anniversary
+    prerequisiteTestCaseId: finish-intro
+    steps:
+      - goal: Fill the form with the name Nguyễn Văn An, day 15 and month 7, and leave the year empty
+        hint: "Tap Thêm ngày giỗ. Type the name in Tên người mất. Pick 15 in Ngày and 7 in Tháng. Do not fill Năm mất."
+        finalScreenAssertion: "The fields show Nguyễn Văn An, 15 and 7 and the year field is empty."
+      - goal: Save the anniversary
+        hint: "Scroll down if needed and tap Lưu ngày giỗ."
+        finalScreenAssertion: "The list screen is visible and shows Nguyễn Văn An with 15 tháng 7 âm lịch."
+
+  - displayName: Add an anniversary with a death year
+    id: add-anniversary-with-year
+    prerequisiteTestCaseId: finish-intro
+    steps:
+      - goal: Fill the form with the name Trần Thị Bình, day 3, month 2 and death year 1998
+        hint: "Tap Thêm ngày giỗ. The year goes in Năm mất (âm lịch)."
+        finalScreenAssertion: "The form shows Trần Thị Bình, 3, 2 and 1998."
+      - goal: Save the anniversary
+        hint: "Tap Lưu ngày giỗ."
+        finalScreenAssertion: "The list shows Trần Thị Bình with 3 tháng 2 âm lịch."
+
+  - displayName: Edit an anniversary
+    id: edit-anniversary
+    prerequisiteTestCaseId: add-anniversary
+    steps:
+      - goal: Open the saved anniversary for editing
+        hint: "Tap the card of Nguyễn Văn An."
+        finalScreenAssertion: "A form titled Sửa ngày giỗ is visible with the name Nguyễn Văn An."
+      - goal: Change the name to Nguyễn Văn Ân and save
+        hint: "Clear the name field, type the new name, then tap Lưu thay đổi."
+        finalScreenAssertion: "The list shows Nguyễn Văn Ân and no longer shows Nguyễn Văn An."
+
+  - displayName: Delete an anniversary
+    id: delete-anniversary
+    prerequisiteTestCaseId: add-anniversary
+    steps:
+      - goal: Start deleting the anniversary
+        hint: "Tap the card of Nguyễn Văn An, scroll down and tap Xoá ngày giỗ."
+        finalScreenAssertion: "A dialog asking Xoá ngày giỗ của Nguyễn Văn An? is visible with the buttons Giữ lại and Xoá."
+      - goal: Keep the anniversary
+        hint: "Tap Giữ lại."
+        finalScreenAssertion: "The edit form is still visible with the name Nguyễn Văn An."
+      - goal: Delete the anniversary for real
+        hint: "Tap Xoá ngày giỗ, then tap Xoá in the dialog."
+        finalScreenAssertion: "The list screen is visible and shows Chưa có ngày giỗ nào."
+
+  - displayName: Reminder settings in the form
+    id: form-reminder-settings
+    prerequisiteTestCaseId: finish-intro
+    steps:
+      - goal: Open the add form and find the reminder section
+        hint: "Tap Thêm ngày giỗ and scroll down to Nhắc tôi."
+        finalScreenAssertion: "The switch Nhắc tôi, the choices under Nhắc trước and the row Giờ nhắc are visible."
+      - goal: Choose a reminder 3 days before
+        hint: "Tap the chip 3 ngày under Nhắc trước."
+        finalScreenAssertion: "The chip 3 ngày is selected and a summary text starting with Nhắc lúc 07:00 is visible."
+      - goal: Turn the reminder off
+        hint: "Tap the switch Nhắc tôi."
+        finalScreenAssertion: "The choices under Nhắc trước are no longer available or the text Không nhắc is visible."
+
+  - displayName: Switch calendar views
+    id: calendar-views
+    prerequisiteTestCaseId: finish-intro
+    steps:
+      - goal: Open the calendar tab
+        hint: "Open the navigation drawer or tab labelled Lịch."
+        finalScreenAssertion: "A calendar is visible with the weekday row T2 T3 T4 T5 T6 T7 CN."
+      - goal: Show the year view
+        hint: "Tap the toggle labelled Năm."
+        finalScreenAssertion: "Twelve month tiles are visible under a title starting with Năm."
+      - goal: Show the week view
+        hint: "Tap the toggle labelled Tuần."
+        finalScreenAssertion: "A single week of seven days is visible."
+      - goal: Return to the month view
+        hint: "Tap the toggle labelled Tháng."
+        finalScreenAssertion: "A month grid with the weekday row T2 to CN is visible."
+
+  - displayName: Calendar shows an anniversary on its day
+    id: calendar-shows-anniversary
+    prerequisiteTestCaseId: add-anniversary
+    steps:
+      - goal: Open the calendar and go to the month that contains 15 tháng 7 âm lịch
+        hint: "Open Lịch, use Tháng sau until a day with a dot appears. Chạm that day."
+        finalScreenAssertion: "A day list shows Nguyễn Văn An with the chip Ngày giỗ."
+
+  - displayName: Settings change the app theme and language
+    id: settings-theme-language
+    prerequisiteTestCaseId: finish-intro
+    steps:
+      - goal: Open Settings
+        hint: "Open the navigation drawer and tap Cài đặt."
+        finalScreenAssertion: "The settings screen is visible with rows Ngôn ngữ, Giao diện and Thông báo."
+      - goal: Switch to the dark theme
+        hint: "Tap Giao diện and choose Tối."
+        finalScreenAssertion: "The screen background is dark."
+      - goal: Switch the language to English
+        hint: "Tap the language row and choose English."
+        finalScreenAssertion: "Labels are shown in English and the Vietnamese label Cài đặt is gone."
+
+  - displayName: Legal pages open and go back
+    id: legal-pages
+    prerequisiteTestCaseId: finish-intro
+    steps:
+      - goal: Open the terms page
+        hint: "Open Cài đặt and tap Điều khoản & Điều kiện."
+        finalScreenAssertion: "A page with the terms text is visible."
+      - goal: Go back and open the privacy page
+        hint: "Press back, then tap Quyền riêng tư & Chính sách."
+        finalScreenAssertion: "A page with the privacy policy text is visible."
+      - goal: Go back to settings
+        hint: "Press back."
+        finalScreenAssertion: "The settings screen is visible again."
