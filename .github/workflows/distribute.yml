@@ -291,6 +291,7 @@ jobs:
           IOS_RESULT: ${{ needs.ios.result }}
           RELEASE_RESULT: ${{ needs.release.result }}
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           VERSION: ${{ needs.prepare.outputs.version }}
           FLUTTER: ${{ needs.android.outputs.flutter || needs.ios.outputs.flutter }}
           NOTES: ${{ needs.prepare.outputs.notes }}
@@ -311,5 +312,12 @@ jobs:
           facts+=$'\n'"iOS: ${IOS_RESULT:-skipped}"$'\n'"GitHub Release: ${RELEASE_RESULT:-skipped}"
           release_url=""
           if [ "$RELEASE_RESULT" = success ]; then release_url="${REPO_URL}/releases/tag/${version//+/%2B}"; fi
+          # The banner is a public raw file of the repository; without the file the
+          # Teams card simply has no image.
+          banner=""
+          if [ -f docs/design/notify-banner.png ]; then
+            banner="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${DEFAULT_BRANCH}/docs/design/notify-banner.png"
+          fi
           NOTIFY_STATUS="$status" NOTIFY_TITLE="$title" NOTIFY_BODY="$NOTES" NOTIFY_URL="$RUN_URL" \
-            NOTIFY_FACTS="$facts" NOTIFY_RELEASE_URL="$release_url" bash scripts/notify.sh
+            NOTIFY_FACTS="$facts" NOTIFY_RELEASE_URL="$release_url" NOTIFY_BANNER_URL="$banner" \
+            bash scripts/notify.sh

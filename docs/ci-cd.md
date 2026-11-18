@@ -120,6 +120,7 @@ bundle exec ruby fastlane/test/evermoon_test.rb              # the helper tests
 ## Changelog, artifacts and how long things stay
 
 - The **GitHub Release** of each tag is the permanent changelog (no expiry). Its text comes from `scripts/release_notes.sh`: commits since the previous release, grouped as breaking changes, features, fixes and other changes. It is also the Firebase release note and the body of the notification.
+- **Notification look.** Discord gets a coloured embed (status colour, fact fields, changelog) plus the release link in the message text, so Discord unfolds the repository preview. Telegram gets formatted text, buttons (release, run) and the release link preview. Teams gets a card with a banner image on top, the status header, facts, changelog and two buttons. The repository must be public for the link previews and the Teams banner to load. Put the banner at `docs/design/notify-banner.png` (the workflow passes its raw GitHub URL only when the file exists), and upload the same image under GitHub, Settings, General, Social preview so the Discord and Telegram previews show it.
 - GitHub keeps workflow logs and artifacts for 90 days by default (changeable in the repository settings). This workflow uploads no artifact.
 - The APK is not attached to the Release: a public repository would let anyone download the prod build. The build is in Firebase App Distribution; how long Firebase keeps a release was not verified.
 
