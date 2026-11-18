@@ -312,10 +312,19 @@ jobs:
           facts+=$'\n'"iOS: ${IOS_RESULT:-skipped}"$'\n'"GitHub Release: ${RELEASE_RESULT:-skipped}"
           release_url=""
           if [ "$RELEASE_RESULT" = success ]; then release_url="${REPO_URL}/releases/tag/${version//+/%2B}"; fi
-          # The banner is a public raw file of the repository; without the file the
-          # Teams card simply has no image.
+          # Teams and Discord webhook messages do not unfold links, so the image
+          # Telegram shows for the release link is read from the release page
+          # (its og:image tag) and put into their cards. A failure only means the
+          # fallback below is used.
           banner=""
-          if [ -f docs/design/notify-banner.png ]; then
+          if [ -n "$release_url" ]; then
+            banner="$(curl -fsSL --max-time 20 "$release_url" 2>/dev/null \
+              | grep -o '<meta property="og:image" content="[^"]*"' | head -1 \
+              | sed 's/.*content="//; s/"$//; s/&amp;/\&/g' || true)"
+          fi
+          # Fallback: a public raw file of the repository; without it the cards
+          # simply have no image.
+          if [ -z "$banner" ] && [ -f docs/design/notify-banner.png ]; then
             banner="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${DEFAULT_BRANCH}/docs/design/notify-banner.png"
           fi
           NOTIFY_STATUS="$status" NOTIFY_TITLE="$title" NOTIFY_BODY="$NOTES" NOTIFY_URL="$RUN_URL" \

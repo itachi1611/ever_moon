@@ -96,7 +96,12 @@ fi
 if [ -z "$CLASSIFIED" ]; then
   OUT="${OUT}No changes."$'\n'
 else
-  OUT="${OUT}$(section 'Breaking changes' breaking)$(section 'Features' feat)$(section 'Fixes' fix)$(section 'Other changes' other)"
+  # $(...) drops trailing newlines, so each section gets its blank line back
+  # here; without it the next heading is glued to the last bullet.
+  for spec in 'Breaking changes:breaking' 'Features:feat' 'Fixes:fix' 'Other changes:other'; do
+    block="$(section "${spec%%:*}" "${spec##*:}")"
+    if [ -n "$block" ]; then OUT="${OUT}${block}"$'\n\n'; fi
+  done
 fi
 
 if [ "$MAX" -gt 0 ] && [ "${#OUT}" -gt "$MAX" ]; then

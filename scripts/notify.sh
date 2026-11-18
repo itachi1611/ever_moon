@@ -140,6 +140,9 @@ elif kind == "discord":
     }
     if release_url or url:
         embed["url"] = release_url or url
+    if banner:
+        # An image in the embed itself does not depend on Discord unfolding the link.
+        embed["image"] = {"url": banner}
     payload = {"embeds": [embed], "allowed_mentions": {"parse": []}}
     if release_url:
         # A bare link in the message text makes Discord unfold the repository preview.
