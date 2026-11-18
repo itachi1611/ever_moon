@@ -34,6 +34,13 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 
+    // The release-time lint check (lintVitalAnalyze*) crashed on CI with a
+    // NoSuchMethodError inside Android Lint itself, which failed the build. Lint is
+    // not a release gate here; flutter analyze is.
+    lint {
+        checkReleaseBuilds = false
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.fox.evermoon"
