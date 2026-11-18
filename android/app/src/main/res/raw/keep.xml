@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The soft bell is only referenced by name from Dart, so resource shrinking
-     would remove it from release builds without this. -->
+<!-- The soft bell and the status bar icon are only referenced by name from
+     Dart (flutter_local_notifications looks the icon up by its resource name),
+     so resource shrinking would remove them from release builds without this.
+     Without the icon, startup fails with an invalid_icon error and the app
+     stays on a blank screen. -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@raw/soft_bell" />
+    tools:keep="@raw/soft_bell,@drawable/notification" />
