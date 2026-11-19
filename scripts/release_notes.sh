@@ -47,7 +47,8 @@ classify() {
   awk -F'\t' -v breaking=" $BREAKING_HASHES " '
     {
       hash = $1; subj = $2; kind = "other"; brk = 0; text = subj
-      # The version bump commit made by distribution.sh is not a change.
+      # The release commit (distribution.sh makes it, the squash merge of its
+      # pull request may add " (#n)" to the title) is not a change.
       if (subj ~ /^chore\(release\):/) next
       if (match(subj, /^[a-z]+(\([^)]*\))?!?:/)) {
         head = substr(subj, 1, RLENGTH)

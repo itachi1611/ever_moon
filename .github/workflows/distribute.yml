@@ -3,7 +3,8 @@
 # team. dev builds are made on a developer machine (fastlane distribute_dev).
 #
 # Trigger: push a tag equal to the version in pubspec.yaml, for example
-# 1.0.1+2. scripts/distribution.sh bumps the version and creates the tag.
+# 1.0.1+2. scripts/distribution.sh prepares the version bump pull request and
+# scripts/release_tag.sh creates the tag after that pull request is merged.
 # Secrets live in the GitHub Environment "prod"; iOS runs only when the
 # repository variable IOS_ENABLED is "true". Setup: docs/ci-cd.md
 name: Distribute prod
@@ -62,7 +63,7 @@ jobs:
           fi
           pubspec="$(sed -n -E 's/^version:[[:space:]]*([^[:space:]]+).*/\1/p' pubspec.yaml | head -1)"
           if [[ "$pubspec" != "$TAG" ]]; then
-            echo "::error::Tag '$TAG' does not match version '$pubspec' in pubspec.yaml. Use scripts/distribution.sh."
+            echo "::error::Tag '$TAG' does not match version '$pubspec' in pubspec.yaml. Use scripts/distribution.sh, then scripts/release_tag.sh after the pull request is merged."
             exit 1
           fi
           # A tag on another branch would publish unreviewed code.
@@ -312,21 +313,44 @@ jobs:
           facts+=$'\n'"iOS: ${IOS_RESULT:-skipped}"$'\n'"GitHub Release: ${RELEASE_RESULT:-skipped}"
           release_url=""
           if [ "$RELEASE_RESULT" = success ]; then release_url="${REPO_URL}/releases/tag/${version//+/%2B}"; fi
-          # Teams and Discord webhook messages do not unfold links, so the image
-          # Telegram shows for the release link is read from the release page
-          # (its og:image tag) and put into their cards. A failure only means the
-          # fallback below is used.
+          # The banner is the same picture at the top of every channel: a public
+          # raw file of the repository. Without the file there is no banner.
           banner=""
+          if [ -f docs/design/notify-banner.png ]; then
+            banner="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${DEFAULT_BRANCH}/docs/design/notify-banner.png"
+          fi
+          # The release preview is the image Telegram shows for the release
+          # link (the og:image of the release page). Telegram unfolds the link
+          # itself; Discord gets the image URL in its embed.
+          preview=""
           if [ -n "$release_url" ]; then
-            banner="$(curl -fsSL --max-time 20 "$release_url" 2>/dev/null \
+            preview="$(curl -fsSL --max-time 20 "$release_url" 2>/dev/null \
               | grep -o '<meta property="og:image" content="[^"]*"' | head -1 \
               | sed 's/.*content="//; s/"$//; s/&amp;/\&/g' || true)"
           fi
-          # Fallback: a public raw file of the repository; without it the cards
-          # simply have no image.
-          if [ -z "$banner" ] && [ -f docs/design/notify-banner.png ]; then
-            banner="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${DEFAULT_BRANCH}/docs/design/notify-banner.png"
+          # GitHub draws that image the first time somebody asks for it, which
+          # can take several seconds. Asking here, before any message is sent,
+          # makes it ready (and drops it if it never comes).
+          if [ -n "$preview" ]; then
+            ready=""
+            for attempt in 1 2 3; do
+              type="$(curl -sL --max-time 30 -o /dev/null -w '%{http_code} %{content_type}' "$preview" 2>/dev/null || true)"
+              case "$type" in "200 image/"*) ready=1; break ;; esac
+              sleep 5
+            done
+            if [ -z "$ready" ]; then preview=""; fi
+          fi
+          # Teams does not load the preview from its URL even when the URL
+          # works, so its card carries the image inside the message, shrunk to
+          # fit the 28 KB limit. Without it the card simply has no preview.
+          teams_preview=""
+          if [ -n "$preview" ]; then
+            if ! command -v magick >/dev/null 2>&1 && ! command -v convert >/dev/null 2>&1; then
+              sudo apt-get install -y -qq --no-install-recommends imagemagick >/dev/null 2>&1 || true
+            fi
+            teams_preview="$(bash scripts/og_image_data_uri.sh "$preview" 11000 2>/dev/null || true)"
           fi
           NOTIFY_STATUS="$status" NOTIFY_TITLE="$title" NOTIFY_BODY="$NOTES" NOTIFY_URL="$RUN_URL" \
             NOTIFY_FACTS="$facts" NOTIFY_RELEASE_URL="$release_url" NOTIFY_BANNER_URL="$banner" \
+            NOTIFY_PREVIEW_URL="$preview" NOTIFY_TEAMS_PREVIEW="$teams_preview" \
             bash scripts/notify.sh
