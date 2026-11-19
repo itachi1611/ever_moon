@@ -149,6 +149,12 @@ Java: Flutter ignores `JAVA_HOME` and uses the JDK of Android Studio (a newer JB
 - GitHub keeps workflow logs and artifacts for 90 days by default (changeable in the repository settings). This workflow uploads no artifact.
 - The APK is not attached to the Release: a public repository would let anyone download the prod build. The build is in Firebase App Distribution; how long Firebase keeps a release was not verified.
 
+## Pinned actions
+
+Every third-party action in `.github/` is pinned to a full commit SHA with the version in a trailing comment, for example `actions/checkout@<sha> # v6.1.0`. A tag such as `v6` can be moved to different code; a commit SHA cannot, and SonarQube Cloud rates an unpinned action as a security issue. Actions of this repository (`uses: ./.github/actions/...`) need no pin. The pins stay on the major version that was in use before (`checkout` v6, `setup-java` v5, `flutter-action` v2, `setup-ruby` v1, `upload-pages-artifact` v3, `deploy-pages` v4); moving to a new major is a decision made in the pull request that does it.
+
+`.github/dependabot.yml` opens one pull request every Monday that moves the SHAs and the version comments together (title `chore(ci): ...`). Read its release notes before merging. To pin a new action by hand: `git ls-remote --tags https://github.com/<owner>/<repo>` and take the SHA of `refs/tags/<version>^{}` when that line exists (an annotated tag), otherwise of `refs/tags/<version>`.
+
 ## Not verified
 
 - The push-to-`main` release path (the `prepare` branch logic, the tag created by `gh release create --target`, the concurrency group) has not run on GitHub yet; the next release confirms it. Whether the tag ruleset allows the workflow's token to create a tag was not tested. `actionlint` is not installed. What ran locally: the YAML parses, the `prepare` step text runs correctly against a scratch repository (valid tag, tag different from `pubspec.yaml`, bad format, not a tag, commit not on `main`), and `scripts/release_prepare.sh`, `release_tag.sh`, `release_notes.sh` and `notify.sh` ran against a scratch repository with a fake origin on macOS's bash 3.2 (for the two release scripts: dry run and real run of each step, a release branch that already exists, tagging before the pull request is merged, tagging twice, a commit that lands after the release commit, and a dirty working tree). The rulesets were checked on GitHub: a direct push to `main` and the deletion of a release tag are rejected, and a pull request merged with `check` passing.
