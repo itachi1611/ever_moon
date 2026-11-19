@@ -3,6 +3,14 @@ description: >
   Formatting, code generation, analyze and tests. Used by CI and by the
   release gate. Needs the toolchain from ./.github/actions/setup.
 
+inputs:
+  coverage:
+    description: >
+      "true" writes coverage/lcov.info while testing the app (the Sonar scan
+      reads it). The release gate leaves it off.
+    required: false
+    default: "false"
+
 runs:
   using: composite
   steps:
@@ -38,7 +46,14 @@ runs:
 
     - name: Test app
       shell: bash
-      run: flutter test
+      env:
+        COVERAGE: ${{ inputs.coverage }}
+      run: |
+        if [ "$COVERAGE" = true ]; then
+          flutter test --coverage
+        else
+          flutter test
+        fi
 
     - name: Test lunar_calendar package
       shell: bash

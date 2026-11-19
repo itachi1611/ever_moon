@@ -1,11 +1,15 @@
-# Checks every pull request into main: formatting, analyze and tests, plus a
-# smoke check of the fastlane setup. It never publishes; releases come from
+# Checks every pull request into main: formatting, analyze and tests, a
+# SonarQube Cloud scan whose quality gate must pass, plus a smoke check of the
+# fastlane setup. It also runs on main after a merge, so Sonar has a baseline to
+# compare pull requests with. It never publishes; releases come from
 # distribute.yml. Tool versions come from pubspec.yaml, .ruby-version and
 # .java-version, not from this file.
 name: CI
 
 on:
   pull_request:
+    branches: [main]
+  push:
     branches: [main]
 
 permissions:
@@ -22,6 +26,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          # Sonar needs the history to tell new code from old code.
+          fetch-depth: 0
 
       - name: Set up toolchain
         uses: ./.github/actions/setup
@@ -30,6 +37,38 @@ jobs:
 
       - name: Verify the app
         uses: ./.github/actions/verify
+        with:
+          coverage: "true"
+
+      # A pull request from a fork or from Dependabot gets no secret; the scan
+      # is skipped there instead of failing.
+      - name: Check for the Sonar token
+        id: sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          if [ -n "$SONAR_TOKEN" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::SONAR_TOKEN is not available; the SonarQube scan is skipped"
+          fi
+
+      # The step fails when the quality gate fails, so the required check
+      # `check` blocks the merge. The organization and project key are
+      # repository variables (docs/ci-cd.md).
+      - name: SonarQube Cloud scan
+        if: steps.sonar.outputs.enabled == 'true'
+        # Pinned to a commit (Sonar rule: full commit SHA for third-party
+        # actions); this is the commit of v7.2.1.
+        uses: SonarSource/sonarqube-scan-action@c7ee0f9df90b7aa20e8dcf9695dcfe2e7da5b4f2 # v7.2.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=300
 
       - name: Test the fastlane helpers
         run: bundle exec ruby fastlane/test/evermoon_test.rb
