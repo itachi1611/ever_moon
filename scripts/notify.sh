@@ -15,7 +15,14 @@ fi
 #   NOTIFY_BODY         optional, several lines (the changelog, Conventional Commit groups)
 #   NOTIFY_URL          optional link to the workflow run
 #   NOTIFY_RELEASE_URL  optional link to the GitHub Release (a public repo gives a link preview)
-#   NOTIFY_BANNER_URL   optional public https image, shown at the top of the Teams card
+#   NOTIFY_BANNER_URL   optional public https image, the same banner at the top of every channel:
+#                       the first image in the Teams card, a first embed in Discord, a photo sent
+#                       just before the message in Telegram
+#   NOTIFY_PREVIEW_URL  optional public https image of the release page, shown inside the Discord
+#                       embed (Telegram unfolds the release link by itself)
+#   NOTIFY_TEAMS_PREVIEW  optional, the same release image as a small data: URI (see
+#                       scripts/og_image_data_uri.sh), shown at the bottom of the Teams card;
+#                       Teams does not load the release image from its URL
 #   NOTIFY_FACTS        optional, one "Label: value" per line (version, Flutter, job results)
 #   NOTIFY_DRY_RUN      set to 1 to print the messages instead of sending them
 # Channels:
@@ -31,6 +38,8 @@ BODY="${NOTIFY_BODY:-}"
 URL="${NOTIFY_URL:-}"
 RELEASE_URL="${NOTIFY_RELEASE_URL:-}"
 BANNER_URL="${NOTIFY_BANNER_URL:-}"
+PREVIEW_URL="${NOTIFY_PREVIEW_URL:-}"
+TEAMS_PREVIEW="${NOTIFY_TEAMS_PREVIEW:-}"
 FACTS="${NOTIFY_FACTS:-}"
 DRY="${NOTIFY_DRY_RUN:-0}"
 
@@ -38,13 +47,13 @@ DRY="${NOTIFY_DRY_RUN:-0}"
 # builds it so quotes, HTML and Vietnamese text are escaped correctly.
 build_payload() {
   KIND="$1" STATUS="$STATUS" TITLE="$TITLE" BODY="$BODY" URL="$URL" FACTS="$FACTS" \
-    RELEASE_URL="$RELEASE_URL" BANNER_URL="$BANNER_URL" CHAT_ID="${TELEGRAM_CHAT_ID:-}" python3 - <<'PY'
+    RELEASE_URL="$RELEASE_URL" BANNER_URL="$BANNER_URL" PREVIEW_URL="$PREVIEW_URL" TEAMS_PREVIEW="$TEAMS_PREVIEW" CHAT_ID="${TELEGRAM_CHAT_ID:-}" python3 - <<'PY'
 import html, json, os, re
 
 e = os.environ
 kind, status = e["KIND"], e["STATUS"]
 title, body, url = e["TITLE"], e["BODY"], e["URL"]
-release_url, banner = e["RELEASE_URL"], e["BANNER_URL"]
+release_url, banner, preview = e["RELEASE_URL"], e["BANNER_URL"], e["PREVIEW_URL"]
 
 headline, style, color, embed_color, mark = {
     "success": ("Release succeeded", "good", "Good", 0x2ECC71, "✅"),
@@ -94,8 +103,9 @@ def render(items, heading, bullet):
     return "\n".join(lines)
 
 
-if kind == "teams":
-    text = render(blocks(11000),
+def teams_card(embedded, limit):
+    """The Teams message for a release image (data URI, may be empty) and a changelog size."""
+    text = render(blocks(limit),
                   lambda t: "**" + t + "**",
                   lambda t, s: "• " + t + (" (" + s + ")" if s else "")).replace("\n", "\n\n")
     card_body = []
@@ -113,6 +123,9 @@ if kind == "teams":
     if text:
         card_body.append({"type": "TextBlock", "text": "What changed", "weight": "Bolder", "separator": True, "spacing": "Medium"})
         card_body.append({"type": "TextBlock", "text": text, "wrap": True})
+    if embedded:
+        card_body.append({"type": "Image", "url": embedded, "size": "Stretch",
+                          "altText": "Release preview", "spacing": "Medium"})
     actions = []
     if release_url:
         actions.append({"type": "Action.OpenUrl", "title": "Open the release", "url": release_url})
@@ -125,8 +138,29 @@ if kind == "teams":
     }
     if actions:
         card["actions"] = actions
-    payload = {"type": "message", "attachments": [
+    return {"type": "message", "attachments": [
         {"contentType": "application/vnd.microsoft.card.adaptive", "content": card}]}
+
+
+# Teams refuses a message above about 28 KB. The embedded release image
+# counts in full, so the changelog gets what is left; if even that does not
+# fit, the image is dropped and the changelog is kept.
+TEAMS_MAX_BYTES = 27000
+
+
+def teams_payload():
+    embedded = e["TEAMS_PREVIEW"] if e["TEAMS_PREVIEW"].startswith("data:") else ""
+    limit = 11000
+    if embedded:
+        limit = max(1500, min(limit, TEAMS_MAX_BYTES - len(embedded) - 4000))
+    result = teams_card(embedded, limit)
+    if embedded and len(json.dumps(result).encode()) > TEAMS_MAX_BYTES:
+        result = teams_card("", 11000)
+    return result
+
+
+if kind == "teams":
+    payload = teams_payload()
 
 elif kind == "discord":
     text = render(blocks(3300),
@@ -140,10 +174,14 @@ elif kind == "discord":
     }
     if release_url or url:
         embed["url"] = release_url or url
-    if banner:
+    if preview:
         # An image in the embed itself does not depend on Discord unfolding the link.
-        embed["image"] = {"url": banner}
-    payload = {"embeds": [embed], "allowed_mentions": {"parse": []}}
+        embed["image"] = {"url": preview}
+    embeds = [embed]
+    if banner:
+        # A first embed holding only the banner shows it above the message.
+        embeds.insert(0, {"image": {"url": banner}, "color": embed_color})
+    payload = {"embeds": embeds, "allowed_mentions": {"parse": []}}
     if release_url:
         # A bare link in the message text makes Discord unfold the repository preview.
         payload["content"] = release_url
@@ -200,6 +238,14 @@ fi
 
 if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT_ID:-}" ]; then
   SENT=1
+  if [ -n "$BANNER_URL" ]; then
+    # A link preview cannot be combined with a photo in one message, so the
+    # banner goes first, silently, and the message with the release preview follows.
+    if [ "$DRY" = 1 ]; then printf 'telegram banner photo: %s\n' "$BANNER_URL"; fi
+    send "Telegram banner" -X POST --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+      --data-urlencode "photo=${BANNER_URL}" -d disable_notification=true \
+      "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto"
+  fi
   PAYLOAD="$(build_payload telegram)"
   if [ "$DRY" = 1 ]; then printf '%s\n' "$PAYLOAD"; fi
   send Telegram -X POST -H 'Content-Type: application/json' -d "$PAYLOAD" \

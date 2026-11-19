@@ -6,6 +6,8 @@ Status: revision 3 (2026-11-17, Fox's second review: prod only on GitHub, tag eq
 
 Revision 3: `scripts/distribution.sh` bumps the version in `pubspec.yaml`, commits, tags `x.y.z+n` on `main` and pushes. The tag builds the **prod** flavor on GitHub Actions with fastlane, uploads it to Firebase App Distribution (project `evermoon-2cc28`), publishes a GitHub Release with the changelog and notifies the team. iOS only when the repository variable `IOS_ENABLED` is `true`. Every pull request into `main` runs format, analyze and tests. `dev` builds are made locally.
 
+Revision 4 (2026-11-19): `main` is protected by a ruleset without a bypass list (pull requests only, squash merge, `check` must pass, no force push, no deletion) and release tags `[0-9]*` are immutable (no update, delete or force push; creation allowed). `scripts/distribution.sh` can no longer push to `main`, so it only creates `release/<x.y.z>` with the version bump and prints the pull request to open (titled `chore(release): <version>`); after the squash merge `scripts/release_tag.sh` checks that the newest commit on `origin/main` is that release commit and creates and pushes the tag. D-C19 below describes the original single-script flow.
+
 Revision 2 (superseded): a tag `dev-*` or `prod-*` built that flavor.
 
 ## Scope

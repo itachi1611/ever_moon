@@ -5,9 +5,15 @@ if [ -z "${BASH_VERSION:-}" ]; then
 fi
 
 # distribution.sh
-# Start a release: choose the version, update pubspec.yaml, commit, tag and push.
-# The tag (for example 1.0.1+2) is what starts the release workflow on GitHub,
-# which builds the prod flavor and uploads it to Firebase App Distribution.
+# Step 1 of a release: choose the version, put it in pubspec.yaml on a release
+# branch, push the branch, and print the pull request to open.
+#
+# main only accepts pull requests (repository ruleset), so a release has two
+# steps with the merge of that pull request between them:
+#   1. bash scripts/distribution.sh   this script: release/<x.y.z> branch + PR
+#   2. bash scripts/release_tag.sh    after the merge: tag main (starts GitHub)
+# The tag (for example 1.0.1+2) is what starts the release workflow, which
+# builds the prod flavor and uploads it to Firebase App Distribution.
 #
 # Usage: bash scripts/distribution.sh [--dry-run]
 #   --dry-run  ask the same questions and show what would run; change nothing
@@ -173,12 +179,32 @@ if git rev-parse --verify --quiet "refs/tags/$NEW_VERSION" > /dev/null; then
   die "The tag $NEW_VERSION already exists."
 fi
 
-# ── Confirm and run ──────────────────────────────────────────────────────────
-printf '\n%sRelease %s%s\n' "$BOLD" "$NEW_VERSION" "$RESET"
-if [ "$NEW_VERSION" != "$PUBSPEC_VERSION" ]; then
-  printf '  1. set version: %s in pubspec.yaml (was %s)\n  2. commit "chore(release): %s"\n' "$NEW_VERSION" "$PUBSPEC_VERSION" "$NEW_VERSION"
+REMOTE="$(git remote get-url origin | sed -E 's#^git@github.com:#https://github.com/#; s#\.git$##')"
+
+# pubspec.yaml already says the version to release (the very first release):
+# there is nothing to put on a branch, only the tag is missing.
+if [ "$NEW_VERSION" = "$PUBSPEC_VERSION" ]; then
+  printf '\n%s%s%s is already the version on %s; no pull request is needed.\n' "$BOLD" "$NEW_VERSION" "$RESET" "$RELEASE_BRANCH"
+  printf 'Tag it with:  bash scripts/release_tag.sh\n'
+  exit 0
 fi
-printf '  - tag %s\n  - push %s and the tag to origin; GitHub Actions then builds and uploads prod\n\n' "$NEW_VERSION" "$RELEASE_BRANCH"
+
+# The release branch is named after the version name, without the build number.
+RELEASE_WORK_BRANCH="release/${NEW_NAME}"
+if git rev-parse --verify --quiet "refs/heads/$RELEASE_WORK_BRANCH" > /dev/null; then
+  blocker "The branch $RELEASE_WORK_BRANCH already exists here. Open its pull request, or delete it: git branch -D $RELEASE_WORK_BRANCH"
+fi
+if git ls-remote --exit-code --heads origin "$RELEASE_WORK_BRANCH" > /dev/null 2>&1; then
+  blocker "The branch $RELEASE_WORK_BRANCH already exists on origin. Open its pull request, or delete it on GitHub first."
+fi
+
+# ── Confirm and run ──────────────────────────────────────────────────────────
+PR_TITLE="chore(release): $NEW_VERSION"
+printf '\n%sRelease %s%s\n' "$BOLD" "$NEW_VERSION" "$RESET"
+printf '  1. create the branch %s from %s\n' "$RELEASE_WORK_BRANCH" "$RELEASE_BRANCH"
+printf '  2. set version: %s in pubspec.yaml (was %s)\n' "$NEW_VERSION" "$PUBSPEC_VERSION"
+printf '  3. commit "%s" and push the branch\n' "$PR_TITLE"
+printf '  4. you open the pull request, merge it, then run: bash scripts/release_tag.sh\n\n'
 
 if ! ask_yes_no "Go ahead?"; then echo "Cancelled; nothing changed."; exit 0; fi
 
@@ -187,18 +213,22 @@ if [ "$DRY" = 1 ]; then
   exit 0
 fi
 
-if [ "$NEW_VERSION" != "$PUBSPEC_VERSION" ]; then
-  awk -v v="$NEW_VERSION" '!done && /^version:/ { print "version: " v; done = 1; next } { print }' pubspec.yaml > pubspec.yaml.tmp
-  mv pubspec.yaml.tmp pubspec.yaml
-  git add pubspec.yaml
-  git commit --quiet -m "chore(release): $NEW_VERSION"
-fi
-git tag -a "$NEW_VERSION" -m "Release $NEW_VERSION"
+git checkout --quiet -b "$RELEASE_WORK_BRANCH"
+awk -v v="$NEW_VERSION" '!done && /^version:/ { print "version: " v; done = 1; next } { print }' pubspec.yaml > pubspec.yaml.tmp
+mv pubspec.yaml.tmp pubspec.yaml
+git add pubspec.yaml
+git commit --quiet -m "$PR_TITLE"
 
-if ! git push origin "$RELEASE_BRANCH" "refs/tags/$NEW_VERSION"; then
-  printf '%sPush failed.%s The commit and tag exist only here. To undo: git tag -d %s && git reset --hard HEAD~1 (only if a release commit was made).\n' "$RED" "$RESET" "$NEW_VERSION" >&2
+if ! git push --quiet -u origin "$RELEASE_WORK_BRANCH"; then
+  git checkout --quiet "$RELEASE_BRANCH"
+  printf '%sPush failed.%s The release commit exists only on the branch %s. Back on %s. To undo: git branch -D %s\n' "$RED" "$RESET" "$RELEASE_WORK_BRANCH" "$RELEASE_BRANCH" "$RELEASE_WORK_BRANCH" >&2
   exit 1
 fi
+git checkout --quiet "$RELEASE_BRANCH"
 
-REMOTE="$(git remote get-url origin | sed -E 's#^git@github.com:#https://github.com/#; s#\.git$##')"
-printf '\n%sPushed %s.%s Follow the release at %s/actions\n' "$GREEN" "$NEW_VERSION" "$RESET" "$REMOTE"
+printf '\n%sPushed %s.%s Back on %s.\n\n' "$GREEN" "$RELEASE_WORK_BRANCH" "$RESET" "$RELEASE_BRANCH"
+printf 'Next:\n'
+printf '  1. Open the pull request: %s/compare/%s...%s?expand=1\n' "$REMOTE" "$RELEASE_BRANCH" "$RELEASE_WORK_BRANCH"
+printf '     Title it exactly:  %s%s%s\n' "$BOLD" "$PR_TITLE" "$RESET"
+printf '  2. Wait for the check to pass, then Squash and merge.\n'
+printf '  3. Run:  bash scripts/release_tag.sh   (tags %s and starts the release)\n' "$NEW_VERSION"
