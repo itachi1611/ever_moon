@@ -5,10 +5,13 @@ if [ -z "${BASH_VERSION:-}" ]; then
 fi
 
 # release_tag.sh
-# Step 2 of a release: after the release pull request is merged, tag main.
-# The tag (for example 1.0.1+2) is what starts the release workflow on GitHub,
-# which builds the prod flavor and uploads it to Firebase App Distribution.
-# Step 1 is scripts/distribution.sh (release branch and pull request).
+# Fallback: tag main by hand. A normal release needs only
+# scripts/release_prepare.sh, because merging its pull request makes the
+# Distribute prod workflow build and tag by itself. Use this script for the
+# first release (pubspec.yaml already holds the version, so no pull request) or
+# when that workflow failed and has to be started again from a tag.
+# The tag (for example 1.0.1+2) starts the release workflow on GitHub, which
+# builds the prod flavor and uploads it to Firebase App Distribution.
 #
 # Usage: bash scripts/release_tag.sh [--dry-run]
 #   --dry-run  run every check and show what would happen; change nothing
@@ -97,7 +100,7 @@ printf 'Commit to tag      : %s  %s\n\n' "$(git rev-parse --short "$TARGET")" "$
 
 # ── Checks ───────────────────────────────────────────────────────────────────
 if [ "$NEW_VERSION" = "$LAST_TAG" ]; then
-  die "origin/$RELEASE_BRANCH is at $LAST_TAG, which is already tagged, so there is nothing to tag. If you prepared a release, merge its pull request first and run this script again; to start a new release run scripts/distribution.sh."
+  die "origin/$RELEASE_BRANCH is at $LAST_TAG, which is already tagged, so there is nothing to tag. If you prepared a release, merge its pull request first and run this script again; to start a new release run scripts/release_prepare.sh."
 fi
 if git rev-parse --verify --quiet "refs/tags/$NEW_VERSION" > /dev/null \
   || git ls-remote --exit-code --tags origin "refs/tags/$NEW_VERSION" > /dev/null 2>&1; then

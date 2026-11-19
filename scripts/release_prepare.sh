@@ -4,18 +4,18 @@ if [ -z "${BASH_VERSION:-}" ]; then
   exec bash "$0" "$@"
 fi
 
-# distribution.sh
-# Step 1 of a release: choose the version, put it in pubspec.yaml on a release
-# branch, push the branch, and print the pull request to open.
+# release_prepare.sh
+# Starts a release: choose the version, put it in pubspec.yaml on a release
+# branch, push the branch and open the pull request (with auto-merge when the
+# GitHub CLI `gh` is installed and signed in; otherwise it prints the link).
 #
-# main only accepts pull requests (repository ruleset), so a release has two
-# steps with the merge of that pull request between them:
-#   1. bash scripts/distribution.sh   this script: release/<x.y.z> branch + PR
-#   2. bash scripts/release_tag.sh    after the merge: tag main (starts GitHub)
-# The tag (for example 1.0.1+2) is what starts the release workflow, which
-# builds the prod flavor and uploads it to Firebase App Distribution.
+# main only accepts pull requests (repository ruleset). When the release pull
+# request is merged, the commit "chore(release): <version>" lands on main and
+# the Distribute prod workflow tags it, builds prod and uploads it to Firebase
+# App Distribution by itself. Nothing else has to be run.
+# scripts/release_tag.sh is only the fallback (first release, or a failed run).
 #
-# Usage: bash scripts/distribution.sh [--dry-run]
+# Usage: bash scripts/release_prepare.sh [--dry-run]
 #   --dry-run  ask the same questions and show what would run; change nothing
 #
 # Run it on main, with a clean working tree, after your changes are merged.
@@ -204,7 +204,7 @@ printf '\n%sRelease %s%s\n' "$BOLD" "$NEW_VERSION" "$RESET"
 printf '  1. create the branch %s from %s\n' "$RELEASE_WORK_BRANCH" "$RELEASE_BRANCH"
 printf '  2. set version: %s in pubspec.yaml (was %s)\n' "$NEW_VERSION" "$PUBSPEC_VERSION"
 printf '  3. commit "%s" and push the branch\n' "$PR_TITLE"
-printf '  4. you open the pull request, merge it, then run: bash scripts/release_tag.sh\n\n'
+printf '  4. open the pull request and turn on auto-merge; the merge starts the release\n\n'
 
 if ! ask_yes_no "Go ahead?"; then echo "Cancelled; nothing changed."; exit 0; fi
 
@@ -227,8 +227,25 @@ fi
 git checkout --quiet "$RELEASE_BRANCH"
 
 printf '\n%sPushed %s.%s Back on %s.\n\n' "$GREEN" "$RELEASE_WORK_BRANCH" "$RESET" "$RELEASE_BRANCH"
-printf 'Next:\n'
-printf '  1. Open the pull request: %s/compare/%s...%s?expand=1\n' "$REMOTE" "$RELEASE_BRANCH" "$RELEASE_WORK_BRANCH"
-printf '     Title it exactly:  %s%s%s\n' "$BOLD" "$PR_TITLE" "$RESET"
-printf '  2. Wait for the check to pass, then Squash and merge.\n'
-printf '  3. Run:  bash scripts/release_tag.sh   (tags %s and starts the release)\n' "$NEW_VERSION"
+
+# open_pull_request: gh creates the pull request and asks GitHub to squash
+# merge it as soon as the required check passes. Returns 1 when gh is missing,
+# not signed in, or any step fails, so the caller prints the manual steps.
+open_pull_request() {
+  command -v gh > /dev/null 2>&1 || return 1
+  gh auth status > /dev/null 2>&1 || return 1
+  gh pr create --base "$RELEASE_BRANCH" --head "$RELEASE_WORK_BRANCH" \
+    --title "$PR_TITLE" --body "Release $NEW_VERSION. Merging this starts the Distribute prod workflow." || return 1
+  gh pr merge "$RELEASE_WORK_BRANCH" --auto --squash || return 1
+}
+
+if open_pull_request; then
+  printf '\n%sAuto-merge is on.%s When the check passes the pull request merges and the release starts by itself.\n' "$GREEN" "$RESET"
+else
+  printf 'Next (the GitHub CLI is not available, so do this on GitHub):\n'
+  printf '  1. Open the pull request: %s/compare/%s...%s?expand=1\n' "$REMOTE" "$RELEASE_BRANCH" "$RELEASE_WORK_BRANCH"
+  printf '     Title it exactly:  %s%s%s\n' "$BOLD" "$PR_TITLE" "$RESET"
+  printf '  2. Press "Enable auto-merge" (Squash and merge). Once the check passes it merges.\n'
+  printf '  3. The merge starts the release of %s; there is nothing else to run.\n' "$NEW_VERSION"
+fi
+printf 'Follow it at %s/actions\n' "$REMOTE"

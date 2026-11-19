@@ -12,7 +12,7 @@ Project skills and agents live in `.claude/` (copied from the author's `flutter-
 
 Documents you generate go in `docs/` and are written in English only. Chat with the user may be in English or Vietnamese.
 
-CI/CD (GitHub Actions, fastlane at the repository root, Firebase App Distribution, only prod runs on GitHub, dev is built locally; tag `x.y.z+n` equals the pubspec version; `main` only accepts pull requests, so a release is `scripts/distribution.sh` (release branch and pull request) then, after the merge, `scripts/release_tag.sh` (tags `main`)): `docs/ci-cd.md`, plan `docs/plans/0007-ci-cd-firebase-distribution.md`. The Fastfile holds only lanes; helpers are in `fastlane/lib/`. Versions come from `environment.flutter` in `pubspec.yaml` (Flutter, exact), `.ruby-version` and `.java-version`; Firebase app ids come from `firebase.json`. Do not copy those values into workflows or the Fastfile.
+CI/CD (GitHub Actions, fastlane at the repository root, Firebase App Distribution, only prod runs on GitHub, dev is built locally; tag `x.y.z+n` equals the pubspec version; `main` only accepts pull requests, so a release is `scripts/release_prepare.sh` (release branch and pull request) then, after the merge, `scripts/release_tag.sh` (tags `main`)): `docs/ci-cd.md`, plan `docs/plans/0007-ci-cd-firebase-distribution.md`. The Fastfile holds only lanes; helpers are in `fastlane/lib/`. Versions come from `environment.flutter` in `pubspec.yaml` (Flutter, exact), `.ruby-version` and `.java-version`; Firebase app ids come from `firebase.json`. Do not copy those values into workflows or the Fastfile.
 
 ## Base template
 

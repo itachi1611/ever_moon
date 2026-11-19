@@ -6,7 +6,7 @@ fi
 
 # release_notes.sh
 # Changelog from Conventional Commits, and the version bump they suggest.
-# Used by scripts/distribution.sh and by the release workflow, so the notes
+# Used by scripts/release_prepare.sh and by the release workflow, so the notes
 # that testers, the GitHub Release and the notification show are one text.
 #
 # Usage:
@@ -47,7 +47,7 @@ classify() {
   awk -F'\t' -v breaking=" $BREAKING_HASHES " '
     {
       hash = $1; subj = $2; kind = "other"; brk = 0; text = subj
-      # The release commit (distribution.sh makes it, the squash merge of its
+      # The release commit (release_prepare.sh makes it, the squash merge of its
       # pull request may add " (#n)" to the title) is not a change.
       if (subj ~ /^chore\(release\):/) next
       if (match(subj, /^[a-z]+(\([^)]*\))?!?:/)) {
