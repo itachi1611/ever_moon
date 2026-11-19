@@ -22,7 +22,7 @@ runs:
   steps:
     - name: Set up Java
       if: inputs.java == 'true'
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
       with:
         distribution: temurin
         java-version-file: .java-version
@@ -30,7 +30,7 @@ runs:
     # The exact Flutter version is environment.flutter in pubspec.yaml, so CI
     # builds with the Flutter that was tested locally and never floats.
     - name: Set up Flutter
-      uses: subosito/flutter-action@v2
+      uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
       with:
         flutter-version-file: pubspec.yaml
         cache: true
@@ -44,7 +44,7 @@ runs:
 
     - name: Set up Ruby and gems
       if: inputs.ruby == 'true'
-      uses: ruby/setup-ruby@v1
+      uses: ruby/setup-ruby@f9c4492e86def3e644ab32a0ef185eda5b0c20d0 # v1.342.0
       with:
         bundler-cache: true
 

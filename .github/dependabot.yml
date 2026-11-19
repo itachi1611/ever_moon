@@ -1,0 +1,20 @@
+# Keeps the pinned GitHub Actions current. Every third-party action is pinned
+# to a full commit SHA with its version in a trailing comment; Dependabot
+# opens one weekly pull request that moves the SHAs and the comments.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    # Workflows are found from "/"; the local composite action has its own
+    # uses: lines and must be listed to be scanned.
+    directories:
+      - "/"
+      - "/.github/actions/setup"
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      github-actions:
+        patterns: ["*"]
+    commit-message:
+      # Pull request titles must be Conventional Commits.
+      prefix: "chore(ci)"
