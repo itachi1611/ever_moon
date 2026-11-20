@@ -1,6 +1,6 @@
 # Plan 0003: `LunarCalendarService` and the anniversary resolver
 
-Status: A1 and A2 done (2026-11-06); A3 and A4 in later plans. Requirements owner: Fox. Tracker: pending (no tracker chosen yet).
+Status: A1 and A2 done (2026-11-06); A3 is plan 0004 (done) and A4 is plan 0006 (implemented, see its status). Requirements owner: Fox. Tracker: pending (no tracker chosen yet).
 
 ## Outcome
 

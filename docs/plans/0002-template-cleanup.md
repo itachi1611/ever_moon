@@ -1,6 +1,6 @@
 # Plan 0002: Template cleanup for Evermoon
 
-Status: Decisions approved by Fox on 2026-11-05 (except the open rows). Implementation in slices; each slice is verified by Fox with `fvm flutter pub get` and `fvm dart analyze` (Claude's sandbox has no Dart SDK).
+Status (2026-11-20): all slices C1 to C10 are done. The "Open" list below still holds items not closed: the offline start check (CL-4, airplane mode), the iOS build after C8, the duplicate Pigeon copies on iOS, and the release-key SHA-1 for production Google sign-in (phase 2). Decisions approved by Fox on 2026-11-05 (except the open rows). Slices were verified by Fox with `fvm flutter pub get` and `fvm dart analyze` (Claude's sandbox has no Dart SDK).
 
 ## Context
 
