@@ -1,7 +1,12 @@
 #!/bin/bash
-# Re-exec with bash if invoked via sh/dash
-if [ -z "${BASH_VERSION:-}" ]; then
-  exec bash "$0" "$@"
+# Re-exec with bash if invoked via sh/dash. On macOS `sh` is bash in POSIX mode:
+# BASH_VERSION is set there, but that mode rejects some syntax of this script,
+# so it counts as "not bash" too.
+reexec=0
+if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
+if [ "$reexec" = 1 ]; then
+  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
 fi
 
 # git_clean.sh
@@ -90,7 +95,16 @@ fi
 # Each line of for-each-ref: name|upstream|track. track is "[gone]" when the
 # upstream branch no longer exists on origin.
 DELETE=(); KEEP=(); REASONS=()
-while IFS='|' read -r name upstream track; do
+REFS="$(git for-each-ref --format='%(refname:short)|%(upstream:short)|%(upstream:track)' refs/heads)"
+OLD_IFS="$IFS"
+IFS=$'\n'
+for line in $REFS; do
+  # Split on "|" with parameter expansion: no here-string or process
+  # substitution, and no subshell that would lose the arrays.
+  name="${line%%|*}"
+  rest="${line#*|}"
+  upstream="${rest%%|*}"
+  track="${rest#*|}"
   if [ "$name" = "$MAIN" ] || [ -z "$name" ]; then continue; fi
   if [ "$track" = "[gone]" ]; then
     DELETE+=("$name")
@@ -101,7 +115,8 @@ while IFS='|' read -r name upstream track; do
   else
     KEEP+=("$name"); REASONS+=("still on origin")
   fi
-done < <(git for-each-ref --format='%(refname:short)|%(upstream:short)|%(upstream:track)' refs/heads)
+done
+IFS="$OLD_IFS"
 
 if [ "${#KEEP[@]}" -gt 0 ]; then
   printf '\n%sKept%s (use --all to delete these too):\n' "$BOLD" "$RESET"
