@@ -7,7 +7,8 @@ fi
 # release_prepare.sh
 # Starts a release: choose the version, put it in pubspec.yaml on a release
 # branch, push the branch and open the pull request (with auto-merge when the
-# GitHub CLI `gh` is installed and signed in; otherwise it prints the link).
+# GitHub CLI `gh` is installed and signed in; otherwise it prints a link whose
+# title and description are already filled in).
 #
 # main only accepts pull requests (repository ruleset). When the release pull
 # request is merged, the commit "chore(release): <version>" lands on main and
@@ -59,6 +60,13 @@ ask_yes_no() {
 
 # ── Versions ─────────────────────────────────────────────────────────────────
 VERSION_RE='^[0-9]+\.[0-9]+\.[0-9]+$'
+
+# url_encode <text>: percent-encodes every byte except the unreserved ones, so
+# a title or description can travel in a query string. perl reads bytes, which
+# keeps non-ASCII text intact.
+url_encode() {
+  printf '%s' "$1" | perl -0777 -pe 's/([^A-Za-z0-9._~-])/sprintf("%%%02X", ord($1))/ge'
+}
 
 # true when $1 is a higher x.y.z than $2.
 is_greater() {
@@ -200,6 +208,10 @@ fi
 
 # ── Confirm and run ──────────────────────────────────────────────────────────
 PR_TITLE="chore(release): $NEW_VERSION"
+# The description is the start of the changelog, cut short so the link that
+# carries it stays well under the length browsers and GitHub accept. The full
+# changelog is in the GitHub Release.
+PR_BODY="Release ${NEW_VERSION}. Merging this pull request starts the Distribute prod workflow: it builds prod, uploads it to Firebase App Distribution, tags ${NEW_VERSION} and publishes the GitHub Release."$'\n\n'"$(bash scripts/release_notes.sh HEAD --max-chars 1200)"
 printf '\n%sRelease %s%s\n' "$BOLD" "$NEW_VERSION" "$RESET"
 printf '  1. create the branch %s from %s\n' "$RELEASE_WORK_BRANCH" "$RELEASE_BRANCH"
 printf '  2. set version: %s in pubspec.yaml (was %s)\n' "$NEW_VERSION" "$PUBSPEC_VERSION"
@@ -235,17 +247,21 @@ open_pull_request() {
   command -v gh > /dev/null 2>&1 || return 1
   gh auth status > /dev/null 2>&1 || return 1
   gh pr create --base "$RELEASE_BRANCH" --head "$RELEASE_WORK_BRANCH" \
-    --title "$PR_TITLE" --body "Release $NEW_VERSION. Merging this starts the Distribute prod workflow." || return 1
+    --title "$PR_TITLE" --body "$PR_BODY" || return 1
   gh pr merge "$RELEASE_WORK_BRANCH" --auto --squash || return 1
 }
 
 if open_pull_request; then
   printf '\n%sAuto-merge is on.%s When the check passes the pull request merges and the release starts by itself.\n' "$GREEN" "$RESET"
 else
+  PR_LINK="$REMOTE/compare/${RELEASE_BRANCH}...${RELEASE_WORK_BRANCH}?expand=1"
+  if command -v perl > /dev/null 2>&1; then
+    PR_LINK+="&title=$(url_encode "$PR_TITLE")&body=$(url_encode "$PR_BODY")"
+  fi
   printf 'Next (the GitHub CLI is not available, so do this on GitHub):\n'
-  printf '  1. Open the pull request: %s/compare/%s...%s?expand=1\n' "$REMOTE" "$RELEASE_BRANCH" "$RELEASE_WORK_BRANCH"
-  printf '     Title it exactly:  %s%s%s\n' "$BOLD" "$PR_TITLE" "$RESET"
-  printf '  2. Press "Enable auto-merge" (Squash and merge). Once the check passes it merges.\n'
+  printf '  1. Open the pull request (title and description are filled in): %s\n' "$PR_LINK"
+  printf '     The title must stay exactly:  %s%s%s\n' "$BOLD" "$PR_TITLE" "$RESET"
+  printf '  2. Press "Create pull request", then "Enable auto-merge" (Squash and merge). Once the check passes it merges.\n'
   printf '  3. The merge starts the release of %s; there is nothing else to run.\n' "$NEW_VERSION"
 fi
 printf 'Follow it at %s/actions\n' "$REMOTE"
