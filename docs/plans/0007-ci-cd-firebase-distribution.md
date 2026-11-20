@@ -1,14 +1,16 @@
 # Plan 0007: CI and CD to Firebase App Distribution
 
-Status: revision 3 (2026-11-17, Fox's second review: prod only on GitHub, tag equals the pubspec version, `scripts/release_prepare.sh`, notifications, GitHub Release changelog) implemented and checked locally, uncommitted; see "Revision 3". Nothing has run on GitHub yet. Revisions 1 and 2 below are kept as history; where revision 3 changes a decision, the row says "Superseded".
+Status (2026-11-20): implemented and running on GitHub. Revision 5 is the current release flow (merge of the release pull request starts the release); revision 6 adds SonarQube Cloud, pinned actions and Dependabot. Releases 1.0.0+1 to 1.2.0+7 are tagged on `origin`; Fox confirmed the notification previews on 1.2.0+7. Open: iOS (no Apple Developer account, `IOS_ENABLED` stays off), `gh` not installed on Fox's Mac, Firebase release retention unverified. Revisions 1 to 4 below are kept as history; where a later revision changes a decision, the row says "Superseded".
 
 ## Outcome
 
-Revision 3: `scripts/release_prepare.sh` bumps the version in `pubspec.yaml`, commits, tags `x.y.z+n` on `main` and pushes. The tag builds the **prod** flavor on GitHub Actions with fastlane, uploads it to Firebase App Distribution (project `evermoon-2cc28`), publishes a GitHub Release with the changelog and notifies the team. iOS only when the repository variable `IOS_ENABLED` is `true`. Every pull request into `main` runs format, analyze and tests. `dev` builds are made locally.
+Revision 3 (the flow is superseded by revisions 4 and 5; the script was `distribution.sh`, renamed `release_prepare.sh` on 2026-11-19): `scripts/release_prepare.sh` bumps the version in `pubspec.yaml`, commits, tags `x.y.z+n` on `main` and pushes. The tag builds the **prod** flavor on GitHub Actions with fastlane, uploads it to Firebase App Distribution (project `evermoon-2cc28`), publishes a GitHub Release with the changelog and notifies the team. iOS only when the repository variable `IOS_ENABLED` is `true`. Every pull request into `main` runs format, analyze and tests. `dev` builds are made locally.
 
 Revision 4 (2026-11-19): `main` is protected by a ruleset without a bypass list (pull requests only, squash merge, `check` must pass, no force push, no deletion) and release tags `[0-9]*` are immutable (no update, delete or force push; creation allowed). `scripts/release_prepare.sh` can no longer push to `main`, so it only creates `release/<x.y.z>` with the version bump and prints the pull request to open (titled `chore(release): <version>`); after the squash merge `scripts/release_tag.sh` checks that the newest commit on `origin/main` is that release commit and creates and pushes the tag. D-C19 below describes the original single-script flow.
 
 Revision 5 (2026-11-19, Fox: "no second step to wait for"): the merge of the release pull request starts the release. `release_prepare.sh` opens the pull request with auto-merge (when `gh` is available); the push of the `chore(release): <version>` commit to `main` triggers `distribute.yml`, whose `prepare` job skips every other push, and the `release` job creates the tag on the built commit after a successful build. A pushed tag still works (`release_tag.sh`, the fallback for the first release or a re-run). Decision: the tag is created only after the build succeeds, so a failed run leaves no tag. Ordinary pushes to `main` use their own concurrency group so they cannot displace a waiting release.
+
+Revision 6 (2026-11-19 to 11-20): `ci.yml` runs a SonarQube Cloud scan (coverage from `flutter test --coverage`) and its quality gate blocks merges (D-C25). The release notification carries a static moon banner on every channel plus the GitHub release preview (Teams embeds a shrunk copy, Discord and Telegram link it). Third-party actions are pinned to commit SHAs and Dependabot moves them monthly (D-C26).
 
 Revision 2 (superseded): a tag `dev-*` or `prod-*` built that flavor.
 
@@ -117,6 +119,8 @@ Fox's decisions: one branch (`main`); GitHub builds only prod; `dev` stays local
 | D-C22 | The GitHub Release carries the changelog and no APK (a public repository would expose the prod build). Artifacts are not uploaded by the workflow, so retention is only the 90-day default of logs. |
 | D-C23 | `ci.yml` runs on pull requests into `main` only. Shared checks live in the composite action `.github/actions/verify` (pub get, `dart format --set-exit-if-changed` on tracked Dart files, build_runner, gen-l10n, analyze, tests, `lunar_calendar` tests) and also gate the release. 19 files were formatted once so the gate starts green. `dart fix` and `dart migrate` are not used: the first rewrites code, the second no longer exists. |
 | D-C24 | `.env.*` come from the committed `.example` files; they are bundled into the app and so are not secrets. |
+| D-C25 | Revision 6. SonarQube Cloud analysis in `ci.yml` (organization and project key are repository variables, the token is a secret; Automatic Analysis is off). `sonar.qualitygate.wait=true` makes the gate fail the check, so it blocks the merge. New code is a number of days on the project; a pull request is judged on its own diff. |
+| D-C26 | Revision 6. Supersedes "Actions use major tags" in D-C6. Every third-party action is pinned to a full commit SHA with its version in a trailing comment (SonarQube rated unpinned actions as a security issue); `.github/dependabot.yml` opens one grouped pull request a month (`chore(ci): ...`), including the local setup action. It started weekly; after its first pull request moved several actions to a new major, Fox changed it on 2026-11-20 to monthly and to ignore new majors (those are moved by hand). The majors that pull request already brought (checkout v7, setup-java v6, upload-pages-artifact v5, deploy-pages v5, Sonar scan v8.5.0) were kept, not rolled back; the next release run is their check. |
 
 Criteria: CD-13 `prepare` accepts only a tag equal to the pubspec version on `main`. CD-14 `release_prepare.sh` behaves as D-C19 in every case listed below. CD-15 `release_notes.sh` groups commits and suggests the right bump. CD-16 `notify.sh` sends valid JSON, truncates, and exits 0 on failure. CD-17 the format gate, analyze and tests pass locally. CD-18 (needs GitHub) the first tag run completes and creates the Release.
 
@@ -133,6 +137,14 @@ Verification, 2026-11-17 on Fox's Mac and a scratch repository with a fake origi
 
 Not verified: any workflow run on GitHub, Teams, Telegram and Discord delivery, iOS archive, signing and upload, Firebase's release retention. `flutter-version-file: pubspec.yaml` has not run on a runner (its README requires an exact version, which is what the pin is).
 
+## Update 2026-11-20: what ran on GitHub
+
+CD-18 passes: the prod secrets and webhooks were set up, and releases 1.0.0+1 to 1.2.0+7 are tagged on `origin` (tags listed with `git ls-remote --tags origin`). 1.2.0+7 was the first release through revision 5: Fox ran only `scripts/release_prepare.sh`, merged the pull request, and the workflow built, tagged, published the Release and notified; he confirmed the previews on 2026-11-19. The rulesets of revision 4 and the SonarQube gate (D-C25) are active; the first gate failure (unpinned action) was fixed by D-C26. Dependabot's first pull request (grouped, 5 updates) was merged on 2026-11-20 and moved `checkout` to v7, `setup-java` to v6, `upload-pages-artifact` and `deploy-pages` to v5 and the Sonar scan action to v8.5.0.
+
+Not recorded as checked: CD-1 to CD-6, CD-10 and CD-11 one by one (the successful releases imply most of them, but no evidence was written down); a release run after the action bump; the failure path ("Re-run failed jobs" leaves no tag); Firebase's release retention; iOS archive, signing and upload.
+
 ## Blockers and next action
 
-Fox: create the prod keystore, the service account and the tester group, add the Environment `prod` secrets and the repository webhook secrets (list in `docs/ci-cd.md`), commit the pubspec pin (`flutter: 3.47.1`), then push `main` and run `scripts/release_prepare.sh`. iOS waits for an Apple Developer account. The working tree stays uncommitted until he asks.
+- Fox: install `gh` (`brew install gh`, `gh auth login`) so `release_prepare.sh` opens the pull request and turns on auto-merge by itself; without it he presses Enable auto-merge once on GitHub.
+- The next release is the check of the action bump (checkout v7, setup-java v6); read its run before trusting it.
+- iOS waits for an Apple Developer account (`IOS_ENABLED` stays unset).

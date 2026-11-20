@@ -6,7 +6,7 @@ Domain vocabulary only. This file records meanings, not requirements. Vietnamese
 |------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Lunar date (âm lịch)         | A date in the Vietnamese lunar calendar: day, month and year.                                                                                                  |
 | Giỗ                          | Death anniversary, held yearly on the lunar date of the death. The core event type of Evermoon.                                                                |
-| Tiên thường                  | An offering some families hold the day before the main anniversary. Not supported in v1: the app reminds on the exact anniversary day only.                    |
+| Tiên thường                  | An offering some families hold the day before the main anniversary. Not a separate event in v1: a reminder set to 1 day before the anniversary covers it (lead times are 0, 1, 3 or 7 days).                    |
 | Leap month (tháng nhuận)     | An extra month added in some lunar years that repeats a month number. In the reference algorithm it is the first month without a major solar term (trung khí). |
 | Regular month (tháng thường) | The non-leap month with a given number. Default month for anniversaries (see ADR 0001).                                                                        |
 | Sóc                          | The new moon. The lunar day 1 (mùng 1) is the day containing the new moon, computed in UTC+7.                                                                  |

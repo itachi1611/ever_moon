@@ -1,6 +1,6 @@
 # Keeps the pinned GitHub Actions current. Every third-party action is pinned
 # to a full commit SHA with its version in a trailing comment; Dependabot
-# opens one weekly pull request that moves the SHAs and the comments.
+# opens one pull request a month that moves the SHAs and the comments.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -10,8 +10,13 @@ updates:
       - "/"
       - "/.github/actions/setup"
     schedule:
-      interval: weekly
-      day: monday
+      # Monthly runs on the first day of the month; "day" only exists for weekly.
+      interval: monthly
+    # A new major version of an action can change its runtime or inputs, so
+    # majors are moved by hand, after reading the release notes.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       github-actions:
         patterns: ["*"]
