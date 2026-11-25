@@ -3,11 +3,11 @@
 # BASH_VERSION is set there, but that mode rejects some syntax of this script,
 # so it counts as "not bash" too.
 reexec=0
-if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case "${BASH_VERSION:-}" in '') reexec=1 ;; esac
 case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
-if [ "$reexec" = 1 ]; then
-  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
-fi
+case "$reexec" in
+  1) exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@" ;;
+esac
 
 # release_tag.sh
 # Fallback: tag main by hand. A normal release needs only
@@ -31,7 +31,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../lib/common.sh"
 cd_project_root
 
 DRY=0
-if [ "${1:-}" = "--dry-run" ]; then DRY=1; fi
+if [[ "${1:-}" = "--dry-run" ]]; then DRY=1; fi
 
 # ── Repository state ─────────────────────────────────────────────────────────
 RELEASE_BRANCH="$(default_branch)"
@@ -42,7 +42,7 @@ fi
 if ! git rev-parse --verify --quiet "origin/$RELEASE_BRANCH" > /dev/null; then
   die "origin/$RELEASE_BRANCH does not exist."
 fi
-if [ -n "$(git status --porcelain)" ]; then
+if [[ -n "$(git status --porcelain)" ]]; then
   blocker "The working tree has uncommitted changes. Commit or stash them first."
 fi
 
@@ -65,7 +65,7 @@ printf 'Last release       : %s\n' "${LAST_TAG:-none yet}"
 printf 'Commit to tag      : %s  %s\n\n' "$(git rev-parse --short "$TARGET")" "$SUBJECT"
 
 # ── Checks ───────────────────────────────────────────────────────────────────
-if [ "$NEW_VERSION" = "$LAST_TAG" ]; then
+if [[ "$NEW_VERSION" = "$LAST_TAG" ]]; then
   die "origin/$RELEASE_BRANCH is at $LAST_TAG, which is already tagged, so there is nothing to tag. If you prepared a release, merge its pull request first and run this script again; to start a new release run scripts/distribution/release/release_firebase.sh."
 fi
 if git rev-parse --verify --quiet "refs/tags/$NEW_VERSION" > /dev/null \
@@ -73,13 +73,13 @@ if git rev-parse --verify --quiet "refs/tags/$NEW_VERSION" > /dev/null \
   die "The tag $NEW_VERSION already exists. Nothing to do; if the release has not run, merge the release pull request first."
 fi
 
-if [ -n "$LAST_TAG" ]; then
+if [[ -n "$LAST_TAG" ]]; then
   LAST_NAME="${LAST_TAG%%+*}"
   LAST_BUILD="${LAST_TAG##*+}"
-  if [ "$NEW_NAME" != "$LAST_NAME" ] && ! is_greater "$NEW_NAME" "$LAST_NAME"; then
+  if [[ "$NEW_NAME" != "$LAST_NAME" ]] && ! is_greater "$NEW_NAME" "$LAST_NAME"; then
     die "The version $NEW_NAME is not higher than the last release ($LAST_NAME). Has the release pull request been merged?"
   fi
-  if [ "$NEW_BUILD" -le "$LAST_BUILD" ]; then
+  if [[ "$NEW_BUILD" -le "$LAST_BUILD" ]]; then
     die "The build number $NEW_BUILD is not higher than the last release ($LAST_BUILD); Android needs a higher number on every upload."
   fi
 fi
@@ -100,14 +100,14 @@ printf '  3. push the tag; GitHub Actions then builds and uploads prod\n\n'
 
 if ! ask_yes_no "Tag $NEW_VERSION on $RELEASE_BRANCH?"; then echo "Cancelled; nothing changed."; exit 0; fi
 
-if [ "$DRY" = 1 ]; then
+if [[ "$DRY" = 1 ]]; then
   echo "Dry run: nothing was changed."
   exit 0
 fi
 
 git checkout --quiet "$RELEASE_BRANCH"
 git pull --quiet --ff-only origin "$RELEASE_BRANCH" || die "Could not fast-forward $RELEASE_BRANCH to origin."
-if [ "$(git rev-parse HEAD)" != "$TARGET" ]; then
+if [[ "$(git rev-parse HEAD)" != "$TARGET" ]]; then
   die "$RELEASE_BRANCH moved while you were answering. Run the script again."
 fi
 

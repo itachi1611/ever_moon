@@ -3,11 +3,11 @@
 # BASH_VERSION is set there, but that mode rejects some syntax of this script,
 # so it counts as "not bash" too.
 reexec=0
-if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case "${BASH_VERSION:-}" in '') reexec=1 ;; esac
 case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
-if [ "$reexec" = 1 ]; then
-  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
-fi
+case "$reexec" in
+  1) exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@" ;;
+esac
 
 # release_firebase.sh
 # Starts a release: choose the version, put it in pubspec.yaml on a release
@@ -33,7 +33,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../lib/common.sh"
 cd_project_root
 
 DRY=0
-if [ "${1:-}" = "--dry-run" ]; then DRY=1; fi
+if [[ "${1:-}" = "--dry-run" ]]; then DRY=1; fi
 
 # ── Versions ─────────────────────────────────────────────────────────────────
 VERSION_RE='^[0-9]+\.[0-9]+\.[0-9]+$'
@@ -66,7 +66,7 @@ CURRENT_BUILD="${PUBSPEC_VERSION##*+}"
 # ── Flutter in use ───────────────────────────────────────────────────────────
 # fvm when the project uses it, plain flutter otherwise.
 flutter_in_use() {
-  if [ -f .fvmrc ] && command -v fvm > /dev/null 2>&1; then
+  if [[ -f .fvmrc ]] && command -v fvm > /dev/null 2>&1; then
     printf 'fvm: %s' "$(fvm flutter --version 2> /dev/null | head -1)"
   elif command -v flutter > /dev/null 2>&1; then
     printf 'flutter: %s' "$(flutter --version 2> /dev/null | head -1)"
@@ -81,10 +81,10 @@ PINNED="$(sed -n -E 's/^[[:space:]]+flutter:[[:space:]]*([0-9][^[:space:]]*).*/\
 RELEASE_BRANCH="$(default_branch)"
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
-if [ "$BRANCH" != "$RELEASE_BRANCH" ]; then
+if [[ "$BRANCH" != "$RELEASE_BRANCH" ]]; then
   blocker "You are on '$BRANCH'; releases are made from '$RELEASE_BRANCH'."
 fi
-if [ -n "$(git status --porcelain)" ]; then
+if [[ -n "$(git status --porcelain)" ]]; then
   blocker "The working tree has uncommitted changes. Commit or stash them first."
 fi
 if ! git fetch --tags --quiet origin 2> /dev/null; then
@@ -92,7 +92,7 @@ if ! git fetch --tags --quiet origin 2> /dev/null; then
 fi
 if git rev-parse --verify --quiet "origin/$RELEASE_BRANCH" > /dev/null; then
   BEHIND="$(git rev-list --count "HEAD..origin/$RELEASE_BRANCH")"
-  if [ "$BEHIND" -gt 0 ]; then blocker "'$RELEASE_BRANCH' is $BEHIND commit(s) behind origin. Pull first."; fi
+  if [[ "$BEHIND" -gt 0 ]]; then blocker "'$RELEASE_BRANCH' is $BEHIND commit(s) behind origin. Pull first."; fi
 fi
 
 LAST_TAG="$(git describe --tags --abbrev=0 --match '[0-9]*' 2> /dev/null || true)"
@@ -101,7 +101,7 @@ LAST_TAG="$(git describe --tags --abbrev=0 --match '[0-9]*' 2> /dev/null || true
 printf '\n%sBuild version : %s%s%s  %s(build number %s)%s\n' "$BOLD" "$GREEN" "$CURRENT_NAME" "$RESET" "$DIM" "$CURRENT_BUILD" "$RESET"
 printf 'Last release  : %s\n' "${LAST_TAG:-none yet}"
 printf 'Flutter       : %s\n' "$(flutter_in_use)"
-if [ -z "$PINNED" ]; then
+if [[ -z "$PINNED" ]]; then
   blocker "pubspec.yaml has no 'flutter: x.y.z' under environment:, and CI needs it."
 else
   printf 'CI builds with : Flutter %s (pubspec.yaml)\n' "$PINNED"
@@ -109,7 +109,7 @@ fi
 
 printf '\n%sChanges since %s%s\n\n' "$BOLD" "${LAST_TAG:-the beginning}" "$RESET"
 bash scripts/distribution/release/release_notes.sh HEAD | sed '1,2d'
-if [ -n "$LAST_TAG" ]; then
+if [[ -n "$LAST_TAG" ]]; then
   printf '%s%s%s\n' "$DIM" "$(git diff --shortstat "$LAST_TAG"..HEAD)" "$RESET"
 fi
 
@@ -117,14 +117,14 @@ fi
 NEW_NAME=""
 NEW_BUILD=""
 
-if [ -z "$LAST_TAG" ]; then
+if [[ -z "$LAST_TAG" ]]; then
   printf '\nNo release has been made yet.\n'
   if ask_yes_no "Release the current version $PUBSPEC_VERSION as it is?"; then
     NEW_NAME="$CURRENT_NAME"; NEW_BUILD="$CURRENT_BUILD"
   fi
 else
   LEVEL="$(bash scripts/distribution/release/release_notes.sh HEAD --bump)"
-  if [ "$LEVEL" = none ]; then
+  if [[ "$LEVEL" = none ]]; then
     printf '\nNothing to release: no commits since %s.\n' "$LAST_TAG"
     exit 0
   fi
@@ -135,17 +135,17 @@ else
   fi
 fi
 
-if [ -z "$NEW_NAME" ]; then
+if [[ -z "$NEW_NAME" ]]; then
   while true; do
     printf 'Enter the version (x.y.z): '
     if ! read -r NEW_NAME; then die "No input."; fi
     if ! printf '%s' "$NEW_NAME" | grep -Eq "$VERSION_RE"; then echo "Use the form 1.2.3."; continue; fi
-    if [ -n "$LAST_TAG" ] && ! is_greater "$NEW_NAME" "${LAST_TAG%%+*}"; then
+    if [[ -n "$LAST_TAG" ]] && ! is_greater "$NEW_NAME" "${LAST_TAG%%+*}"; then
       echo "The version must be higher than the last release (${LAST_TAG%%+*})."; continue
     fi
     break
   done
-  if [ "$NEW_NAME" = "$CURRENT_NAME" ]; then NEW_BUILD="$CURRENT_BUILD"; else NEW_BUILD="$((CURRENT_BUILD + 1))"; fi
+  if [[ "$NEW_NAME" = "$CURRENT_NAME" ]]; then NEW_BUILD="$CURRENT_BUILD"; else NEW_BUILD="$((CURRENT_BUILD + 1))"; fi
 fi
 
 NEW_VERSION="${NEW_NAME}+${NEW_BUILD}"
@@ -157,7 +157,7 @@ REMOTE="$(git remote get-url origin | sed -E 's#^git@github.com:#https://github.
 
 # pubspec.yaml already says the version to release (the very first release):
 # there is nothing to put on a branch, only the tag is missing.
-if [ "$NEW_VERSION" = "$PUBSPEC_VERSION" ]; then
+if [[ "$NEW_VERSION" = "$PUBSPEC_VERSION" ]]; then
   printf '\n%s%s%s is already the version on %s; no pull request is needed.\n' "$BOLD" "$NEW_VERSION" "$RESET" "$RELEASE_BRANCH"
   printf 'Tag it with:  bash scripts/distribution/release/release_tag.sh\n'
   exit 0
@@ -186,7 +186,7 @@ printf '  4. open the pull request and turn on auto-merge; the merge starts the 
 
 if ! ask_yes_no "Go ahead?"; then echo "Cancelled; nothing changed."; exit 0; fi
 
-if [ "$DRY" = 1 ]; then
+if [[ "$DRY" = 1 ]]; then
   echo "Dry run: nothing was changed."
   exit 0
 fi

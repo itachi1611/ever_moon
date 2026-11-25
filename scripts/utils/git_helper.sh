@@ -3,11 +3,11 @@
 # BASH_VERSION is set there, but that mode rejects some syntax of this script,
 # so it counts as "not bash" too.
 reexec=0
-if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case "${BASH_VERSION:-}" in '') reexec=1 ;; esac
 case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
-if [ "$reexec" = 1 ]; then
-  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
-fi
+case "$reexec" in
+  1) exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@" ;;
+esac
 
 # git_helper.sh
 # Small git helpers for this repository, one command per task. To add a
@@ -57,7 +57,7 @@ clean_check_repo() {
   MAIN="$(git symbolic-ref --short refs/remotes/origin/HEAD 2> /dev/null | sed 's#^origin/##' || true)"
   MAIN="${MAIN:-main}"
 
-  if [ -n "$(git status --porcelain)" ]; then
+  if [[ -n "$(git status --porcelain)" ]]; then
     die "The working tree has uncommitted changes. Commit or stash them first."
   fi
   if ! git fetch --prune --tags --quiet origin 2> /dev/null; then
@@ -71,12 +71,12 @@ clean_check_repo() {
 clean_sync_main() {
   local current
   current="$(git rev-parse --abbrev-ref HEAD)"
-  if [ "$DRY" = 1 ]; then
-    if [ "$current" != "$MAIN" ]; then printf 'Would switch from %s to %s.\n' "$current" "$MAIN"; fi
+  if [[ "$DRY" = 1 ]]; then
+    if [[ "$current" != "$MAIN" ]]; then printf 'Would switch from %s to %s.\n' "$current" "$MAIN"; fi
     printf 'Would pull %s (fast-forward only).\n' "$MAIN"
     return 0
   fi
-  if [ "$current" != "$MAIN" ]; then git checkout --quiet "$MAIN"; fi
+  if [[ "$current" != "$MAIN" ]]; then git checkout --quiet "$MAIN"; fi
   git pull --quiet --ff-only origin "$MAIN" || die "Could not fast-forward $MAIN to origin/$MAIN. Resolve it by hand."
   printf '%s%s%s is up to date with origin/%s.\n' "$GREEN" "$MAIN" "$RESET" "$MAIN"
 }
@@ -98,10 +98,10 @@ clean_classify() {
     rest="${line#*|}"
     upstream="${rest%%|*}"
     track="${rest#*|}"
-    if [ "$name" = "$MAIN" ] || [ -z "$name" ]; then continue; fi
-    if [ "$track" = "[gone]" ] || [ "$ALL" = 1 ]; then
+    if [[ "$name" = "$MAIN" ]] || [[ -z "$name" ]]; then continue; fi
+    if [[ "$track" = "[gone]" ]] || [[ "$ALL" = 1 ]]; then
       DELETE+=("$name")
-    elif [ -z "$upstream" ]; then
+    elif [[ -z "$upstream" ]]; then
       KEEP+=("$name"); REASONS+=("never pushed")
     else
       KEEP+=("$name"); REASONS+=("still on origin")
@@ -110,7 +110,7 @@ clean_classify() {
 }
 
 clean_show_kept() {
-  if [ "${#KEEP[@]}" -eq 0 ]; then return 0; fi
+  if [[ "${#KEEP[@]}" -eq 0 ]]; then return 0; fi
   printf '\n%sKept%s (use --all to delete these too):\n' "$BOLD" "$RESET"
   local i=0 name
   for name in "${KEEP[@]}"; do
@@ -125,17 +125,17 @@ clean_show_delete() {
   for name in "${DELETE[@]}"; do
     printf '  %s  %s%s%s\n' "$name" "$DIM" "$(git log -1 --format='%h %s' "refs/heads/$name")" "$RESET"
   done
-  if [ "$ALL" = 1 ]; then
+  if [[ "$ALL" = 1 ]]; then
     warn "--all also deletes branches that may hold work that is not on origin."
   fi
 }
 
 clean_delete() {
-  if [ "$DRY" = 1 ]; then
+  if [[ "$DRY" = 1 ]]; then
     echo "Dry run: nothing was changed."
     return 0
   fi
-  if [ "$YES" = 0 ] && ! ask_yes_no "Delete ${#DELETE[@]} local branch(es)?"; then
+  if [[ "$YES" = 0 ]] && ! ask_yes_no "Delete ${#DELETE[@]} local branch(es)?"; then
     echo "Cancelled; no branch was deleted."
     return 0
   fi
@@ -156,7 +156,7 @@ cmd_clean() {
   clean_sync_main
   clean_classify
   clean_show_kept
-  if [ "${#DELETE[@]}" -eq 0 ]; then
+  if [[ "${#DELETE[@]}" -eq 0 ]]; then
     printf '\nNo local branch to delete.\n'
     return 0
   fi

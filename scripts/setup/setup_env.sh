@@ -3,11 +3,11 @@
 # BASH_VERSION is set there, but that mode rejects some syntax of this script,
 # so it counts as "not bash" too.
 reexec=0
-if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case "${BASH_VERSION:-}" in '') reexec=1 ;; esac
 case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
-if [ "$reexec" = 1 ]; then
-  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
-fi
+case "$reexec" in
+  1) exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@" ;;
+esac
 
 # setup_env.sh
 # Create assets/env/.env.<flavor> from assets/env/.env.<flavor>.example. The
@@ -33,11 +33,11 @@ copy_env() {
   local src="$ENV_DIR/.env.$flavor.example"
   local dst="$ENV_DIR/.env.$flavor"
 
-  if [ ! -f "$src" ]; then
+  if [[ ! -f "$src" ]]; then
     warn "[$flavor] $src not found, skipped."
     return 1
   fi
-  if [ -f "$dst" ] && ! ask_yes_no "[$flavor] $dst already exists. Overwrite?"; then
+  if [[ -f "$dst" ]] && ! ask_yes_no "[$flavor] $dst already exists. Overwrite?"; then
     echo "[$flavor] kept the existing file."
     return 0
   fi
@@ -46,8 +46,8 @@ copy_env() {
 }
 
 TARGETS=("${FLAVORS[@]}")
-if [ "$#" -gt 1 ]; then die "Too many arguments. Use: bash scripts/setup/setup_env.sh [dev|prod]"; fi
-if [ "$#" -eq 1 ]; then
+if [[ "$#" -gt 1 ]]; then die "Too many arguments. Use: bash scripts/setup/setup_env.sh [dev|prod]"; fi
+if [[ "$#" -eq 1 ]]; then
   case "$1" in
     -h|--help) print_usage; exit 0 ;;
     dev|prod) TARGETS=("$1") ;;
@@ -60,7 +60,7 @@ for flavor in "${TARGETS[@]}"; do
   copy_env "$flavor" || failed+=("$flavor")
 done
 
-if [ "${#failed[@]}" -gt 0 ]; then
+if [[ "${#failed[@]}" -gt 0 ]]; then
   die "Failed for: ${failed[*]}"
 fi
 echo "Done. Fill in the values in each .env file before running the app."

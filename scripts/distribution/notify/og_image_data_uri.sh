@@ -3,11 +3,11 @@
 # BASH_VERSION is set there, but that mode rejects some syntax of this script,
 # so it counts as "not bash" too.
 reexec=0
-if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case "${BASH_VERSION:-}" in '') reexec=1 ;; esac
 case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
-if [ "$reexec" = 1 ]; then
-  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
-fi
+case "$reexec" in
+  1) exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@" ;;
+esac
 
 # og_image_data_uri.sh
 # Downloads an image and prints it as a small data URI (JPEG) on stdout.
@@ -44,7 +44,7 @@ for width in 640 560 480 400; do
     "$IM" "$WORK/in" -background white -alpha remove -alpha off \
       -resize "${width}x" -strip -sampling-factor 4:2:0 -quality "$quality" "$WORK/out.jpg"
     size="$(wc -c < "$WORK/out.jpg" | tr -d ' ')"
-    if [ "$size" -le "$MAX" ]; then
+    if [[ "$size" -le "$MAX" ]]; then
       printf 'data:image/jpeg;base64,%s' "$(base64 < "$WORK/out.jpg" | tr -d '\n')"
       exit 0
     fi

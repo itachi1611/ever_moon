@@ -3,11 +3,11 @@
 # BASH_VERSION is set there, but that mode rejects some syntax of this script,
 # so it counts as "not bash" too.
 reexec=0
-if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case "${BASH_VERSION:-}" in '') reexec=1 ;; esac
 case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
-if [ "$reexec" = 1 ]; then
-  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
-fi
+case "$reexec" in
+  1) exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@" ;;
+esac
 
 # signing_fingerprints.sh
 # Prints the SHA-1 and SHA-256 fingerprints of the Android prod keystore named
@@ -22,7 +22,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"
 cd_project_root
 
 PROPS=android/key.properties
-[ -f "$PROPS" ] || die "Missing $PROPS (see docs/ci-cd.md, One-time setup, step 3)."
+[[ -f "$PROPS" ]] || die "Missing $PROPS (see docs/ci-cd.md, One-time setup, step 3)."
 
 prop() { sed -n -E "s/^$1=(.*)$/\1/p" "$PROPS" | head -1; }
 
@@ -30,10 +30,10 @@ STORE_FILE="$(prop storeFile)"
 ALIAS="$(prop keyAlias)"
 # storeFile is relative to android/app, like Gradle's file().
 KEYSTORE="android/app/$STORE_FILE"
-[ -f "$KEYSTORE" ] || die "Keystore not found: $KEYSTORE"
+[[ -f "$KEYSTORE" ]] || die "Keystore not found: $KEYSTORE"
 
 KEYTOOL="keytool"
-if ! command -v keytool > /dev/null 2>&1 && [ -x /usr/libexec/java_home ]; then
+if ! command -v keytool > /dev/null 2>&1 && [[ -x /usr/libexec/java_home ]]; then
   KEYTOOL="$(/usr/libexec/java_home)/bin/keytool"
 fi
 

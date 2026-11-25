@@ -3,11 +3,11 @@
 # BASH_VERSION is set there, but that mode rejects some syntax of this script,
 # so it counts as "not bash" too.
 reexec=0
-if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case "${BASH_VERSION:-}" in '') reexec=1 ;; esac
 case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
-if [ "$reexec" = 1 ]; then
-  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
-fi
+case "$reexec" in
+  1) exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@" ;;
+esac
 
 # build.sh
 # Builds an Android release on this machine through fastlane, for testing. It
@@ -38,16 +38,16 @@ for arg in "$@"; do
   esac
 done
 
-if [ -z "$flavor" ]; then choose "Flavor" prod dev; flavor="$REPLY_VALUE"; fi
-if [ -z "$type" ]; then choose "Build type" apk aab; type="$REPLY_VALUE"; fi
+if [[ -z "$flavor" ]]; then choose "Flavor" prod dev; flavor="$REPLY_VALUE"; fi
+if [[ -z "$type" ]]; then choose "Build type" apk aab; type="$REPLY_VALUE"; fi
 
 lane="build_${flavor}"
-if [ "$type" = "aab" ]; then lane="${lane}_aab"; fi
+if [[ "$type" = "aab" ]]; then lane="${lane}_aab"; fi
 
 echo
 echo "Flavor: $flavor | Type: $type | Lane: android $lane"
 
-if [ "$DRY" = 1 ]; then
+if [[ "$DRY" = 1 ]]; then
   echo "Dry run: bundle exec fastlane android $lane"
   exit 0
 fi

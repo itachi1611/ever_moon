@@ -12,7 +12,7 @@
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 # Colors only when stdout is a terminal, so logs and pipes stay clean.
-if [ -t 1 ]; then
+if [[ -t 1 ]]; then
   BOLD=$'\033[1m'; DIM=$'\033[2m'; GREEN=$'\033[32m'; YELLOW=$'\033[33m'; RED=$'\033[31m'; RESET=$'\033[0m'
 else
   BOLD=''; DIM=''; GREEN=''; YELLOW=''; RED=''; RESET=''
@@ -37,7 +37,7 @@ abs_path() {
 # blocker <message>: a problem that stops a real run. With DRY=1 it is only
 # reported, so a dry run can still show every later step.
 blocker() {
-  if [ "${DRY:-0}" = 1 ]; then warn "$1 (a real run would stop here)"; else die "$1"; fi
+  if [[ "${DRY:-0}" = 1 ]]; then warn "$1 (a real run would stop here)"; else die "$1"; fi
 }
 
 # pubspec_version: the version: line of pubspec.yaml, for example 1.2.1+8.
@@ -61,9 +61,9 @@ is_greater() {
   local a1 a2 a3 b1 b2 b3
   IFS=. read -r a1 a2 a3 <<< "$1"
   IFS=. read -r b1 b2 b3 <<< "$2"
-  if [ "$a1" -ne "$b1" ]; then [ "$a1" -gt "$b1" ]; return; fi
-  if [ "$a2" -ne "$b2" ]; then [ "$a2" -gt "$b2" ]; return; fi
-  [ "$a3" -gt "$b3" ]
+  if [[ "$a1" -ne "$b1" ]]; then [[ "$a1" -gt "$b1" ]]; return; fi
+  if [[ "$a2" -ne "$b2" ]]; then [[ "$a2" -gt "$b2" ]]; return; fi
+  [[ "$a3" -gt "$b3" ]]
 }
 
 # choose <title> <option>...: numbered menu; sets REPLY_VALUE to the option
@@ -80,7 +80,7 @@ choose() {
     if ! read -r -p "Choose [1-${#options[@]}]: " answer; then die "No input."; fi
     answer="$(printf '%s' "$answer" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')"
     for i in "${!options[@]}"; do
-      if [ "$answer" = "$((i + 1))" ] || [ "$answer" = "${options[$i]}" ]; then
+      if [[ "$answer" = "$((i + 1))" ]] || [[ "$answer" = "${options[$i]}" ]]; then
         REPLY_VALUE="${options[$i]}"
         return 0
       fi

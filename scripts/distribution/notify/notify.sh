@@ -3,11 +3,11 @@
 # BASH_VERSION is set there, but that mode rejects some syntax of this script,
 # so it counts as "not bash" too.
 reexec=0
-if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case "${BASH_VERSION:-}" in '') reexec=1 ;; esac
 case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
-if [ "$reexec" = 1 ]; then
-  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
-fi
+case "$reexec" in
+  1) exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@" ;;
+esac
 
 # notify.sh
 # Tell the team how a release went. Sends to every channel that has its
@@ -221,7 +221,7 @@ PY
 # send <name> <curl args...>
 send() {
   local name="$1"; shift
-  if [ "$DRY" = 1 ]; then
+  if [[ "$DRY" = 1 ]]; then
     printf -- '--- %s (dry run) ---\n' "$name"
     return 0
   fi
@@ -234,37 +234,37 @@ send() {
 
 SENT=0
 
-if [ -n "${TEAMS_WEBHOOK_URL:-}" ]; then
+if [[ -n "${TEAMS_WEBHOOK_URL:-}" ]]; then
   SENT=1
   PAYLOAD="$(build_payload teams)"
-  if [ "$DRY" = 1 ]; then printf '%s\n' "$PAYLOAD"; fi
+  if [[ "$DRY" = 1 ]]; then printf '%s\n' "$PAYLOAD"; fi
   send Teams -X POST -H 'Content-Type: application/json' -d "$PAYLOAD" "$TEAMS_WEBHOOK_URL"
 fi
 
-if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT_ID:-}" ]; then
+if [[ -n "${TELEGRAM_BOT_TOKEN:-}" ]] && [[ -n "${TELEGRAM_CHAT_ID:-}" ]]; then
   SENT=1
-  if [ -n "$BANNER_URL" ]; then
+  if [[ -n "$BANNER_URL" ]]; then
     # A link preview cannot be combined with a photo in one message, so the
     # banner goes first, silently, and the message with the release preview follows.
-    if [ "$DRY" = 1 ]; then printf 'telegram banner photo: %s\n' "$BANNER_URL"; fi
+    if [[ "$DRY" = 1 ]]; then printf 'telegram banner photo: %s\n' "$BANNER_URL"; fi
     send "Telegram banner" -X POST --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
       --data-urlencode "photo=${BANNER_URL}" -d disable_notification=true \
       "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto"
   fi
   PAYLOAD="$(build_payload telegram)"
-  if [ "$DRY" = 1 ]; then printf '%s\n' "$PAYLOAD"; fi
+  if [[ "$DRY" = 1 ]]; then printf '%s\n' "$PAYLOAD"; fi
   send Telegram -X POST -H 'Content-Type: application/json' -d "$PAYLOAD" \
     "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
 fi
 
-if [ -n "${DISCORD_WEBHOOK_URL:-}" ]; then
+if [[ -n "${DISCORD_WEBHOOK_URL:-}" ]]; then
   SENT=1
   PAYLOAD="$(build_payload discord)"
-  if [ "$DRY" = 1 ]; then printf '%s\n' "$PAYLOAD"; fi
+  if [[ "$DRY" = 1 ]]; then printf '%s\n' "$PAYLOAD"; fi
   send Discord -X POST -H 'Content-Type: application/json' -d "$PAYLOAD" "$DISCORD_WEBHOOK_URL"
 fi
 
-if [ "$SENT" = 0 ]; then
+if [[ "$SENT" = 0 ]]; then
   echo "No notification channel is configured; nothing sent."
 fi
 exit 0
