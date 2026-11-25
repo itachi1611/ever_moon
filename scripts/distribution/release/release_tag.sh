@@ -1,19 +1,24 @@
 #!/bin/bash
-# Re-exec with bash if invoked via sh/dash
-if [ -z "${BASH_VERSION:-}" ]; then
-  exec bash "$0" "$@"
+# Re-exec with bash if invoked via sh/dash. On macOS `sh` is bash in POSIX mode:
+# BASH_VERSION is set there, but that mode rejects some syntax of this script,
+# so it counts as "not bash" too.
+reexec=0
+if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
+if [ "$reexec" = 1 ]; then
+  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
 fi
 
 # release_tag.sh
 # Fallback: tag main by hand. A normal release needs only
-# scripts/release_prepare.sh, because merging its pull request makes the
+# scripts/distribution/release/release_firebase.sh, because merging its pull request makes the
 # Distribute prod workflow build and tag by itself. Use this script for the
 # first release (pubspec.yaml already holds the version, so no pull request) or
 # when that workflow failed and has to be started again from a tag.
 # The tag (for example 1.0.1+2) starts the release workflow on GitHub, which
 # builds the prod flavor and uploads it to Firebase App Distribution.
 #
-# Usage: bash scripts/release_tag.sh [--dry-run]
+# Usage: bash scripts/distribution/release/release_tag.sh [--dry-run]
 #   --dry-run  run every check and show what would happen; change nothing
 #
 # It reads the version from pubspec.yaml on origin/main, so it works from any
@@ -21,54 +26,15 @@ fi
 
 set -euo pipefail
 
-_PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$_PROJECT_ROOT" || { printf 'Cannot cd to project root\n' >&2; exit 1; }
+# shellcheck source=../lib/common.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../../lib/common.sh"
+cd_project_root
 
 DRY=0
 if [ "${1:-}" = "--dry-run" ]; then DRY=1; fi
 
-# ── Output helpers ───────────────────────────────────────────────────────────
-if [ -t 1 ]; then
-  BOLD=$'\033[1m'; GREEN=$'\033[32m'; YELLOW=$'\033[33m'; RED=$'\033[31m'; RESET=$'\033[0m'
-else
-  BOLD=''; GREEN=''; YELLOW=''; RED=''; RESET=''
-fi
-
-die()  { printf '%sError:%s %s\n' "$RED" "$RESET" "$1" >&2; exit 1; }
-warn() { printf '%sWarning:%s %s\n' "$YELLOW" "$RESET" "$1"; }
-
-# A dry run reports a blocking problem and goes on, so every check can be seen.
-blocker() {
-  if [ "$DRY" = 1 ]; then warn "$1 (a real run would stop here)"; else die "$1"; fi
-}
-
-# ask_yes_no <question>: returns 0 for yes, 1 for no.
-ask_yes_no() {
-  local answer
-  while true; do
-    printf '%s (y/n): ' "$1"
-    if ! read -r answer; then die "No input."; fi
-    case "$(printf '%s' "$answer" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')" in
-      y|yes) return 0 ;;
-      n|no) return 1 ;;
-      *) echo "Please answer y or n." ;;
-    esac
-  done
-}
-
-# true when $1 is a higher x.y.z than $2.
-is_greater() {
-  local a1 a2 a3 b1 b2 b3
-  IFS=. read -r a1 a2 a3 <<< "$1"
-  IFS=. read -r b1 b2 b3 <<< "$2"
-  if [ "$a1" -ne "$b1" ]; then [ "$a1" -gt "$b1" ]; return; fi
-  if [ "$a2" -ne "$b2" ]; then [ "$a2" -gt "$b2" ]; return; fi
-  [ "$a3" -gt "$b3" ]
-}
-
 # ── Repository state ─────────────────────────────────────────────────────────
-RELEASE_BRANCH="$(git symbolic-ref --short refs/remotes/origin/HEAD 2> /dev/null | sed 's#^origin/##' || true)"
-RELEASE_BRANCH="${RELEASE_BRANCH:-main}"
+RELEASE_BRANCH="$(default_branch)"
 
 if ! git fetch --tags --quiet origin 2> /dev/null; then
   die "Could not reach origin: the tag must be made from the commit that is on origin/$RELEASE_BRANCH."
@@ -100,7 +66,7 @@ printf 'Commit to tag      : %s  %s\n\n' "$(git rev-parse --short "$TARGET")" "$
 
 # ── Checks ───────────────────────────────────────────────────────────────────
 if [ "$NEW_VERSION" = "$LAST_TAG" ]; then
-  die "origin/$RELEASE_BRANCH is at $LAST_TAG, which is already tagged, so there is nothing to tag. If you prepared a release, merge its pull request first and run this script again; to start a new release run scripts/release_prepare.sh."
+  die "origin/$RELEASE_BRANCH is at $LAST_TAG, which is already tagged, so there is nothing to tag. If you prepared a release, merge its pull request first and run this script again; to start a new release run scripts/distribution/release/release_firebase.sh."
 fi
 if git rev-parse --verify --quiet "refs/tags/$NEW_VERSION" > /dev/null \
   || git ls-remote --exit-code --tags origin "refs/tags/$NEW_VERSION" > /dev/null 2>&1; then

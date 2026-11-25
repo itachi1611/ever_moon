@@ -1,10 +1,15 @@
 #!/bin/bash
-# Re-exec with bash if invoked via sh/dash
-if [ -z "${BASH_VERSION:-}" ]; then
-  exec bash "$0" "$@"
+# Re-exec with bash if invoked via sh/dash. On macOS `sh` is bash in POSIX mode:
+# BASH_VERSION is set there, but that mode rejects some syntax of this script,
+# so it counts as "not bash" too.
+reexec=0
+if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
+if [ "$reexec" = 1 ]; then
+  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
 fi
 
-# release_prepare.sh
+# release_firebase.sh
 # Starts a release: choose the version, put it in pubspec.yaml on a release
 # branch, push the branch and open the pull request (with auto-merge when the
 # GitHub CLI `gh` is installed and signed in; otherwise it prints a link whose
@@ -14,49 +19,21 @@ fi
 # request is merged, the commit "chore(release): <version>" lands on main and
 # the Distribute prod workflow tags it, builds prod and uploads it to Firebase
 # App Distribution by itself. Nothing else has to be run.
-# scripts/release_tag.sh is only the fallback (first release, or a failed run).
+# scripts/distribution/release/release_tag.sh is only the fallback (first release, or a failed run).
 #
-# Usage: bash scripts/release_prepare.sh [--dry-run]
+# Usage: bash scripts/distribution/release/release_firebase.sh [--dry-run]
 #   --dry-run  ask the same questions and show what would run; change nothing
 #
 # Run it on main, with a clean working tree, after your changes are merged.
 
 set -euo pipefail
 
-_PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$_PROJECT_ROOT" || { printf 'Cannot cd to project root\n' >&2; exit 1; }
+# shellcheck source=../lib/common.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../../lib/common.sh"
+cd_project_root
 
 DRY=0
 if [ "${1:-}" = "--dry-run" ]; then DRY=1; fi
-
-# ── Output helpers ───────────────────────────────────────────────────────────
-if [ -t 1 ]; then
-  BOLD=$'\033[1m'; DIM=$'\033[2m'; GREEN=$'\033[32m'; YELLOW=$'\033[33m'; RED=$'\033[31m'; RESET=$'\033[0m'
-else
-  BOLD=''; DIM=''; GREEN=''; YELLOW=''; RED=''; RESET=''
-fi
-
-die()  { printf '%sError:%s %s\n' "$RED" "$RESET" "$1" >&2; exit 1; }
-warn() { printf '%sWarning:%s %s\n' "$YELLOW" "$RESET" "$1"; }
-
-# A dry run reports a blocking problem and goes on, so every step can be seen.
-blocker() {
-  if [ "$DRY" = 1 ]; then warn "$1 (a real run would stop here)"; else die "$1"; fi
-}
-
-# ask_yes_no <question>: returns 0 for yes, 1 for no.
-ask_yes_no() {
-  local answer
-  while true; do
-    printf '%s (y/n): ' "$1"
-    if ! read -r answer; then die "No input."; fi
-    case "$(printf '%s' "$answer" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')" in
-      y|yes) return 0 ;;
-      n|no) return 1 ;;
-      *) echo "Please answer y or n." ;;
-    esac
-  done
-}
 
 # ── Versions ─────────────────────────────────────────────────────────────────
 VERSION_RE='^[0-9]+\.[0-9]+\.[0-9]+$'
@@ -66,16 +43,6 @@ VERSION_RE='^[0-9]+\.[0-9]+\.[0-9]+$'
 # keeps non-ASCII text intact.
 url_encode() {
   printf '%s' "$1" | perl -0777 -pe 's/([^A-Za-z0-9._~-])/sprintf("%%%02X", ord($1))/ge'
-}
-
-# true when $1 is a higher x.y.z than $2.
-is_greater() {
-  local a1 a2 a3 b1 b2 b3
-  IFS=. read -r a1 a2 a3 <<< "$1"
-  IFS=. read -r b1 b2 b3 <<< "$2"
-  if [ "$a1" -ne "$b1" ]; then [ "$a1" -gt "$b1" ]; return; fi
-  if [ "$a2" -ne "$b2" ]; then [ "$a2" -gt "$b2" ]; return; fi
-  [ "$a3" -gt "$b3" ]
 }
 
 # next_version <x.y.z> <major|minor|patch>
@@ -111,8 +78,7 @@ flutter_in_use() {
 PINNED="$(sed -n -E 's/^[[:space:]]+flutter:[[:space:]]*([0-9][^[:space:]]*).*/\1/p' pubspec.yaml | head -1)"
 
 # ── Repository state ─────────────────────────────────────────────────────────
-RELEASE_BRANCH="$(git symbolic-ref --short refs/remotes/origin/HEAD 2> /dev/null | sed 's#^origin/##' || true)"
-RELEASE_BRANCH="${RELEASE_BRANCH:-main}"
+RELEASE_BRANCH="$(default_branch)"
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
 if [ "$BRANCH" != "$RELEASE_BRANCH" ]; then
@@ -142,7 +108,7 @@ else
 fi
 
 printf '\n%sChanges since %s%s\n\n' "$BOLD" "${LAST_TAG:-the beginning}" "$RESET"
-bash scripts/release_notes.sh HEAD | sed '1,2d'
+bash scripts/distribution/release/release_notes.sh HEAD | sed '1,2d'
 if [ -n "$LAST_TAG" ]; then
   printf '%s%s%s\n' "$DIM" "$(git diff --shortstat "$LAST_TAG"..HEAD)" "$RESET"
 fi
@@ -157,7 +123,7 @@ if [ -z "$LAST_TAG" ]; then
     NEW_NAME="$CURRENT_NAME"; NEW_BUILD="$CURRENT_BUILD"
   fi
 else
-  LEVEL="$(bash scripts/release_notes.sh HEAD --bump)"
+  LEVEL="$(bash scripts/distribution/release/release_notes.sh HEAD --bump)"
   if [ "$LEVEL" = none ]; then
     printf '\nNothing to release: no commits since %s.\n' "$LAST_TAG"
     exit 0
@@ -193,7 +159,7 @@ REMOTE="$(git remote get-url origin | sed -E 's#^git@github.com:#https://github.
 # there is nothing to put on a branch, only the tag is missing.
 if [ "$NEW_VERSION" = "$PUBSPEC_VERSION" ]; then
   printf '\n%s%s%s is already the version on %s; no pull request is needed.\n' "$BOLD" "$NEW_VERSION" "$RESET" "$RELEASE_BRANCH"
-  printf 'Tag it with:  bash scripts/release_tag.sh\n'
+  printf 'Tag it with:  bash scripts/distribution/release/release_tag.sh\n'
   exit 0
 fi
 
@@ -211,7 +177,7 @@ PR_TITLE="chore(release): $NEW_VERSION"
 # The description is the start of the changelog, cut short so the link that
 # carries it stays well under the length browsers and GitHub accept. The full
 # changelog is in the GitHub Release.
-PR_BODY="Release ${NEW_VERSION}. Merging this pull request starts the Distribute prod workflow: it builds prod, uploads it to Firebase App Distribution, tags ${NEW_VERSION} and publishes the GitHub Release."$'\n\n'"$(bash scripts/release_notes.sh HEAD --max-chars 1200)"
+PR_BODY="Release ${NEW_VERSION}. Merging this pull request starts the Distribute prod workflow: it builds prod, uploads it to Firebase App Distribution, tags ${NEW_VERSION} and publishes the GitHub Release."$'\n\n'"$(bash scripts/distribution/release/release_notes.sh HEAD --max-chars 1200)"
 printf '\n%sRelease %s%s\n' "$BOLD" "$NEW_VERSION" "$RESET"
 printf '  1. create the branch %s from %s\n' "$RELEASE_WORK_BRANCH" "$RELEASE_BRANCH"
 printf '  2. set version: %s in pubspec.yaml (was %s)\n' "$NEW_VERSION" "$PUBSPEC_VERSION"
@@ -266,3 +232,4 @@ else
 fi
 printf 'Follow it at %s/actions\n' "$REMOTE"
 printf 'After the merge, go back to main and remove the merged local branches:  bash scripts/utils/git_helper.sh clean\n'
+printf 'To put the same version on Google Play afterwards (from main):  bash scripts/distribution/release/release_play.sh\n'

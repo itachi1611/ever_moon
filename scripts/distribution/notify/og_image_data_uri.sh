@@ -1,7 +1,12 @@
 #!/bin/bash
-# Re-exec with bash if invoked via sh/dash
-if [ -z "${BASH_VERSION:-}" ]; then
-  exec bash "$0" "$@"
+# Re-exec with bash if invoked via sh/dash. On macOS `sh` is bash in POSIX mode:
+# BASH_VERSION is set there, but that mode rejects some syntax of this script,
+# so it counts as "not bash" too.
+reexec=0
+if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
+if [ "$reexec" = 1 ]; then
+  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
 fi
 
 # og_image_data_uri.sh
@@ -11,7 +16,7 @@ fi
 # card. A Teams message is limited to about 28 KB, so the image is shrunk until
 # it fits the byte budget.
 #
-# Usage: bash scripts/og_image_data_uri.sh <image-url> [max-bytes]
+# Usage: bash scripts/distribution/notify/og_image_data_uri.sh <image-url> [max-bytes]
 # Exit status 1 (nothing printed) when the image cannot be fetched or shrunk;
 # the caller then falls back to a plain image URL.
 

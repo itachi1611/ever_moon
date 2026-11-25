@@ -136,6 +136,100 @@ class AndroidPathTest < Minitest::Test
   end
 end
 
+class PlayTest < Minitest::Test
+  def setup
+    @saved = ENV.delete("PLAY_SERVICE_CREDENTIALS")
+    @dir = Dir.mktmpdir
+    @credentials = File.join(@dir, "play.json")
+    File.write(@credentials, "{}")
+  end
+
+  def teardown
+    FileUtils.remove_entry(@dir)
+    ENV.delete("PLAY_SERVICE_CREDENTIALS")
+    ENV["PLAY_SERVICE_CREDENTIALS"] = @saved if @saved
+  end
+
+  def test_application_id_is_the_default_config_one
+    assert_equal "com.fox.evermoon", Evermoon::Project.android_application_id
+  end
+
+  def test_every_track_is_accepted_and_others_are_rejected
+    %w[internal alpha beta production].each do |track|
+      assert_equal track, Evermoon::Play.track!(track)
+    end
+    ["", nil, "prod", "Internal"].each do |track|
+      error = assert_raises(Evermoon::Error) { Evermoon::Play.track!(track) }
+      assert_includes error.message, "internal, alpha, beta, production"
+    end
+  end
+
+  def test_missing_credentials_stop_before_any_build
+    error = assert_raises(Evermoon::Error) { Evermoon::Play.upload_params(track: "internal") }
+    assert_includes error.message, "PLAY_SERVICE_CREDENTIALS"
+    ENV["PLAY_SERVICE_CREDENTIALS"] = File.join(@dir, "missing.json")
+    assert_raises(Evermoon::Error) { Evermoon::Play.upload_params(track: "internal") }
+  end
+
+  def test_a_bad_track_is_reported_even_with_credentials
+    ENV["PLAY_SERVICE_CREDENTIALS"] = @credentials
+    assert_raises(Evermoon::Error) { Evermoon::Play.upload_params(track: "nightly") }
+  end
+
+  def test_default_params_upload_only_the_prod_bundle
+    ENV["PLAY_SERVICE_CREDENTIALS"] = @credentials
+    params = Evermoon::Play.upload_params(track: "internal")
+    assert_equal "com.fox.evermoon", params[:package_name]
+    assert_equal @credentials, params[:json_key]
+    assert_equal "internal", params[:track]
+    assert params[:aab].end_with?("bundle/prodRelease/app-prod-release.aab")
+    assert_equal "completed", params[:release_status]
+    assert_equal false, params[:validate_only]
+    refute params.key?(:rollout)
+    %i[skip_upload_apk skip_upload_metadata skip_upload_changelogs
+       skip_upload_images skip_upload_screenshots].each { |key| assert params[key], key }
+  end
+
+  def test_validate_only_accepts_the_strings_a_lane_receives
+    ENV["PLAY_SERVICE_CREDENTIALS"] = @credentials
+    assert Evermoon::Play.upload_params(track: "internal", validate_only: "true")[:validate_only]
+    refute Evermoon::Play.upload_params(track: "internal", validate_only: "false")[:validate_only]
+  end
+
+  def test_staged_rollout_on_production
+    ENV["PLAY_SERVICE_CREDENTIALS"] = @credentials
+    params = Evermoon::Play.upload_params(track: "production", rollout: "0.1")
+    assert_equal "inProgress", params[:release_status]
+    assert_equal "0.1", params[:rollout]
+  end
+
+  def test_rollout_of_everybody_is_a_normal_release
+    ENV["PLAY_SERVICE_CREDENTIALS"] = @credentials
+    params = Evermoon::Play.upload_params(track: "production", rollout: "1")
+    assert_equal "completed", params[:release_status]
+    refute params.key?(:rollout)
+  end
+
+  def test_bad_rollouts_are_rejected
+    ENV["PLAY_SERVICE_CREDENTIALS"] = @credentials
+    %w[0 -0.5 1.5 abc].each do |rollout|
+      assert_raises(Evermoon::Error, rollout) do
+        Evermoon::Play.upload_params(track: "production", rollout: rollout)
+      end
+    end
+    assert_raises(Evermoon::Error) { Evermoon::Play.upload_params(track: "beta", rollout: "0.1") }
+  end
+
+  def test_draft_release_status_and_its_limits
+    ENV["PLAY_SERVICE_CREDENTIALS"] = @credentials
+    assert_equal "draft", Evermoon::Play.upload_params(track: "internal", release_status: "draft")[:release_status]
+    assert_raises(Evermoon::Error) { Evermoon::Play.upload_params(track: "internal", release_status: "halted") }
+    assert_raises(Evermoon::Error) do
+      Evermoon::Play.upload_params(track: "production", rollout: "0.1", release_status: "draft")
+    end
+  end
+end
+
 class DistributionTest < Minitest::Test
   def test_missing_credentials_stop_before_any_build
     saved = ENV.delete("FIREBASE_SERVICE_CREDENTIALS")

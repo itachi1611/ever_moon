@@ -1,7 +1,12 @@
 #!/bin/bash
-# Re-exec with bash if invoked via sh/dash
-if [ -z "${BASH_VERSION:-}" ]; then
-  exec bash "$0" "$@"
+# Re-exec with bash if invoked via sh/dash. On macOS `sh` is bash in POSIX mode:
+# BASH_VERSION is set there, but that mode rejects some syntax of this script,
+# so it counts as "not bash" too.
+reexec=0
+if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
+if [ "$reexec" = 1 ]; then
+  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
 fi
 
 # notify.sh
@@ -21,7 +26,7 @@ fi
 #   NOTIFY_PREVIEW_URL  optional public https image of the release page, shown inside the Discord
 #                       embed (Telegram unfolds the release link by itself)
 #   NOTIFY_TEAMS_PREVIEW  optional, the same release image as a small data: URI (see
-#                       scripts/og_image_data_uri.sh), shown at the bottom of the Teams card;
+#                       scripts/distribution/notify/og_image_data_uri.sh), shown at the bottom of the Teams card;
 #                       Teams does not load the release image from its URL
 #   NOTIFY_FACTS        optional, one "Label: value" per line (version, Flutter, job results)
 #   NOTIFY_DRY_RUN      set to 1 to print the messages instead of sending them

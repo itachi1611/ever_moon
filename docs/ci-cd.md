@@ -13,16 +13,16 @@ Shared steps are composite actions: `.github/actions/setup` (Flutter, Java, Ruby
 
 ## Pull requests
 
-Titles follow Conventional Commits (`type(scope): summary`): squash merge makes the title the commit on `main`, and the changelog and the version bump are read from those titles. `.github/pull_request_template.md` fills the description of every new pull request with four sections (Summary, Changes, How it was checked, Notes). The release pull request is the exception: `release_prepare.sh` writes its own title and description, so the template does not apply to it.
+Titles follow Conventional Commits (`type(scope): summary`): squash merge makes the title the commit on `main`, and the changelog and the version bump are read from those titles. `.github/pull_request_template.md` fills the description of every new pull request with four sections (Summary, Changes, How it was checked, Notes). The release pull request is the exception: `release_firebase.sh` writes its own title and description, so the template does not apply to it.
 
 ## The release flow
 
 `main` is protected by two repository rulesets: `main` accepts only pull requests (squash merge, the `check` job of CI must pass, no force push, no deletion), and tags matching `[0-9]*` cannot be moved, deleted or force-pushed (creating them is allowed). Neither ruleset has a bypass list. A release therefore goes through a pull request, and the merge of that pull request starts it: one command, no second step to wait for.
 
 1. Merge your work into `main` (through pull requests).
-2. **Prepare.** On `main`, run `bash scripts/release_prepare.sh` (add `--dry-run` to see every step without changing anything). It shows the current version, the Flutter in use, and the changes since the last release grouped by commit type. It suggests a bump from the Conventional Commit types (`feat` is minor, `fix` is patch, `!` or `BREAKING CHANGE` is major) and asks `Bump to 1.1.0 (y/n)`; `n` lets you type the version. After a final `Go ahead? (y/n)` it creates the branch `release/<x.y.z>`, sets `version:` in `pubspec.yaml` (the build number grows by one, because Android needs a higher code on every upload), commits `chore(release): <version>`, pushes the branch, returns to `main`, and opens the pull request with auto-merge turned on when the GitHub CLI (`gh`) is installed and signed in (otherwise it prints a link with the title and a description, the start of the changelog, already filled in)
+2. **Prepare.** On `main`, run `bash scripts/distribution/release/release_firebase.sh` (add `--dry-run` to see every step without changing anything). It shows the current version, the Flutter in use, and the changes since the last release grouped by commit type. It suggests a bump from the Conventional Commit types (`feat` is minor, `fix` is patch, `!` or `BREAKING CHANGE` is major) and asks `Bump to 1.1.0 (y/n)`; `n` lets you type the version. After a final `Go ahead? (y/n)` it creates the branch `release/<x.y.z>`, sets `version:` in `pubspec.yaml` (the build number grows by one, because Android needs a higher code on every upload), commits `chore(release): <version>`, pushes the branch, returns to `main`, and opens the pull request with auto-merge turned on when the GitHub CLI (`gh`) is installed and signed in (otherwise it prints a link with the title and a description, the start of the changelog, already filled in)
 3. **Merge.** Without `gh`, open the printed link (the title is `chore(release): <version>`, which squash merge uses as the commit title on `main`, so do not edit it), press Create pull request and then Enable auto-merge. When `check` passes it squash merges by itself, and that merge starts the release. Afterwards run `bash scripts/utils/git_helper.sh clean` (it works after any merged pull request, not only a release): it switches to `main`, pulls it, and deletes the local branches whose branch on origin is gone (GitHub deletes a branch when its pull request merges). Branches that were never pushed or still exist on origin are kept and listed; `--dry-run` shows the plan, `--all` also deletes those, `--yes` skips the question. Each deleted branch prints its commit so it can be restored with `git branch <name> <commit>`.
-4. **Tag (fallback only).** Normally there is nothing to run: the workflow tags the commit after a successful build. `bash scripts/release_tag.sh` (also has `--dry-run`) is for the first release or for a run that has to start again from a tag. It fetches origin, reads the version from `pubspec.yaml` on `origin/main`, and refuses unless: the working tree is clean, the version is higher than the last release, the tag does not exist, and the newest commit on `origin/main` is the release commit (its title starts `chore(release): <version>`), so the tag cannot land on a different commit. After `Tag <version> on main? (y/n)` it moves to `main`, pulls with fast-forward only, creates an annotated tag on that commit and pushes the tag. The very first release has nothing to put on a branch: `release_prepare.sh` says so, and only the tag step is needed.
+4. **Tag (fallback only).** Normally there is nothing to run: the workflow tags the commit after a successful build. `bash scripts/distribution/release/release_tag.sh` (also has `--dry-run`) is for the first release or for a run that has to start again from a tag. It fetches origin, reads the version from `pubspec.yaml` on `origin/main`, and refuses unless: the working tree is clean, the version is higher than the last release, the tag does not exist, and the newest commit on `origin/main` is the release commit (its title starts `chore(release): <version>`), so the tag cannot land on a different commit. After `Tag <version> on main? (y/n)` it moves to `main`, pulls with fast-forward only, creates an annotated tag on that commit and pushes the tag. The very first release has nothing to put on a branch: `release_firebase.sh` says so, and only the tag step is needed.
 5. The merge (or the tag) starts **Distribute prod**:
 
 | Job       | Does                                                                                                                                                                                                                                                                    |
@@ -47,8 +47,29 @@ fastlane lives at the repository root (`Gemfile`, `Gemfile.lock`, `fastlane/`). 
 | `build_dev`, `build_prod`             | pub get, build_runner, then the release build (APK, or IPA through Xcode). No credentials needed. The artifact is left in `build/`. |
 | `build_dev_aab`, `build_prod_aab`     | Android only: the same as an app bundle (`build/app/outputs/bundle/<flavor>Release/app-<flavor>-release.aab`)                       |
 | `distribute_dev`, `distribute_prod`   | the matching `build_*`, then uploads to the flavor's Firebase app and tester group                                                  |
+| `publish_play` (Android only)         | `build_prod_aab`, then uploads the bundle to a Google Play track (`track:internal`, `alpha`, `beta` or `production`; see Google Play) |
 
-Parameters (optional): `build_name:1.0.0 build_number:61 notes:"text"`. Without them the version comes from `pubspec.yaml`. GitHub calls only `distribute_prod`; the `dev` lanes are for your machine.
+Parameters (optional): `build_name:1.0.0 build_number:61 notes:"text"`. Without them the version comes from `pubspec.yaml`. GitHub calls only `distribute_prod`; the `dev` lanes and `publish_play` are for your machine.
+
+## Scripts
+
+`scripts/` is grouped by purpose. Every script documents its usage in the comment at the top (most also print it with `--help`), runs from any directory, and works when started with `sh` or `bash`. `scripts/lib/common.sh` holds what they share (colors, `die`, `ask_yes_no`, menus, version helpers); it is sourced, never run.
+
+| Folder                          | Script                  | Does                                                                                                   |
+|---------------------------------|-------------------------|--------------------------------------------------------------------------------------------------------|
+| `scripts/setup/`                | `setup_env.sh`          | creates `assets/env/.env.<flavor>` from the `.example` files                                           |
+|                                 | `config_firebase.sh`    | `flutterfire configure` for dev and prod, then copies the native config files                          |
+| `scripts/utils/`                | `git_helper.sh`         | git helpers, one command each; `clean` goes back to `main`, pulls, and deletes the merged local branches |
+|                                 | `build.sh`              | builds an Android artifact on this machine for testing (`[dev\|prod] [apk\|aab]`); uploads nothing      |
+|                                 | `signing_fingerprints.sh` | prints the SHA-1 and SHA-256 of the prod keystore                                                    |
+| `scripts/distribution/release/` | `release.sh`            | one entry point: `release.sh [firebase\|play] [arguments]`, asks when the target is missing            |
+|                                 | `release_firebase.sh`   | starts a release (version and pull request); merging it publishes to Firebase, see The release flow    |
+|                                 | `release_play.sh`       | builds the prod bundle and uploads it to a Google Play track you choose, from this machine             |
+|                                 | `release_tag.sh`        | the tag fallback                                                                                       |
+|                                 | `release_notes.sh`      | the changelog and the suggested version bump, used by the release scripts and the workflow             |
+| `scripts/distribution/notify/`  | `notify.sh`, `og_image_data_uri.sh` | the release notification and its Teams preview image, called by the workflow               |
+
+Distribution is prod only. Firebase App Distribution is published by GitHub when the release pull request merges (there is no local upload script); Google Play is uploaded from this machine. `build.sh` is the only local build, for both flavors.
 
 ## Where each value comes from
 
@@ -99,7 +120,7 @@ Nothing below is written in a workflow or the Fastfile; each has one source.
    | iOS only, later: `ASC_KEY_B64`, `ASC_KEY_ID`, `ASC_ISSUER_ID`            | App Store Connect API key (the `.p8` as base64, its key id, the issuer id) |
    | iOS only, optional: `APPLE_TEAM_ID`                                      | when the team in the Xcode project is not the one to sign with             |
 
-   Also add one **variable** (same page, Variables tab, not a secret): `ANDROID_SIGNING_SHA256`, the SHA256 line printed by `bash scripts/signing_fingerprints.sh`. The release then fails when the APK is signed with any other key. The same script prints the SHA-1 and SHA-256 to add under the prod Android app in Firebase (Project settings, Add fingerprint), which Google sign-in will need. Without the variable the check only reports the signer.
+   Also add one **variable** (same page, Variables tab, not a secret): `ANDROID_SIGNING_SHA256`, the SHA256 line printed by `bash scripts/utils/signing_fingerprints.sh`. The release then fails when the APK is signed with any other key. The same script prints the SHA-1 and SHA-256 to add under the prod Android app in Firebase (Project settings, Add fingerprint), which Google sign-in will need. Without the variable the check only reports the signer.
 
    No `.env` file is a secret: `assets/env/.env.*` are bundled into the app, so anyone with the APK can read them. CI copies the committed `.example` files; put non-secret prod values in `.env.prod.example`.
 5. **Notifications.** Add any of these as **repository** secrets (Settings, Secrets and variables, Actions, Repository secrets), not in the environment, so the notify job does not ask for the prod approval again. The job sends to every channel that has its secrets and does nothing when none is set:
@@ -134,22 +155,52 @@ Needs Ruby from `.ruby-version` (rbenv: `rbenv install` in the repository) and B
 bundle config set --local path vendor/bundle   # once; the folder is gitignored
 bundle install
 bundle exec fastlane lanes
-bash scripts/build.sh                                        # asks flavor (prod/dev) and type (apk/aab), runs the lane
-bundle exec fastlane android build_dev                       # APK only
-bundle exec fastlane android build_dev_aab                   # app bundle only
-FIREBASE_SERVICE_CREDENTIALS=/path/to/service-account.json \
-  bundle exec fastlane android distribute_dev                # build and upload to the dev Firebase project
+bash scripts/utils/build.sh                           # asks flavor (prod/dev) and type (apk/aab), runs the lane
+bash scripts/utils/build.sh dev apk                          # or give them: [dev|prod] [apk|aab] [--dry-run]
+bundle exec fastlane android build_dev                       # the same lane called directly
 bundle exec ruby fastlane/test/evermoon_test.rb              # the helper tests
 ```
 
 Java: Flutter ignores `JAVA_HOME` and uses the JDK of Android Studio (a newer JBR) unless told otherwise, which prints a Gradle "restricted method" warning and differs from CI. Point it at the JDK in `.java-version` once per machine: `fvm flutter config --jdk-dir "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home"` (it writes `jdk-dir` in `~/.config/flutter/settings`; delete that line to undo).
 
-`dev` is uploaded to project `evermoon-dev`, so it needs a service account of that project and a tester group there. `prod` on your machine needs `android/key.properties`. On iOS, `build_*` signs with the Apple account logged in to Xcode unless `ASC_KEY_PATH`, `ASC_KEY_ID` and `ASC_ISSUER_ID` are all set.
+The `dev` lanes (`distribute_dev`, and the dev entry of `fastlane/distribution.yml`) stay for reference; no script uses them. `prod` on your machine needs `android/key.properties`. On iOS, `build_*` signs with the Apple account logged in to Xcode unless `ASC_KEY_PATH`, `ASC_KEY_ID` and `ASC_ISSUER_ID` are all set.
+
+## Google Play
+
+Local only: a release on GitHub goes to Firebase, and nothing uploads to Google Play unless you run it. Only the **prod** flavor exists on Google Play (the dev flavor has the id `com.fox.evermoon.dev`, which is not an app there).
+
+```bash
+bash scripts/distribution/release/release.sh play internal           # the same through the common entry point
+bash scripts/distribution/release/release_play.sh                    # asks the track, shows the plan, asks to confirm
+bash scripts/distribution/release/release_play.sh internal           # a track by name: internal | alpha | beta | production
+bash scripts/distribution/release/release_play.sh internal --validate    # Google Play checks the upload, nothing is published
+bash scripts/distribution/release/release_play.sh production --rollout 0.1   # staged rollout to 10 % of the users
+bash scripts/distribution/release/release_play.sh --dry-run          # check the setup and show the command, run nothing
+```
+
+| Track        | Reaches                                            |
+|--------------|----------------------------------------------------|
+| `internal`   | the testers you invite by email (fast, no review)  |
+| `alpha`      | closed testing                                     |
+| `beta`       | open testing                                       |
+| `production` | everybody (asks for a rollout fraction and for a confirmation) |
+
+The script builds the prod app bundle (`build_prod_aab`, signed with the prod keystore, so `android/key.properties` is needed) and runs the lane `publish_play` of fastlane (`upload_to_play_store`). It uploads only the bundle: the store listing, screenshots and the "What's new" text are edited in the Play Console. `--draft` leaves the release as a draft there. The version is the one in `pubspec.yaml`; its build number (the part after `+`) must be higher than every bundle already on Google Play, so the usual order is: `release_firebase.sh`, merge the pull request, `git_helper.sh clean` (back on an updated `main`), then `release_play.sh`.
+
+**One-time setup** (Play Console and Google Cloud, by hand):
+
+1. Create the app `com.fox.evermoon` in the Play Console and **upload the first bundle by hand** (`bash scripts/utils/build.sh`, prod, aab). fastlane's documentation says the app must first be set up by hand by uploading at least one build to Google Play, before its upload action (supply) is used.
+2. Google Cloud console: enable the **Google Play Android Developer API** in a project (the one in Play Console, Account details, can be `evermoon-2cc28`).
+3. In the same project create a **service account for Play** (for example `play-publisher`; not the Firebase one, so each account has only its own rights) and download a JSON key.
+4. Play Console, Users and permissions, Invite new users: the email of that service account, with the permissions to release (fastlane recommends Admin; narrower rights work if they include the track you use, for example `production`).
+5. Keep the JSON outside the repository and give it to the script with `--credentials FILE` or the variable `PLAY_SERVICE_CREDENTIALS`. Check the connection once with `fastlane run validate_play_store_json_key json_key:/path/to/file.json`.
+
+Try the first upload with `--validate` on `internal`: it exercises the account and the bundle without publishing. A brand-new app that is still in draft in the Play Console may only accept `--draft` releases until its store listing and declarations are complete. What was and was not checked is under Not verified.
 
 ## Changelog, artifacts and how long things stay
 
-- The **GitHub Release** of each tag is the permanent changelog (no expiry). Its text comes from `scripts/release_notes.sh`: commits since the previous release, grouped as breaking changes, features, fixes and other changes. It is also the Firebase release note and the body of the notification.
-- **Notification look.** Discord gets a colored embed (status color, fact fields, changelog) plus the release link in the message text, so Discord unfolds the repository preview. Telegram gets formatted text, buttons (release, run) and the release link preview. Teams gets a card with the status header, facts, changelog and two buttons. Every channel has two pictures. The **banner** is `docs/design/notify-banner.png` (the moon), at the top of all three: the first image of the Teams card, a first embed in Discord, and a photo Telegram receives just before the message (a link preview cannot share a message with a photo; the photo is sent silently). The **release preview** is the image of the GitHub release page (its `og:image`): Telegram unfolds the link itself, Discord gets the image URL in its embed, and the Teams card shows it at the bottom. The workflow reads the URL from the release page and requests it once first (GitHub draws it on the first request, which can take seconds). Teams does not load that URL even when it answers `200 image/png`, so for Teams `scripts/og_image_data_uri.sh` downloads the image, shrinks it to about 11 KB (ImageMagick, installed on the runner when missing) and embeds it as a data URI; `notify.sh` shortens the changelog so the whole message stays under the 28 KB limit of Teams, and drops the preview if it still does not fit. The banner is passed by its raw GitHub URL only when the file exists. The repository must be public for the pictures to load.
+- The **GitHub Release** of each tag is the permanent changelog (no expiry). Its text comes from `scripts/distribution/release/release_notes.sh`: commits since the previous release, grouped as breaking changes, features, fixes and other changes. It is also the Firebase release note and the body of the notification.
+- **Notification look.** Discord gets a colored embed (status color, fact fields, changelog) plus the release link in the message text, so Discord unfolds the repository preview. Telegram gets formatted text, buttons (release, run) and the release link preview. Teams gets a card with the status header, facts, changelog and two buttons. Every channel has two pictures. The **banner** is `docs/design/notify-banner.png` (the moon), at the top of all three: the first image of the Teams card, a first embed in Discord, and a photo Telegram receives just before the message (a link preview cannot share a message with a photo; the photo is sent silently). The **release preview** is the image of the GitHub release page (its `og:image`): Telegram unfolds the link itself, Discord gets the image URL in its embed, and the Teams card shows it at the bottom. The workflow reads the URL from the release page and requests it once first (GitHub draws it on the first request, which can take seconds). Teams does not load that URL even when it answers `200 image/png`, so for Teams `scripts/distribution/notify/og_image_data_uri.sh` downloads the image, shrinks it to about 11 KB (ImageMagick, installed on the runner when missing) and embeds it as a data URI; `notify.sh` shortens the changelog so the whole message stays under the 28 KB limit of Teams, and drops the preview if it still does not fit. The banner is passed by its raw GitHub URL only when the file exists. The repository must be public for the pictures to load.
 - GitHub keeps workflow logs and artifacts for 90 days by default (changeable in the repository settings). This workflow uploads no artifact.
 - The APK is not attached to the Release: a public repository would let anyone download the prod build. The build is in Firebase App Distribution; how long Firebase keeps a release was not verified.
 
@@ -161,15 +212,18 @@ Every third-party action in `.github/` is pinned to a full commit SHA with the v
 
 ## Not verified
 
-- Verified on GitHub (2026-11-19): release 1.2.0+7 went through the push-to-`main` path. Fox ran only `release_prepare.sh` and merged the pull request; the tag `1.2.0+7` exists and Fox confirmed the run and the notification previews. So the `prepare` branch logic, the tag created by `gh release create --target` (the tag ruleset allows it) and the Release creation work. Not seen yet: a release run after the action bump of 2026-11-20 (checkout v7, setup-java v6), the skip path on an ordinary push to `main`, and a failed run followed by "Re-run failed jobs" (none of these is recorded as checked). `actionlint` is not installed. What ran locally before that: the YAML parses, the `prepare` step text runs correctly against a scratch repository (valid tag, tag different from `pubspec.yaml`, bad format, not a tag, commit not on `main`), and `scripts/release_prepare.sh`, `release_tag.sh`, `release_notes.sh` and `notify.sh` ran against a scratch repository with a fake origin on macOS's bash 3.2 (for the two release scripts: dry run and real run of each step, a release branch that already exists, tagging before the pull request is merged, tagging twice, a commit that lands after the release commit, and a dirty working tree). The rulesets were checked on GitHub: a direct push to `main` and the deletion of a release tag are rejected, and a pull request merged with `check` passing.
+- Verified on GitHub (2026-11-19): release 1.2.0+7 went through the push-to-`main` path. Fox ran only `release_firebase.sh` and merged the pull request; the tag `1.2.0+7` exists and Fox confirmed the run and the notification previews. So the `prepare` branch logic, the tag created by `gh release create --target` (the tag ruleset allows it) and the Release creation work. Not seen yet: a release run after the action bump of 2026-11-20 (checkout v7, setup-java v6), the skip path on an ordinary push to `main`, and a failed run followed by "Re-run failed jobs" (none of these is recorded as checked). `actionlint` is not installed. What ran locally before that: the YAML parses, the `prepare` step text runs correctly against a scratch repository (valid tag, tag different from `pubspec.yaml`, bad format, not a tag, commit not on `main`), and `scripts/distribution/release/release_firebase.sh`, `release_tag.sh`, `release_notes.sh` and `notify.sh` ran against a scratch repository with a fake origin on macOS's bash 3.2 (for the two release scripts: dry run and real run of each step, a release branch that already exists, tagging before the pull request is merged, tagging twice, a commit that lands after the release commit, and a dirty working tree). The rulesets were checked on GitHub: a direct push to `main` and the deletion of a release tag are rejected, and a pull request merged with `check` passing.
 - Notifications: delivery to Teams, Discord and Telegram happened on real releases and Fox confirmed the previews look as designed (2026-11-19). Not recorded as checked: the message of a failed release, and the 28 KB limit of Teams with a very long changelog.
+- Google Play (2026-11-25): `release_play.sh`, `release.sh`, `build.sh` and the lane `publish_play` were checked with a fake `bundle` (arguments, tracks, rollout rules, credentials, prompts, failure hint) and with unit tests of the parameters (`Evermoon::Play`); `fastlane lanes` lists the lane. Not checked: a real upload. The parameter names come from the fastlane documentation of `upload_to_play_store`; how a staged rollout and a draft behave on a real app, and whether a new app needs `--draft`, are unproven until the first run (use `--validate` first).
+- Scripts moved (2026-11-25): the release scripts now live in `scripts/distribution/` and source `scripts/lib/common.sh`; `distribute.yml` was edited to the new paths and the YAML parses, and every script path in the workflows exists. The workflow itself has not run since the move; the next release is its test.
 - iOS: only the Flutter step (`flutter build ios --no-codesign`) can be checked without an Apple account. Archive, signing, ad-hoc export and upload are unproven.
 - The Xcode project's team id (`9W96R5ZZY4`) differs from the id in the older guide `doc/manual/FASTLANE_SETUP.md` (`GH2PAB3V62`); confirm which belongs to the account you will use.
 
 ## Keep out of the repository
 
-Service account JSON, `google-services.json`, `GoogleService-Info.plist`, keystores, `key.properties`, `.p8` keys, webhook URLs. `.gitignore` covers the files; the workflows delete the files they write in a last step that always runs.
+Service account JSON (Firebase and Google Play), `google-services.json`, `GoogleService-Info.plist`, keystores, `key.properties`, `.p8` keys, webhook URLs. `.gitignore` covers the files; the workflows delete the files they write in a last step that always runs.
 
 ## Later
 
-- Google Play (internal track) and TestFlight for prod: new lanes next to `distribute_prod`, using the keystore and the App Store Connect key already here.
+- TestFlight for prod: a new lane next to `distribute_prod`, using the App Store Connect key already here.
+- Google Play from GitHub (a manually started workflow with a track choice) if you want it; today it is local only.

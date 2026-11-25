@@ -1,26 +1,33 @@
 #!/bin/bash
-# Re-exec with bash if invoked via sh/dash
-if [ -z "${BASH_VERSION:-}" ]; then
-  exec bash "$0" "$@"
+# Re-exec with bash if invoked via sh/dash. On macOS `sh` is bash in POSIX mode:
+# BASH_VERSION is set there, but that mode rejects some syntax of this script,
+# so it counts as "not bash" too.
+reexec=0
+if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
+if [ "$reexec" = 1 ]; then
+  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
 fi
 
 # release_notes.sh
 # Changelog from Conventional Commits, and the version bump they suggest.
-# Used by scripts/release_prepare.sh and by the release workflow, so the notes
-# that testers, the GitHub Release and the notification show are one text.
-#
-# Usage:
-#   bash scripts/release_notes.sh [ref] [--max-chars N]   notes, markdown
-#   bash scripts/release_notes.sh [ref] --bump            major | minor | patch | none
+# Used by scripts/distribution/release/release_firebase.sh and by the release workflow,
+# so the notes that testers, the GitHub Release and the notification show are
+# one text.
 #
 # [ref] is the end of the range (default HEAD): a tag, or a commit. The range
 # starts at the newest release tag before it (tags start with a digit); with no
 # earlier tag the range is the whole history.
+#
+# Usage:
+#   bash scripts/distribution/release/release_notes.sh [ref] [--max-chars N]   notes, markdown
+#   bash scripts/distribution/release/release_notes.sh [ref] --bump            major | minor | patch | none
 
 set -euo pipefail
 
-_PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$_PROJECT_ROOT" || { printf 'Cannot cd to project root\n' >&2; exit 1; }
+# shellcheck source=../lib/common.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../../lib/common.sh"
+cd_project_root
 
 MODE=notes
 TO=HEAD
@@ -29,7 +36,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --bump) MODE=bump ;;
     --max-chars) MAX="${2:?--max-chars needs a number}"; shift ;;
-    -h|--help) sed -n '2,17p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) print_usage; exit 0 ;;
     *) TO="$1" ;;
   esac
   shift
@@ -47,7 +54,7 @@ classify() {
   awk -F'\t' -v breaking=" $BREAKING_HASHES " '
     {
       hash = $1; subj = $2; kind = "other"; brk = 0; text = subj
-      # The release commit (release_prepare.sh makes it, the squash merge of its
+      # The release commit (release_firebase.sh makes it, the squash merge of its
       # pull request may add " (#n)" to the title) is not a change.
       if (subj ~ /^chore\(release\):/) next
       if (match(subj, /^[a-z]+(\([^)]*\))?!?:/)) {
