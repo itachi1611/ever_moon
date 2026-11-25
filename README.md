@@ -21,7 +21,7 @@ git clone git@github.com:itachi1611/ever_moon.git
 cd ever_moon
 fvm install
 fvm flutter pub get
-bash scripts/setup_env.sh        # creates assets/env/.env.<flavor> from the .example files
+bash scripts/setup/setup_env.sh        # creates assets/env/.env.<flavor> from the .example files (or: dev | prod)
 fvm flutter gen-l10n
 fvm flutter pub run build_runner build --delete-conflicting-outputs
 ```
@@ -49,12 +49,11 @@ Firebase configuration files are git-ignored and generated per machine:
 
 ```sh
 npm install -g firebase-tools
-firebase login
 fvm dart pub global activate flutterfire_cli
-bash scripts/config_firebase.sh          # both flavors; pass `dev` or `prod` for one
+bash scripts/setup/config_firebase.sh          # both flavors; pass `dev` or `prod` for one
 ```
 
-This writes `lib/firebase/<flavor>/firebase_options.dart`, `google-services.json` and `GoogleService-Info.plist`. Enable Authentication, Cloud Messaging and Crashlytics in each project. The app must work without login; login is optional.
+The script checks the tools, shows the logged-in Firebase account (and offers to switch, or logs in when needed), then configures each flavor. This writes `lib/firebase/<flavor>/firebase_options.dart`, `google-services.json` and `GoogleService-Info.plist`. Enable Authentication, Cloud Messaging and Crashlytics in each project. The app must work without login; login is optional.
 
 ## Checks
 
