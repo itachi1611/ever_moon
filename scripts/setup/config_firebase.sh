@@ -3,11 +3,11 @@
 # BASH_VERSION is set there, but that mode rejects some syntax of this script,
 # so it counts as "not bash" too.
 reexec=0
-if [ -z "${BASH_VERSION:-}" ]; then reexec=1; fi
+case "${BASH_VERSION:-}" in '') reexec=1 ;; esac
 case ":${SHELLOPTS:-}:" in *:posix:*) reexec=1 ;; esac
-if [ "$reexec" = 1 ]; then
-  exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@"
-fi
+case "$reexec" in
+  1) exec env -u SHELLOPTS -u POSIXLY_CORRECT bash "$0" "$@" ;;
+esac
 
 # config_firebase.sh
 # Run `flutterfire configure` for the Evermoon Firebase projects, then copy the
@@ -62,7 +62,7 @@ check_login() {
   listing="$(firebase login:list 2> /dev/null || true)"
   user="$(printf '%s' "$listing" | grep -oE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' | head -1 || true)"
 
-  if [ -z "$user" ]; then
+  if [[ -z "$user" ]]; then
     echo "Not logged in to Firebase. Running: firebase login"
     firebase login
     return
@@ -77,7 +77,7 @@ check_login() {
 # copy_native_config <source file> <destination dir> <flavor>
 copy_native_config() {
   local src="$1" dest_dir="$2" flavor="$3"
-  if [ ! -f "$src" ]; then
+  if [[ ! -f "$src" ]]; then
     warn "[$flavor] $src not found, skipped."
     return 0
   fi
@@ -111,8 +111,8 @@ configure_flavor() {
 }
 
 TARGETS=("${FLAVORS[@]}")
-if [ "$#" -gt 1 ]; then die "Too many arguments. Use: bash scripts/setup/config_firebase.sh [dev|prod]"; fi
-if [ "$#" -eq 1 ]; then
+if [[ "$#" -gt 1 ]]; then die "Too many arguments. Use: bash scripts/setup/config_firebase.sh [dev|prod]"; fi
+if [[ "$#" -eq 1 ]]; then
   case "$1" in
     -h|--help) print_usage; exit 0 ;;
     dev|prod) TARGETS=("$1") ;;
@@ -129,7 +129,7 @@ for flavor in "${TARGETS[@]}"; do
   configure_flavor "$flavor" || failed+=("$flavor")
 done
 
-if [ "${#failed[@]}" -gt 0 ]; then
+if [[ "${#failed[@]}" -gt 0 ]]; then
   die "Failed for: ${failed[*]}"
 fi
 printf '\n%sDone.%s\n' "$GREEN" "$RESET"

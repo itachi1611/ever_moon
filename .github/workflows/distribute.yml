@@ -4,11 +4,11 @@
 #
 # Triggers:
 # - A push to main whose commit title starts "chore(release): <version>" (the
-#   merge of the pull request that scripts/release_prepare.sh opens) and whose
+#   merge of the pull request that scripts/distribution/release/release_firebase.sh opens) and whose
 #   pubspec.yaml has that version. The release job creates the tag after a
 #   successful build. Every other push to main stops in the prepare job.
 # - A push of a tag equal to the version in pubspec.yaml, for example 1.0.1+2
-#   (scripts/release_tag.sh): the fallback for the first release or a re-run.
+#   (scripts/distribution/release/release_tag.sh): the fallback for the first release or a re-run.
 # Secrets live in the GitHub Environment "prod"; iOS runs only when the
 # repository variable IOS_ENABLED is "true". Setup: docs/ci-cd.md
 name: Distribute prod
@@ -72,7 +72,7 @@ jobs:
               exit 1
             fi
             if [[ "$pubspec" != "$version" ]]; then
-              echo "::error::Tag '$version' does not match version '$pubspec' in pubspec.yaml. Start a release with scripts/release_prepare.sh."
+              echo "::error::Tag '$version' does not match version '$pubspec' in pubspec.yaml. Start a release with scripts/distribution/release/release_firebase.sh."
               exit 1
             fi
             # A tag on another branch would publish unreviewed code.
@@ -115,7 +115,7 @@ jobs:
           END_REF: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
         run: |
           delimiter="notes_$(date +%s%N)"
-          { echo "notes<<$delimiter"; bash scripts/release_notes.sh "$END_REF"; echo "$delimiter"; } >> "$GITHUB_OUTPUT"
+          { echo "notes<<$delimiter"; bash scripts/distribution/release/release_notes.sh "$END_REF"; echo "$delimiter"; } >> "$GITHUB_OUTPUT"
 
   # The release must pass what a pull request passes, even if it skipped one.
   gate:
@@ -192,7 +192,7 @@ jobs:
         run: bundle exec fastlane android build_prod
 
       # ANDROID_SIGNING_SHA256 is a non-secret variable of the prod environment
-      # (scripts/signing_fingerprints.sh prints it). Without it the check only reports.
+      # (scripts/utils/signing_fingerprints.sh prints it). Without it the check only reports.
       - name: Verify the APK signer
         env:
           EXPECTED: ${{ vars.ANDROID_SIGNING_SHA256 }}
@@ -381,9 +381,9 @@ jobs:
             if ! command -v magick >/dev/null 2>&1 && ! command -v convert >/dev/null 2>&1; then
               sudo apt-get install -y -qq --no-install-recommends imagemagick >/dev/null 2>&1 || true
             fi
-            teams_preview="$(bash scripts/og_image_data_uri.sh "$preview" 11000 2>/dev/null || true)"
+            teams_preview="$(bash scripts/distribution/notify/og_image_data_uri.sh "$preview" 11000 2>/dev/null || true)"
           fi
           NOTIFY_STATUS="$status" NOTIFY_TITLE="$title" NOTIFY_BODY="$NOTES" NOTIFY_URL="$RUN_URL" \
             NOTIFY_FACTS="$facts" NOTIFY_RELEASE_URL="$release_url" NOTIFY_BANNER_URL="$banner" \
             NOTIFY_PREVIEW_URL="$preview" NOTIFY_TEAMS_PREVIEW="$teams_preview" \
-            bash scripts/notify.sh
+            bash scripts/distribution/notify/notify.sh

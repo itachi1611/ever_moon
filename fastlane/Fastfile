@@ -3,8 +3,11 @@
 #   build_<flavor>       compile the release artifact; needs no credentials
 #   build_<flavor>_aab   Android only: the same as an app bundle (.aab)
 #   distribute_<flavor>  build_<flavor>, then upload to Firebase App Distribution
+#   publish_play         Android only: build_prod_aab, then upload to Google Play
 #
 # Parameters: build_name:1.0.0 build_number:61 notes:"text"
+# publish_play also needs track:internal|alpha|beta|production and takes
+# rollout:0.1 (production only), release_status:draft, validate_only:true
 # Usage and secrets: docs/ci-cd.md
 require File.join(FastlaneCore::FastlaneFolder.path, "lib", "evermoon")
 
@@ -39,6 +42,19 @@ platform :android do
   desc "Build the prod APK and upload it to Firebase App Distribution"
   lane :distribute_prod do |options|
     ever_publish(options.merge(flavor: "prod"))
+  end
+
+  desc "Build the prod app bundle and upload it to a Google Play track"
+  lane :publish_play do |options|
+    # Fail on a wrong track or missing credentials before spending minutes on the build.
+    params = Evermoon::Play.upload_params(
+      track: options[:track],
+      rollout: options[:rollout],
+      release_status: options[:release_status],
+      validate_only: options[:validate_only]
+    )
+    ever_build_aab(options.merge(flavor: Evermoon::Play::FLAVOR))
+    upload_to_play_store(**params)
   end
 
   private_lane :ever_build do |options|

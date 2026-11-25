@@ -45,6 +45,15 @@ module Evermoon
       UI.fail!("firebase.json has no #{platform} app for flavor '#{flavor}'.")
     end
 
+    # The Android application id (package name) of the prod flavor: the one in
+    # `defaultConfig`, which only the dev flavor extends with a suffix.
+    def self.android_application_id
+      file = path("android", "app", "build.gradle.kts")
+      UI.fail!("Missing #{file}") unless File.exist?(file)
+      File.read(file)[/^\s*applicationId\s*=\s*"([^"]+)"/, 1] ||
+        UI.fail!("#{file} does not set applicationId.")
+    end
+
     def self.firebase_project(flavor)
       firebase_options(flavor).fetch("projectId")
     end
