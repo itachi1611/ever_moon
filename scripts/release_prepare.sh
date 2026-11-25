@@ -265,4 +265,4 @@ else
   printf '  3. The merge starts the release of %s; there is nothing else to run.\n' "$NEW_VERSION"
 fi
 printf 'Follow it at %s/actions\n' "$REMOTE"
-printf 'After the merge, go back to main and remove the merged local branches:  bash scripts/git_clean.sh\n'
+printf 'After the merge, go back to main and remove the merged local branches:  bash scripts/utils/git_helper.sh clean\n'
