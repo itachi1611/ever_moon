@@ -1,98 +1,71 @@
 # Privacy Policy
 
-_Last updated: June 17, 2026_
+_Last updated: November 26, 2026_
 
-Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information.
-
----
-
-## 1. Information We Collect
-
-### 1.1 Information You Provide
-
-- **Account information**: name, email address, password
-- **Profile information**: profile picture, preferences
-- **Communications**: messages or feedback you send us
-
-### 1.2 Information Collected Automatically
-
-- **Device information**: device type, operating system, unique device identifiers
-- **Usage data**: pages visited, features used, time spent in the app
-- **Log data**: IP address, access times, crash reports
-
-### 1.3 Information from Third Parties
-
-We may receive information about you from third-party services such as social login providers (Google, Apple) if you choose to connect them.
+Evermoon helps you register yearly events on Vietnamese lunar dates, such as death anniversaries ("giỗ"), and reminds you on the right day. This policy explains what the app does with your information.
 
 ---
 
-## 2. How We Use Your Information
+## 1. Your events stay on your device
 
-We use the information we collect to:
+The events you create (names, lunar dates, notes and reminder settings) are stored **only on your device**, in a local database. Evermoon does not upload them to any server and does not need an account.
 
-- Provide, maintain, and improve the application
-- Personalize your experience
-- Send important notifications and updates
-- Analyze usage patterns to enhance features
-- Comply with legal obligations
+Because the data is local, uninstalling the app or clearing its storage deletes it. We cannot recover it for you.
 
-We **do not** sell your personal information to third parties.
+Some events concern people who have passed away. That information is entered by you, stays on your device, and is never shared by the app.
 
 ---
 
-## 3. Data Sharing
+## 2. Information collected automatically
 
-We may share your information with:
+The app uses Google Firebase services. Through them, Google receives the following on our behalf:
 
-| Recipient | Purpose |
-|---|---|
-| Service providers | Hosting, analytics, customer support |
-| Legal authorities | When required by law |
-| Business transfers | In case of merger or acquisition |
+| Data | Service | Purpose |
+|---|---|---|
+| Crash reports and diagnostics (stack traces, device model, operating system version, app version) | Firebase Crashlytics | Find and fix crashes |
+| Firebase installation ID and push notification token | Firebase Cloud Messaging | Deliver notifications to your device |
 
----
-
-## 4. Data Retention
-
-We retain your data for as long as your account is active or as needed to provide services. You may request deletion of your data at any time.
+This data is not linked to your name, email address or phone number, because the app has no account system. Google processes it as a service provider according to the [Firebase privacy information](https://firebase.google.com/support/privacy). Crash and diagnostic collection cannot currently be turned off inside the app.
 
 ---
 
-## 5. Security
+## 3. Permissions the app asks for
 
-We implement industry-standard security measures including **encryption in transit (TLS)** and **at rest** to protect your information. However, no method of transmission over the internet is 100% secure.
+- **Notifications**: to show your reminders.
+- **Exact alarms and device restart**: so reminders fire at the time you chose and are scheduled again after the phone restarts or its time zone changes.
+- **Vibration**: to vibrate when a reminder appears.
+- **Network access**: for Firebase services described above.
 
----
-
-## 6. Your Rights
-
-Depending on your location, you may have the right to:
-
-- **Access** the personal data we hold about you
-- **Correct** inaccurate data
-- **Delete** your personal data
-- **Object** to or **restrict** certain processing
-- **Data portability** — receive your data in a portable format
-
-To exercise these rights, contact us at **privacy@example.com**.
+The app does not access your contacts, photos, camera, microphone or location.
 
 ---
 
-## 7. Children's Privacy
+## 4. What we do not do
 
-This application is not directed to children under 13. We do not knowingly collect personal information from children under 13.
-
----
-
-## 8. Changes to This Policy
-
-We may update this Privacy Policy periodically. We will notify you of material changes through the application or by email.
+- We do not show advertising.
+- We do not sell or rent your information.
+- We do not use your data for advertising or profiling.
 
 ---
 
-## 9. Contact Us
+## 5. Children
 
-For privacy-related inquiries:
+Evermoon is intended for users aged 18 and over. We do not knowingly collect information from children.
 
-📧 **privacy@example.com**  
-📍 123 Example Street, Ho Chi Minh City, Vietnam
+---
+
+## 6. Your choices
+
+Your event data is on your device, so you control it directly: edit or delete events in the app, or remove everything by uninstalling it. You can turn off notifications at any time in the system settings of your phone. For questions about the crash and diagnostic data described in section 2, contact us at the address below.
+
+---
+
+## 7. Changes to this policy
+
+If the app changes in a way that affects your privacy (for example, when family sharing and sign-in are added), we will update this page and the date above before the change takes effect.
+
+---
+
+## 8. Contact
+
+For privacy questions, write to **itachi1611@gmail.com**.
